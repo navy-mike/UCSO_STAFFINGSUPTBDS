@@ -1,0 +1,142 @@
+﻿$PBExportHeader$f_remove_from_dragfrom_group.srf
+global type f_remove_from_dragfrom_group from function_object
+end type
+
+forward prototypes
+global function boolean f_remove_from_dragfrom_group (long ll_from_pos_exists_id, long ll_from_bs_specs_others_exists_id, long ll_from_xref_exists_id, long ll_from_xrefmods_exists_id, long ll_from_emp_exists_id, ref string lsa_dd_errors[], ref integer li_num_deletes, ref integer li_num_updates, ref transaction tr_sqlca)
+end prototypes
+
+global function boolean f_remove_from_dragfrom_group (long ll_from_pos_exists_id, long ll_from_bs_specs_others_exists_id, long ll_from_xref_exists_id, long ll_from_xrefmods_exists_id, long ll_from_emp_exists_id, ref string lsa_dd_errors[], ref integer li_num_deletes, ref integer li_num_updates, ref transaction tr_sqlca);//prototype bSuccessfulRemove = f_remove_from_dragfrom_group(ll_from_pos_exists_id, ll_from_bs_specs_others_exists_id, ll_from_xref_exists_id, ll_from_xrefmods_exists_id, ll_from_emp_exists_id, ref lsa_dd_errors, ref li_num_deletes, ref li_num_updates, ref sqlca)
+//===================================
+//*** REMOVE FROM DRAG_FROM GROUP ***
+//===================================
+boolean bSuccessfulRemove
+bSuccessfulRemove = false
+//on entry:
+//ll_from_pos_exists_id
+//ll_from_bs_specs_others_exists_id
+//ll_from_xref_exists_id
+//ll_from_xrefmods_exists_id
+//ll_from_emp_exists_id
+//ll_from_bs_specs_others_exists_id
+//on exit:
+//lsa_dd_errors[]
+string ls_sqlerrtext
+if((ll_from_pos_exists_id > 0) and (ll_from_bs_specs_others_exists_id > 0)) then
+	bSuccessfulRemove = false
+	long ll_pos_grpid
+	//
+	select grpid into :ll_pos_grpid from sns_staffing_grps_positions2 where id = :ll_from_pos_exists_id using tr_sqlca;
+	// 
+	li_num_deletes = 0
+	li_num_updates = 0
+	// - delete from sns_staffing_grps_positions2 where id = ll_from_pos_exists_id
+	delete from sns_staffing_grps_positions2 where id = :ll_from_pos_exists_id using tr_sqlca;
+	//
+	if(sqlca.sqlcode <> -1) then
+		//
+		commit using tr_sqlca;
+		//
+		li_num_deletes++
+	else
+		ls_sqlerrtext = tr_sqlca.sqlerrtext
+		//
+		rollback using tr_sqlca;
+		//
+		ls_sqlerrtext = "delete from sns_staffing_grps_positions2 error=" + ls_sqlerrtext
+		f_add_item_to_string_array_ext(ref lsa_dd_errors, ls_sqlerrtext, false)
+	end if
+	// - delete from sns_pos_xref where id = ll_from_xref_exists_id
+	if(ll_from_xref_exists_id > 0) then
+		//
+		delete from sns_pos_xref where id = :ll_from_xref_exists_id using tr_sqlca;
+		//
+		if(sqlca.sqlcode <> -1) then
+			//
+			commit using tr_sqlca;
+			//
+			li_num_deletes++
+		else
+			ls_sqlerrtext = tr_sqlca.sqlerrtext
+			//
+			rollback using tr_sqlca;
+			//
+			ls_sqlerrtext = "delete from sns_pos_xref error=" + ls_sqlerrtext
+			f_add_item_to_string_array_ext(ref lsa_dd_errors, ls_sqlerrtext, false)
+		end if
+	end if
+	// - delete from sns_pos_xref_mods where id = ll_from_xrefmods_exists_id
+	if(ll_from_xrefmods_exists_id > 0) then
+		//
+		delete from sns_pos_xref_mods where id = :ll_from_xrefmods_exists_id using tr_sqlca;
+		//
+		if(sqlca.sqlcode <> -1) then
+			//
+			commit using tr_sqlca;
+			//
+			li_num_deletes++
+		else
+			ls_sqlerrtext = sqlca.sqlerrtext
+			//
+			rollback using tr_sqlca;
+			//
+			ls_sqlerrtext = "delete from sns_pos_xref_mods error=" + ls_sqlerrtext
+			f_add_item_to_string_array_ext(ref lsa_dd_errors, ls_sqlerrtext, false)
+		end if							
+	end if
+	// - update sns_employees set positionid = "", title = "", jobcode = "", jobtitle = "", supervisor = 0, grps_resp = "", grpid = 0 where id = ll_from_emp_exists_id
+	if(ll_from_emp_exists_id > 0) then
+		//''
+		update sns_employees set positionid = '', title = '', jobcode = '', jobtitle = '', supervisor = '', grps_resp = '', grpid = 0	
+		where id = :ll_from_emp_exists_id 
+		using tr_sqlca;
+		//
+		if(sqlca.sqlcode <> -1) then
+			//
+			commit using tr_sqlca;
+			//
+			li_num_updates++
+		else
+			ls_sqlerrtext = sqlca.sqlerrtext
+			//
+			rollback using tr_sqlca;
+			//
+			ls_sqlerrtext = "update sns_employees error=" + ls_sqlerrtext
+			f_add_item_to_string_array_ext(ref lsa_dd_errors, ls_sqlerrtext, false)
+		end if								
+	end if
+	// - update sns_board_specs_others set empname = "", empno = 0, positionid = "" where id = ll_from_bs_specs_others_exists_id
+	if(ll_from_bs_specs_others_exists_id > 0) then
+		//
+		update sns_board_specs_others set empname = '', empno = 0, positionid = ''
+		where id = :ll_from_bs_specs_others_exists_id
+		using tr_sqlca;
+		//
+		if(sqlca.sqlcode <> -1) then
+			//
+			commit using tr_sqlca;
+			//
+			li_num_updates++
+			if(ll_pos_grpid = 131) then
+				//
+				update sns_board_specs_others set callnum = '' where id = :ll_from_bs_specs_others_exists_id using tr_sqlca;
+				//
+				commit using tr_sqlca;
+				//
+			end if
+		else
+			ls_sqlerrtext = sqlca.sqlerrtext
+			//
+			rollback using tr_sqlca;
+			//
+			ls_sqlerrtext = "update sns_board_specs_others error=" + ls_sqlerrtext
+			f_add_item_to_string_array_ext(ref lsa_dd_errors, ls_sqlerrtext, false)
+		end if								
+	end if
+	if((li_num_deletes > 0) and (li_num_updates = 2) and (UpperBound(lsa_dd_errors) = 0)) then
+		bSuccessfulRemove = true
+	end if
+end if
+return bSuccessfulRemove
+end function
+

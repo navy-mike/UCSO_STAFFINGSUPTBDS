@@ -1,0 +1,238 @@
+﻿$PBExportHeader$f_backup_board_specs_tables.srf
+global type f_backup_board_specs_tables from function_object
+end type
+
+forward prototypes
+global function long f_backup_board_specs_tables (integer li_case_num, string ls_from_hdrtext, string ls_to_hdrtext, long ll_pos_exists_id, long ll_bs_specs_others_exists_id, long ll_xref_exists_id, long ll_xrefmods_exists_id, long ll_emp_exists_id, ref transaction tr_sqlca)
+end prototypes
+
+global function long f_backup_board_specs_tables (integer li_case_num, string ls_from_hdrtext, string ls_to_hdrtext, long ll_pos_exists_id, long ll_bs_specs_others_exists_id, long ll_xref_exists_id, long ll_xrefmods_exists_id, long ll_emp_exists_id, ref transaction tr_sqlca);//prototype: li_rtn_value = f_backup_board_specs_tables(li_case_num, ls_from_hdrtext, ls_to_hdrtext, ll_pos_exists_id, ll_bs_specs_others_exists_id, ll_xref_exists_id, ll_xrefmods_exists_id, ll_emp_exists_id, ref sqlca)
+//**** SPECIAL PROCESSING FOR RIGHT CLICK DELETIONS ****
+//if backup is for the f_delete_filled_position or f_deleteunfilledposition functions
+// ls_from_hdrtext = the right clicked group hdrtext
+// ls_to_hdrtext = ls_from_hdrtext
+// li_case_num = 99
+// ll_pos_exists_id = sns_staffing_grps_positions2 record ID
+// ll_bs_specs_others_exists_id = sns_board_specs_others record ID
+// ll_xref_exists_id = sns_pos_xref record ID
+// ll_xrefmods_exists_id = sns_pos_xref_mods record ID
+// ll_emp_exists_id = sns_employees record ID
+//******************************************************
+long ll_rtn_value
+ll_rtn_value = 0
+// 1 = successful backup
+//-1 = invalid li_case_num or ls_from_hdrtext or ls_to_hdrtext
+//-2 = insert failed
+//-3 = remove previous backup failed
+if((li_case_num > 0) and (IsNull(ls_from_hdrtext) = false) and (IsNull(ls_to_hdrtext) = false)) then
+	ls_from_hdrtext = trim(upper(ls_from_hdrtext))
+	ls_to_hdrtext = trim(upper(ls_to_hdrtext))
+	long ll_backup_exists_id
+	ll_backup_exists_id = 0
+	boolean bAbort_backup
+	bAbort_backup = false
+	//
+	select id into :ll_backup_exists_id from sns_board_specs_backup where casenum = :li_case_num and fromhdrtext = :ls_from_hdrtext and tohdrtext = :ls_to_hdrtext using tr_sqlca;
+	//
+	if(ll_backup_exists_id > 0) then
+		//
+		delete from sns_board_specs_backup where id = :ll_backup_exists_id using tr_sqlca;
+		//
+		if(tr_sqlca.sqlcode <> -1) then
+			//
+			commit using tr_sqlca;
+			//
+		else
+			//
+			rollback using tr_sqlca;
+			//
+			bAbort_backup = true
+		end if
+	end if
+	if(bAbort_backup = false) then
+		//--------------------
+		long ll_pos_id 
+		long ll_pos_grpid 
+		string ls_pos_callnum 
+		long ll_pos_assgnd_empno 
+		string ls_pos_funddept 
+		string ls_pos_addinfo 
+		string ls_pos_vehnum 
+		string ls_pos_positionid 
+		string ls_pos_jobcode 
+		string ls_pos_jobtitle 
+		long ll_pos_xrefid 
+		//--------------------
+		long ll_xref_id 
+		long ll_xref_pos2recid 
+		long ll_xref_empno 
+		long ll_xref_pos2idshort 
+		string ls_xref_spunitno 
+		long ll_xref_grpid 
+		string ls_xref_status 
+		string ls_xref_empname 
+		//--------------------
+		long ll_xrefmods_id 
+		long ll_xrefmods_ppos2recid 
+		long ll_xrefmods_pempno 
+		long ll_xrefmods_ppos2idshort 
+		string ls_xrefmods_pspunitno 
+		long ll_xrefmods_pgrpid 
+		integer li_xrefmods_pactive
+		integer li_xrefmods_active
+		//--------------------
+		long ll_emp_id 
+		string ls_emp_positionid 
+		string ls_emp_title 
+		string ls_emp_jobcode 
+		string ls_emp_jobtitle 
+		string ls_emp_supervisor 
+		string ls_emp_grps_resp 
+		long ll_emp_grpid 
+		//--------------------
+		long ll_bdspecs_id 
+		long ll_bdspecs_grpid 
+		string ls_bdspecs_nrow 
+		string ls_bdspecs_ncol 
+		string ls_bdspecs_empname 
+		long ll_bdspecs_empno 
+		string ls_bdspecs_callnum 
+		integer li_bdspecs_issuper
+		integer li_bdspecs_isunfilled
+		string ls_bdspecs_groupname 
+		string ls_bdspecs_positionid 
+		integer li_bdspecs_active 
+		//---------------------
+		ll_pos_id = 0
+		ll_pos_grpid = 0
+		ls_pos_callnum = ""
+		ll_pos_assgnd_empno = 0
+		ls_pos_funddept = ""
+		ls_pos_addinfo = ""
+		ls_pos_vehnum = ""
+		ls_pos_positionid = ""
+		ls_pos_jobcode = ""
+		ls_pos_jobtitle = ""
+		ll_pos_xrefid = 0
+		//--------------------
+		ll_xref_id = 0
+		ll_xref_pos2recid = 0
+		ll_xref_empno = 0
+		ll_xref_pos2idshort = 0
+		ls_xref_spunitno = ""
+		ll_xref_grpid = 0
+		ls_xref_status = ""
+		ls_xref_empname = ""
+		//--------------------
+		ll_xrefmods_id = 0
+		ll_xrefmods_ppos2recid = 0
+		ll_xrefmods_pempno = 0
+		ll_xrefmods_ppos2idshort = 0
+		ls_xrefmods_pspunitno = ""
+		ll_xrefmods_pgrpid = 0
+		li_xrefmods_pactive = 0
+		li_xrefmods_active = 0
+		//--------------------
+		ll_emp_id = 0
+		ls_emp_positionid = ""
+		ls_emp_title = ""
+		ls_emp_jobcode = ""
+		ls_emp_jobtitle = ""
+		ls_emp_supervisor = ""
+		ls_emp_grps_resp = ""
+		ll_emp_grpid = 0
+		//--------------------
+		ll_bdspecs_id = 0
+		ll_bdspecs_grpid = 0
+		ls_bdspecs_nrow = ""
+		ls_bdspecs_ncol = ""
+		ls_bdspecs_empname = ""
+		ll_bdspecs_empno = 0
+		ls_bdspecs_callnum = ""
+		li_bdspecs_issuper = 0
+		li_bdspecs_isunfilled = 0
+		ls_bdspecs_groupname = ""
+		ls_bdspecs_positionid = ""
+		li_bdspecs_active = 0
+		//---------------------	
+		if(ll_pos_exists_id > 0) then
+			//
+			select id, grpid, callnum, assgnd_empno, funddept, addinfo, vehnum, positionid, jobcode, jobtitle, xrefid into 
+			:ll_pos_id, :ll_pos_grpid, :ls_pos_callnum, :ll_pos_assgnd_empno, :ls_pos_funddept, :ls_pos_addinfo, :ls_pos_vehnum, :ls_pos_positionid, :ls_pos_jobcode, :ls_pos_jobtitle, :ll_pos_xrefid 
+			from sns_staffing_grps_positions2 
+			where id = :ll_pos_exists_id 
+			using tr_sqlca;
+		end if
+		if(ll_xref_exists_id > 0) then
+			//
+			select id, pos2recid, empno, pos2idshort, spunitno, grpid, status, empname into :ll_xref_id, :ll_xref_pos2recid, :ll_xref_empno, :ll_xref_pos2idshort, :ls_xref_spunitno, :ll_xref_grpid, :ls_xref_status, :ls_xref_empname
+			from sns_pos_xref 
+			where id = :ll_xref_exists_id
+			using tr_sqlca;
+			//
+		end if
+		if(ll_xrefmods_exists_id > 0) then
+			//
+			select id, ppos2recid, pempno, ppos2idshort, pspunitno, pgrpid, pactive, active into :ll_xrefmods_id, :ll_xrefmods_ppos2recid, :ll_xrefmods_pempno, :ll_xrefmods_ppos2idshort, :ls_xrefmods_pspunitno, :ll_xrefmods_pgrpid, :li_xrefmods_pactive, :li_xrefmods_active
+			from sns_pos_xref_mods
+			where id = :ll_xrefmods_exists_id
+			using tr_sqlca;
+			//
+		end if
+		if(ll_emp_exists_id > 0) then
+			//
+			select id, positionid, title, jobcode, jobtitle, supervisor, grps_resp, grpid into :ll_emp_id, :ls_emp_positionid, :ls_emp_title, :ls_emp_jobcode, :ls_emp_jobtitle, :ls_emp_supervisor, :ls_emp_grps_resp, :ll_emp_grpid
+			from sns_employees
+			where id = :ll_emp_exists_id
+			using tr_sqlca;
+			//
+		end if
+		if(ll_bs_specs_others_exists_id > 0) then
+			//
+			select id, grpid, nrow, ncol, empname, empno, callnum, issuper, isunfilled, groupname, positionid, active into :ll_bdspecs_id, :ll_bdspecs_grpid, :ls_bdspecs_nrow, :ls_bdspecs_ncol, :ls_bdspecs_empname, :ll_bdspecs_empno, 
+			:ls_bdspecs_callnum, :li_bdspecs_issuper, :li_bdspecs_isunfilled, :ls_bdspecs_groupname, :ls_bdspecs_positionid, :li_bdspecs_active
+			from sns_board_specs_others
+			where id = :ll_bs_specs_others_exists_id
+			using tr_sqlca;
+			//
+		end if
+		//
+		insert into sns_board_specs_backup(casenum, fromhdrtext, tohdrtext, pos_id, pos_grpid, pos_callnum, pos_assgnd_empno, pos_funddept, pos_addinfo, pos_vehnum, pos_positionid, pos_jobcode, pos_jobtitle, pos_xrefid,
+		xref_id, xref_pos2recid, xref_empno, xref_pos2idshort, xref_spunitno, xref_grpid, xref_status, xref_empname,
+		xrefmods_id, xrefmods_ppos2recid, xrefmods_pempno, xrefmods_ppos2idshort, xrefmods_pspunitno, xrefmods_grpid, xrefmods_pactive, xrefmods_active,
+		emp_id, emp_positionid, emp_title, emp_jobcode, emp_jobtitle, emp_supervisor, emp_grps_resp, emp_grpid,
+		bdspecs_id, bdspecs_grpid, bdspecs_nrow, bdspecs_ncol, bdspecs_empname, bdspecs_empno, bdspecs_callnum, bdspecs_issuper, bdspecs_isunfilled, bdspecs_groupname, bdspecs_positionid,
+		active)
+		values(:li_case_num, :ls_from_hdrtext, :ls_to_hdrtext, :ll_pos_id, :ll_pos_grpid, :ls_pos_callnum, :ll_pos_assgnd_empno, :ls_pos_funddept, :ls_pos_addinfo, :ls_pos_vehnum, :ls_pos_positionid, :ls_pos_jobcode, :ls_pos_jobtitle, :ll_pos_xrefid,
+		:ll_xref_id, :ll_xref_pos2recid, :ll_xref_empno, :ll_xref_pos2idshort, :ls_xref_spunitno, :ll_xref_grpid, :ls_xref_status, :ls_xref_empname,
+		:ll_xrefmods_id, :ll_xrefmods_ppos2recid, :ll_xrefmods_pempno, :ll_xrefmods_ppos2idshort, :ls_xrefmods_pspunitno, :ll_xrefmods_pgrpid, :li_xrefmods_pactive, :li_xrefmods_active,
+		:ll_emp_id, :ls_emp_positionid, :ls_emp_title, :ls_emp_jobcode, :ls_emp_jobtitle, :ls_emp_supervisor, :ls_emp_grps_resp, :ll_emp_grpid,
+		:ll_bdspecs_id, :ll_bdspecs_grpid, :ls_bdspecs_nrow, :ls_bdspecs_ncol, :ls_bdspecs_empname, :ll_bdspecs_empno, :ls_bdspecs_callnum, :li_bdspecs_issuper, :li_bdspecs_isunfilled, :ls_bdspecs_groupname, :ls_bdspecs_positionid, :li_bdspecs_active)
+		using tr_sqlca;
+		// 
+		if(tr_sqlca.sqlcode <> -1) then
+			//
+			commit using tr_sqlca;
+			//
+			ll_rtn_value = 0
+			//
+			select id into :ll_rtn_value from sns_board_specs_backup where casenum = :li_case_num and fromhdrtext = :ls_from_hdrtext and tohdrtext = :ls_to_hdrtext and bdspecs_id = :ll_bdspecs_id using tr_sqlca;
+			//
+		else
+			rollback using tr_sqlca; //ORA-00904: "EMP_EMPNO": invalid identifier
+	
+			ll_rtn_value = -2
+		end if
+	else
+		ll_rtn_value = -3
+	end if
+else
+	ll_rtn_value = -1
+end if
+// >0 = successful backup. inserted record id
+//-1 = invalid li_case_num or ls_from_hdrtext or ls_to_hdrtext
+//-2 = insert failed
+//-3 = remove previous backup failed
+return ll_rtn_value
+end function
+

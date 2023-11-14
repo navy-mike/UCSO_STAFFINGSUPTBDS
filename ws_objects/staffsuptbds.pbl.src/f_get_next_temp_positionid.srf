@@ -1,0 +1,32 @@
+﻿$PBExportHeader$f_get_next_temp_positionid.srf
+global type f_get_next_temp_positionid from function_object
+end type
+
+forward prototypes
+global function string f_get_next_temp_positionid (ref transaction tr_sqlca)
+end prototypes
+
+global function string f_get_next_temp_positionid (ref transaction tr_sqlca);//prototype: ls_temp_positionid = f_get_next_temp_positionid(ref sqlca)
+//return the next temp positionid that is above 90000 (90000 is the limit for temp positionid's)
+string ls_temp_positionid
+ls_temp_positionid = ""
+string ls_min_positionid
+//
+select min(positionid) into :ls_min_positionid from sns_staffing_grps_positions2 where ltrim(rtrim(upper(positionid))) like 'POSITION-99%' using tr_sqlca;
+//--POSITION-99994
+integer li_dpos
+li_dpos = pos(ls_min_positionid, "-")
+if(li_dpos > 0) then
+	long ll_posid_value
+	ll_posid_value = f_stol(mid(ls_min_positionid, (li_dpos + 1)))
+	if(ll_posid_value > 90000) then
+		ll_posid_value = (ll_posid_value - 1) //next temp positionid value
+		ls_temp_positionid = string(ll_posid_value)
+		if(f_len_ext(ls_temp_positionid) = 5) then
+			ls_temp_positionid = "POSITION-" + ls_temp_positionid
+		end if
+	end if
+end if
+return ls_temp_positionid
+end function
+

@@ -1,0 +1,70 @@
+﻿$PBExportHeader$f_insert_sns_pos_xref.srf
+global type f_insert_sns_pos_xref from function_object
+end type
+
+forward prototypes
+global function integer f_insert_sns_pos_xref (long ll_xrefid, long ll_pos2recid, long ll_grpid, long ll_empno, integer li_pos2idshort, string ls_spunitno, integer li_active, string ls_status, string ls_empname, ref string ls_error, ref transaction tr_sqlca)
+end prototypes
+
+global function integer f_insert_sns_pos_xref (long ll_xrefid, long ll_pos2recid, long ll_grpid, long ll_empno, integer li_pos2idshort, string ls_spunitno, integer li_active, string ls_status, string ls_empname, ref string ls_error, ref transaction tr_sqlca);//prototype: li_rtn_value = f_insert_sns_pos_xref(ll_xrefid, ll_pos2recid, ll_grpid, ll_empno, li_pos2idshort, ls_spunitno, li_active, ls_status, ls_empname, ref ls_error, ref sqlca)
+integer li_rtn_value
+li_rtn_value = 0
+boolean b_insert_mode
+b_insert_mode = false
+if(ll_xrefid > 0) then
+	long ll_exists_id
+	//
+	select id into :ll_exists_id from sns_pos_xref where id = :ll_xrefid using tr_sqlca;
+	//
+	if(ll_exists_id > 0) then
+		//
+		update sns_pos_xref set pos2recid = :ll_pos2recid, empno = :ll_empno, pos2idshort = :li_pos2idshort, spunitno = :ls_spunitno, active = :li_active, status = :ls_status, empname = :ls_empname, grpid = :ll_grpid
+		using tr_sqlca;
+		//
+	else
+		//
+		insert into sns_pos_xref(pos2recid, empno, pos2idshort, spunitno, grpid, status, empname, active)
+		values(:ll_pos2recid, :ll_empno, :li_pos2idshort, :ls_spunitno, :ll_grpid, :ls_status, :ls_empname, 1)
+		using tr_sqlca;
+		//
+		b_insert_mode = true
+	end if
+	if(tr_sqlca.sqlcode <> -1) then
+		//
+		commit using tr_sqlca;
+		//
+		if(b_insert_mode = true) then
+			ll_xrefid = 0
+			//
+			select id into :ll_xrefid from sns_pos_xref where pos2recid = :ll_pos2recid using tr_sqlca;
+			//
+			if(ll_xrefid > 0) then
+				//
+				update sns_staffing_grps_positions2 set xrefid = :ll_xrefid where id = :ll_pos2recid using tr_sqlca;
+				//
+				if(tr_sqlca.sqlcode <> -1) then
+					//
+					commit using tr_sqlca;
+					//
+				else
+					ls_error = tr_sqlca.sqlerrtext
+					//
+					rollback using sqlca;
+					//
+					li_rtn_value = -2
+				end if
+			end if
+		end if
+		li_rtn_value = 1
+	else
+		//
+		ls_error = tr_sqlca.sqlerrtext
+		//
+		rollback using tr_sqlca;
+		//
+		li_rtn_value = -1
+	end if
+end if
+return li_rtn_value
+end function
+

@@ -1,0 +1,83 @@
+﻿$PBExportHeader$f_filter_dw.srf
+global type f_filter_dw from function_object
+end type
+
+forward prototypes
+global function string f_filter_dw (ref datawindow a_dw, string as_text)
+end prototypes
+
+global function string f_filter_dw (ref datawindow a_dw, string as_text);string ls_filter, ls_col[], ls_data[], ls_header, ls_join, ls_pre, ls_post, ls_text, ls_objects, ls_control, ls_type, ls_visible, ls_coltype
+long ll_first_row, ll_count, ll_count2, ll_col_idx, ll_pos
+ll_col_idx = 1
+//find info and set filter
+// If it is an unknown dataobject it will search any visible column containing any part of any of the space seperated items in as_data
+if isnull(as_text) then as_text = ''
+as_text = f_replace(as_text, '*', '%')
+as_text = f_replace(as_text, '%%', '%')
+
+ls_join = ' or '
+ls_pre = '%'
+ls_post = '%'
+
+ls_objects = a_dw.object.datawindow.objects
+DO while ls_objects <> ""
+	ll_pos = Pos(ls_objects, "~t")
+	IF ll_pos > 0 THEN
+		ls_control = left(ls_objects, ll_pos - 1)
+		ls_objects = mid(ls_objects, ll_pos + 1)
+	ELSE
+		ls_control = ls_objects
+		ls_objects = ""
+	END IF
+	ls_type = a_dw.describe(ls_control + ".type")
+	ls_visible = a_dw.describe(ls_control + ".visible")
+	if pos(ls_visible, '~t') > 0 then
+		ls_visible = a_dw.describe('evaluate("' + mid(ls_visible, pos(ls_visible, '~t') +1) + ', 0)')
+	end if
+	ls_coltype = a_dw.describe(ls_control + ".coltype")
+	if ls_visible = '1' and (ls_type = 'column' or ls_type = 'compute') then
+		if left(ls_coltype, 5) = 'char(' then
+			ls_col[ll_col_idx] = ls_control
+			ll_col_idx++
+		elseif ls_coltype = 'char' then
+			ls_col[ll_col_idx] = ls_control
+			ll_col_idx++
+		elseif ls_coltype = 'number' then
+			ls_col[ll_col_idx] = 'string(' + ls_control + ')'
+			ll_col_idx++
+		elseif ls_coltype = 'long' then
+			ls_col[ll_col_idx] = 'string(' + ls_control + ')'
+			ll_col_idx++
+		elseif left(ls_coltype, 7) = 'decimal' then
+			ls_col[ll_col_idx] = 'string(' + ls_control + ')'
+			ll_col_idx++				
+		elseif ls_coltype = 'datetime' then
+			ls_col[ll_col_idx] = "string(" + ls_control + ", 'MM/DD/YYYY HH:MM:SS')"
+			ll_col_idx++				
+		end if
+	end if
+LOOP
+
+if as_text = '' then
+	ls_filter = ''
+elseif upperbound(ls_col) > 0 then
+	as_text = f_replace(as_text, '  ', ' ')
+	f_parsetoarray(as_text, ' ', ls_data)
+	for ll_count = 1 to upperbound(ls_data)
+		ls_text = ls_data[ll_count]
+		ls_filter = ls_filter + '('
+		for ll_count2 = 1 to upperbound(ls_col)
+			ls_filter = ls_filter + "(upper(" + ls_col[ll_count2] + ") like " + "'" + ls_pre + ls_text + ls_post + "')"
+			if ll_count2 < upperbound(ls_col) then ls_filter = ls_filter + ls_join
+		next
+		ls_filter = ls_filter + ')'
+		if ll_count < upperbound(ls_data) then ls_filter = ls_filter + ' and '
+	next
+elseif upperbound(ls_col) = 0 then
+else
+end if
+
+ls_filter = f_replace(ls_filter, '%%', '%')
+return ls_filter
+end function
+

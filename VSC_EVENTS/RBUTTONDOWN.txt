@@ -1,0 +1,68 @@
+//===================
+//### RBUTTONDOWN ###
+//===================
+string ls_dwo_name
+ls_dwo_name = dwo.name
+
+//=======================
+long ll_clicked_grpid
+ll_clicked_grpid = 6
+//=======================
+datawindow dw_clicked_object
+dw_clicked_object = f_getDwobjectByGrpid(ll_clicked_grpid, dw_a, dw_b, dw_c, dw_d, dw_rec1, dw_rec2, dw_em1, dw_em2, dw_emsro, dw_vine, dw_smcont, dw_fto, dw_team_resvrs, dw_unfilled,	dw_unassigned)
+if(IsNull(dw_clicked_object) = false) then
+	string ls_empname
+	string ls_callnum
+	string ls_hdrtext
+	if(row = 0) then
+		ls_hdrtext = dw_clicked_object.getitemstring(1, "grpteamid")	
+	else
+		ls_hdrtext = dw_clicked_object.getitemstring(row, "grpteamid")	
+	end if
+	string ls_grpid
+	long ll_grpid
+	ls_grpid = f_extract_bracketed_item(ls_hdrtext, "{","}", true)
+	ll_grpid = f_stol(ls_grpid)
+	long ll_num_avail_positions
+	ll_num_avail_positions = 0
+	if((row > 0) and (ll_grpid > 0)) then
+		ls_empname = dw_clicked_object.getitemstring(row, "sns_board_specs_others_empname")
+		ls_callnum = dw_clicked_object.getitemstring(row, "sns_board_specs_others_callnum")
+		//
+		select count(*) into :ll_num_avail_positions	from sns_board_specs_others where grpid = :ll_grpid using sqlca;
+		//
+		long ll_loop
+		string ls_loopdata
+		integer li_max_names
+		li_max_names = 0
+		for ll_loop = 1 to ll_num_avail_positions
+			ls_loopdata = dw_clicked_object.getitemstring(ll_loop, "sns_board_specs_others_empname")
+			if((pos(ls_loopdata, "UNFILLED") = 0) and (f_len_ext(ls_loopdata) > 0)) then
+				li_max_names++			
+			end if
+		next
+		//
+		integer li_drslt 
+		li_drslt = MessageBox("Question","Are you sure you want to remove " + ls_empname + " from " + gs_crlf + ls_hdrtext + "?", QUESTION!, YESNO!, 1)
+		if(li_drslt = 1) then
+			if(pos(ls_empname, "UNFILLED") > 0) and (ls_callnum = "TBD") then
+				//****************
+				//**** CASE 3 ****
+				//****************
+				f_deleteunfilledposition(ref dw_clicked_object, row, dw_unassigned, ref sqlca)
+			elseif((pos(ls_empname, "UNFILLED") > 0) and (pos(ls_callnum, "1J") = 1)) then
+				//****************
+				//**** CASE 3 ****
+				//****************
+				f_deleteunfilledposition(ref dw_clicked_object, row, dw_unassigned, ref sqlca)
+			else
+				//****************
+				//**** CASE 4 ****
+				//****************
+				if((li_max_names > 0) and (row <= li_max_names)) then
+					f_delete_filled_position(ref dw_clicked_object, row, dw_unassigned, ref sqlca)
+				end if
+			end if	
+		end if
+	end if
+end if

@@ -1,0 +1,17 @@
+﻿$PBExportHeader$f_set_employees_super_lvl.srf
+global type f_set_employees_super_lvl from function_object
+end type
+
+forward prototypes
+global function integer f_set_employees_super_lvl (integer li_value, long ll_empno, ref transaction tr_sqlca)
+end prototypes
+
+global function integer f_set_employees_super_lvl (integer li_value, long ll_empno, ref transaction tr_sqlca);//prototype: li_rtn_val = f_set_employees_super_lvl(li_value, ll_empno, ref sqlca)
+//
+update sns_employees set super_lvl = :li_value where empno = :ll_empno using tr_sqlca;
+//
+commit using tr_sqlca;
+//
+return 0
+end function
+

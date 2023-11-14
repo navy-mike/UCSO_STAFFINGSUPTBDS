@@ -1,0 +1,97 @@
+﻿$PBExportHeader$f_delete_filled_position.srf
+global type f_delete_filled_position from function_object
+end type
+
+forward prototypes
+global function integer f_delete_filled_position (ref datawindow dw_object, long ll_row, ref datawindow dw_unassigned_object, ref transaction tr_sqlca)
+end prototypes
+
+global function integer f_delete_filled_position (ref datawindow dw_object, long ll_row, ref datawindow dw_unassigned_object, ref transaction tr_sqlca);//prototype: li_rtn_value = f_delete_filled_position(ref dw_object, ll_row, dw_unassigned_object, ref sqlca)
+integer li_rtn_value
+li_rtn_value = 0
+string ls_callnum
+string ls_empname
+integer li_super_lvl
+//string ls_positionid
+string ls_grpid
+string ls_hdrtext
+long ll_grpid
+long ll_empno
+string ls_row
+integer li_row
+integer li_is_unfilled
+string ls_groupname
+//long ll_posid
+//------------------
+ls_callnum = dw_object.getitemstring(ll_row, 'sns_board_specs_others_callnum')
+ls_empname = dw_object.getitemstring(ll_row, 'sns_board_specs_others_empname')
+li_super_lvl = dw_object.getitemnumber(ll_row, 'sns_board_specs_others_issuper')
+//ls_positionid = dw_object.getitemstring(row, 'sns_staffing_grps_positions2_positionid')
+ls_hdrtext = dw_object.getitemstring(ll_row, "grpteamid")
+ls_grpid = f_extract_bracketed_item(ls_hdrtext, "{","}", true)
+ll_grpid = f_stol(ls_grpid)
+ll_empno = dw_object.getitemnumber(ll_row, 'sns_board_specs_others_empno')
+ls_row = dw_object.getitemstring(ll_row, 'sns_board_specs_others_nrow')
+li_row = f_stoi(ls_row)
+li_is_unfilled = dw_object.getitemnumber(ll_row, 'sns_board_specs_others_isunfilled')
+ls_groupname = dw_object.getitemstring(ll_row, 'sns_board_specs_others_groupname')
+//ls_callnum = 1J137
+//ls_empname = GILSTRAP-KYLER
+//li_super_lvl = 0
+//ls_hdrtext = TEAM C {3}
+//ll_grpid = 3
+//ll_empno = 18673
+//li_row = 5
+//li_is_unfilled = 0
+//ls_groupname = PATROL
+//
+long ll_from_pos_exists_id
+long ll_from_pos_xrefid
+long ll_from_xref_exists_id
+long ll_from_xrefmods_ppos2recid
+long ll_from_xrefmods_exists_id
+long ll_from_emp_exists_id
+long ll_from_bs_specs_others_exists_id
+//
+select id, xrefid into :ll_from_pos_exists_id, :ll_from_pos_xrefid from sns_staffing_grps_positions2 where assgnd_empno = :ll_empno using sqlca;
+//
+if(ll_from_pos_exists_id > 0) then
+  ll_from_xrefmods_ppos2recid = ll_from_pos_exists_id
+end if
+select id into :ll_from_xref_exists_id from sns_pos_xref where empno = :ll_empno using sqlca;
+//
+select id into :ll_from_xrefmods_exists_id from sns_pos_xref_mods where pempno = :ll_empno using sqlca;
+//
+select id into :ll_from_emp_exists_id from sns_employees where empno = :ll_empno using sqlca;
+//
+select id into :ll_from_bs_specs_others_exists_id from sns_board_specs_others where ltrim(rtrim(upper(empname))) = :ls_empname and empno = :ll_empno using sqlca;
+//
+//------------------------
+boolean bSuccessfulRemove
+integer li_case_num
+string ls_from_hdrtext
+string ls_to_hdrtext
+string lsa_dd_errors[]
+integer li_num_deletes
+integer li_num_updates
+//--------------------------
+li_case_num = 4 //right click on employee to remove from group and move to unassigned group.
+ls_from_hdrtext = ls_hdrtext
+ls_to_hdrtext = "UNFILLED {128}"
+//--------------------------
+li_rtn_value = 0
+li_rtn_value = f_backup_board_specs_tables(li_case_num, ls_from_hdrtext, ls_to_hdrtext, ll_from_pos_exists_id, ll_from_bs_specs_others_exists_id, ll_from_xref_exists_id, ll_from_xrefmods_exists_id, ll_from_emp_exists_id, ref sqlca)
+if(li_rtn_value = 1) then
+	bSuccessfulRemove = false
+	bSuccessfulRemove = f_remove_from_dragfrom_group(ll_from_pos_exists_id, ll_from_bs_specs_others_exists_id, ll_from_xref_exists_id, ll_from_xrefmods_exists_id, ll_from_emp_exists_id, ref lsa_dd_errors, ref li_num_deletes, ref li_num_updates, ref sqlca)
+	if(bSuccessfulRemove = true) then
+		li_rtn_value = 1
+	else
+		li_rtn_value = -1
+	end if
+else
+	li_rtn_value = -2
+end if
+return li_rtn_value
+end function
+

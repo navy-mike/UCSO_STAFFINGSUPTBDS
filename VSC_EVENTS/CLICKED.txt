@@ -1,0 +1,136 @@
+//===============
+//### CLICKED ###
+//===============
+if(bIsDragging = false) then
+	string ls_dwo_name
+	string ls_hdrtext
+	long ll_grpid 
+	string ls_grpid	
+	long ll_empno
+	string ls_callnum
+	string ls_empname			
+	integer li_grow
+	integer li_gcol
+	string ls_parms
+	string ls_rtn_parms
+	long ll_row_count
+	integer li_num_rows
+	
+	//=======================
+	long ll_clicked_grpid
+	ll_clicked_grpid = 3
+	//=======================
+	datawindow dw_clicked_object
+	dw_clicked_object = f_getDwobjectByGrpid(ll_clicked_grpid, dw_a, dw_b, dw_c, dw_d, dw_rec1, dw_rec2, dw_em1, dw_em2, dw_emsro, dw_vine, dw_smcont, dw_fto, dw_team_resvrs, dw_unfilled,	dw_unassigned)
+	if(IsNull(dw_clicked_object) = false) then
+		sle_drag_from_hdrtext.text = ""
+		sle_drag_from_object.text = ""
+		sle_drag_from_row.text = ""
+		sle_drag_from_grpid.text = ""
+		sle_drag_from_empno.text = ""
+		sle_drag_from_callnum.text = ""
+		sle_drag_from_empname.text = ""
+		if(row = 0) then
+			ls_hdrtext = dw_clicked_object.getitemstring(1, "grpteamid")
+		else
+			ls_hdrtext = dw_clicked_object.getitemstring(row, "grpteamid")
+		end if
+		ls_grpid = f_extract_bracketed_item(ls_hdrtext, "{","}", true)
+		ll_grpid = f_stol(ls_grpid)		
+		ls_dwo_name = trim(upper(dwo.name)) //B_INSERT_POSITION
+		sle_drag_from_row.text = string(row)
+		ll_row_count = dw_clicked_object.rowcount()	
+		li_grow = f_deterGrpidRowCol(ll_grpid, ll_row_count, ref li_gcol)
+		//
+		select numrows into :li_num_rows from sns_bd_others_layout_specs where grpid = :ll_grpid using sqlca;
+		//
+		if((row > 0) and (ls_dwo_name = "SNS_BOARD_SPECS_OTHERS_EMPNAME")) then
+			ll_empno = dw_clicked_object.getitemnumber(row, "sns_board_specs_others_empno")
+			if(ll_empno > 0) then
+				bIsDragging = true
+				sle_drag_from_object.text = upper(dwo.name)
+				sle_drag_from_hdrtext.text = ls_hdrtext
+				sle_drag_from_grpid.text = string(ll_grpid)
+				sle_drag_from_empno.text = string(ll_empno)
+				ls_callnum = dw_clicked_object.getitemstring(row, "sns_board_specs_others_callnum")
+				sle_drag_from_callnum.text = ls_callnum
+				ls_empname = dw_clicked_object.getitemstring(row, "sns_board_specs_others_empname")
+				sle_drag_from_empname.text = ls_empname
+				dw_clicked_object.Drag(Begin!)
+				dw_clicked_object.dragicon = "\\ucfs1\apps\pix\ucso_staffing\UCSOSTAFFGRN.ICO"
+				sle_icon_filenanme.text = "\\ucfs1\apps\pix\ucso_staffing\UCSOSTAFFGRN.ICO"
+			else
+				//this code was replaced with the right-click
+				//ls_empname = dw_c.getitemstring(row, "sns_board_specs_others_empname")
+				//ls_callnum = dw_c.getitemstring(row, "sns_board_specs_others_callnum")
+				//if((pos(ls_empname, "UNFILLED") > 0) and (ls_callnum = "TBD")) then
+				//if(pos(ls_empname, "UNFILLED") > 0) then
+				//	bIsDragging = true
+				//	sle_drag_from_object.text = upper(dwo.name)
+				//	sle_drag_from_hdrtext.text = ls_hdrtext
+				//	sle_drag_from_grpid.text = string(ll_grpid)
+				//	sle_drag_from_empno.text = string(ll_empno)
+				//	ls_callnum = dw_c.getitemstring(row, "sns_board_specs_others_callnum")
+				//	sle_drag_from_callnum.text = ls_callnum
+				//	ls_empname = dw_c.getitemstring(row, "sns_board_specs_others_empname")
+				//	sle_drag_from_empname.text = ls_empname
+				//	dw_c.Drag(Begin!)
+				//	dw_c.dragicon = "\\ucfs1\apps\pix\ucso_staffing\UCSOSTAFFGRN.ICO"
+				//	sle_icon_filenanme.text = "\\ucfs1\apps\pix\ucso_staffing\UCSOSTAFFGRN.ICO"
+				//end if
+			end if //ll_empno > 0
+		elseif((row > 0) and (ls_dwo_name = "SNS_BOARD_SPECS_OTHERS_CALLNUM")) then
+			string ls_curr_calllnum
+			ls_curr_calllnum = dw_clicked_object.getitemstring(row, "sns_board_specs_others_callnum")
+			ls_empname = dw_clicked_object.getitemstring(row, "sns_board_specs_others_empname")
+			ll_empno = dw_clicked_object.getitemnumber(row, "sns_board_specs_others_empno")	
+			if(ll_empno > 0) then
+				ls_parms = ls_curr_calllnum + "|" + string(ll_empno) + "|" + ls_empname
+				OpenWithParm(w_change_callnum, ls_parms)
+				ls_rtn_parms = Message.StringParm
+				if(pos(ls_rtn_parms, "1J") > 0) then
+				
+				end if
+				dw_c.Retrieve(3)
+			end if
+		else //row = 0
+			if(li_grow < li_num_rows) then
+				if(li_grow > ll_row_count) then 
+					if(ls_dwo_name = "B_INSERT_POSITION") then
+						//ll_grpid||li_grow||li_gcol||ls_hdrtext||ll_row_count
+						ls_parms = string(ll_grpid) + "|" + string(li_grow) + "|" + string(li_gcol) + "|" + ls_hdrtext + "|" + string(ll_row_count)
+						OpenWithParm(w_insert_position, ls_parms)
+						ls_rtn_parms = Message.StringParm
+						dw_clicked_object.Retrieve(3)
+					end if					
+				else
+					if(ll_grpid > 0) then
+						string ls_funddept
+						string ls_groupname
+						//
+						select grpteam, funddept into :ls_groupname, :ls_funddept from sns_staffing_groups where id = :ll_grpid using sqlca;
+						//
+						string ls_row
+						string ls_col
+						ls_row = string(li_grow)
+						ls_col = string(li_gcol)
+						if(f_len_ext(ls_row) < 2) then
+							ls_row = f_lpad(ls_row, 2, "0")
+						end if
+						if(f_len_ext(ls_col) < 2) then
+							ls_col = f_lpad(ls_col, 2, "0")
+						end if
+						//insert unfilled position
+						//f_insert_unfilled_bd_specs(ls_groupname, ls_row, ls_col, ll_grpid, ls_empname, ll_empno, ls_callnum, 0, 1, 1)
+					else
+						MessageBox("Notification", "Cannot insert row. Max number postions already used.")
+					end if
+				end if
+			else
+				MessageBox("Notification", "Cannot insert row. Max number postions already used.")
+			end if
+		end if //row > 0
+		
+	end if //IsNull dw_clicked_object check
+	
+end if //bIsDragging = true

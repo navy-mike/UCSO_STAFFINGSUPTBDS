@@ -1,0 +1,25 @@
+﻿$PBExportHeader$f_commit_rollback_record.srf
+global type f_commit_rollback_record from function_object
+end type
+
+forward prototypes
+global function integer f_commit_rollback_record (ref transaction tr_sqlca)
+end prototypes
+
+global function integer f_commit_rollback_record (ref transaction tr_sqlca);//prototype: li_commit_status = f_commit_rollback_record(ref sqlca)
+integer li_commit_status
+li_commit_status = 0
+if(tr_sqlca.sqlcode <> -1) then
+	//
+	commit using tr_sqlca;
+	//
+	li_commit_status = 1
+else
+	//
+	rollback using tr_sqlca;
+	//
+	li_commit_status = -1
+end if
+return li_commit_status
+end function
+

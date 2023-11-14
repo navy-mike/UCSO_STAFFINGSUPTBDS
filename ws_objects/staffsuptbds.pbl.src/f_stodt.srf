@@ -1,0 +1,18 @@
+﻿$PBExportHeader$f_stodt.srf
+global type f_stodt from function_object
+end type
+
+forward prototypes
+global function date f_stodt (string ls_date)
+end prototypes
+
+global function date f_stodt (string ls_date);//converts string to date
+date ld_return
+ld_return = date("01/01/1990")
+f_ntos(ref ls_date)
+if(IsDate(ls_date) = true) then
+	ld_return = date(ls_date)
+end if
+return ld_return
+end function
+

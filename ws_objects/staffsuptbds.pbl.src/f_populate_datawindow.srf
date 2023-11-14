@@ -1,0 +1,27 @@
+﻿$PBExportHeader$f_populate_datawindow.srf
+global type f_populate_datawindow from function_object
+end type
+
+forward prototypes
+global function long f_populate_datawindow (ref datawindow dw_window, radiobutton rb_all, radiobutton rb_corrections, radiobutton rb_patrol, radiobutton rb_judicial, radiobutton rb_emergsvcs, ref transaction tr_sqlca)
+end prototypes
+
+global function long f_populate_datawindow (ref datawindow dw_window, radiobutton rb_all, radiobutton rb_corrections, radiobutton rb_patrol, radiobutton rb_judicial, radiobutton rb_emergsvcs, ref transaction tr_sqlca);//prototype: ll_num_retrieved = f_populate_datawindow(ref dw_window, rb_all, rb_corrections, rb_patrols, rb_judicial, rb_emergsvcs, ref sqlca)
+long ll_num_recs_retrieved
+ll_num_recs_retrieved = 0
+string ls_retrieve_spec
+ls_retrieve_spec = ""
+string ls_active_group
+ls_active_group = f_get_active_group(rb_all, rb_corrections, rb_patrol, rb_judicial, rb_emergsvcs)
+if(ls_active_group = "ALL") then
+	ls_retrieve_spec = "%%"
+else
+	ls_retrieve_spec = "%" + ls_active_group + "%"
+end if
+if(f_len_ext(ls_retrieve_spec) > 0) then
+	dw_window.settransobject(tr_sqlca)
+	ll_num_recs_retrieved = dw_window.Retrieve(ls_retrieve_spec)
+end if
+return ll_num_recs_retrieved
+end function
+

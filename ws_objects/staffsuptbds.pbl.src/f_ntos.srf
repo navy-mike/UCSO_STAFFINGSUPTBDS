@@ -1,0 +1,15 @@
+﻿$PBExportHeader$f_ntos.srf
+global type f_ntos from function_object
+end type
+
+forward prototypes
+global function integer f_ntos (ref string ls_null_str)
+end prototypes
+
+global function integer f_ntos (ref string ls_null_str);//make a null string into a empty string = ''
+if(IsNull(ls_null_str) = true) then
+	ls_null_str = ""
+end if
+return 0
+end function
+

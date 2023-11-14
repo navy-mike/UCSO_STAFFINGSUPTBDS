@@ -1,0 +1,8 @@
+select a.callnum, a.empname, a.empno, a.issuper, a.grpid, a.nrow, a.isunfilled, a.groupname, c.grpteam || ' {' || c.id || '}' as grpteamid
+from sns_board_specs_others a, sns_staffing_groups c
+where a.groupname = 'PATROL'
+and a.active = 1
+and a.grpid = :ll_grpid
+and c.id = a.grpid
+and a.callnum is not null
+order by a.grpid, a.nrow, a.ncol

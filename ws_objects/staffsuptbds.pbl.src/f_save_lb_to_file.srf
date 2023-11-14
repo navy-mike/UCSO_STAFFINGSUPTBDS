@@ -1,0 +1,50 @@
+﻿$PBExportHeader$f_save_lb_to_file.srf
+global type f_save_lb_to_file from function_object
+end type
+
+forward prototypes
+global function integer f_save_lb_to_file (string ls_full_filename, ref listbox lb_listbox)
+end prototypes
+
+global function integer f_save_lb_to_file (string ls_full_filename, ref listbox lb_listbox);//prototype: f_save_lb_to_file(ls_full_filename, ref lb_listbox)
+integer li_num_items_saved
+integer li_rtnrslt
+long ll_file_no
+li_rtnrslt = 1
+li_num_items_saved = 0
+if(FileExists(ls_full_filename) = true) then  //full filename exists
+	li_rtnrslt = MessageBox("QUESTION","Do you want to overwrite the currently existing file?", QUESTION!, YESNO!, 1)
+end if
+if(li_rtnrslt = 1) then
+	ls_full_filename = trim(ls_full_filename)
+	ls_full_filename = f_compress_string(ls_full_filename, " ")
+	if(FileExists(ls_full_filename) = true) then
+		FileDelete(ls_full_filename)
+	end if
+	ll_file_no = FileOpen(ls_full_filename, LINEMODE!, WRITE!, SHARED!) //, REPLACE!)
+else
+  ll_file_no = FileOpen(ls_full_filename, LINEMODE!, WRITE!, SHARED!, APPEND!)
+end if
+
+if(ll_file_no > 0) then
+	integer li_total_lb_items
+	li_total_lb_items = lb_listbox.TotalItems()
+	if(li_total_lb_items > 0) then
+		integer li_count
+		long ll_write_rtn
+		integer li_loop
+		string ls_lb_text
+		for li_loop = 1 to li_total_lb_items
+			ls_lb_text = lb_listbox.Text(li_loop)
+			ll_write_rtn = FileWriteEx(ll_file_no, ls_lb_text)
+			if(ll_write_rtn >= 0) then
+				li_count = li_count + 1
+			end if
+		next
+		fileclose(ll_file_no)
+		li_num_items_saved = long(li_count)
+	end if
+end if
+return li_num_items_saved
+end function
+

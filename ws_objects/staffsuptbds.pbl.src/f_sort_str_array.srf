@@ -1,0 +1,141 @@
+﻿$PBExportHeader$f_sort_str_array.srf
+global type f_sort_str_array from function_object
+end type
+
+forward prototypes
+global function integer f_sort_str_array (ref string lsa_array[])
+end prototypes
+
+global function integer f_sort_str_array (ref string lsa_array[]);//prototype: integer li_rtn_value = f_sort_long_array(ref ll_long_array)
+//integer li_rtn_value
+//li_rtn_value = 0
+////
+//datastore lds_temp
+//string ls_err
+//integer i
+
+//// change the datastore definition according to the array data type
+//string ls_dsdef = "release 6; datawindow( processing=0 ) table(column=(type=char( + String(ll_maxlen) ) name=array dbname=~”array~” ) )”
+//
+//lds_temp = CREATE datastore
+//lds_temp.Create(ls_dsdef, ls_err)
+//// put the array in the datastore
+//lds_temp.object.a.current = lsa_array
+//lds_temp.SetSort("a ASC")
+//lds_temp.Sort()
+//// get back the array
+//lsa_array = lds_temp.object.a.current
+//li_rtn_value = 1
+
+
+//example code from : https://blogs.sap.com/2016/09/27/sorting-a-string-array/
+// SCRIPT:     of_SortArray
+
+//
+
+// PURPOSE:    This function sorts the passed array using a DataStore created
+
+// on-the-fly.
+
+//
+
+// This is based on code from Real Gagnon:
+
+// http://www.rgagnon.com/pbdetails/pb-0114.html
+
+//
+
+// ARGUMENTS:  as_array – Array of values to sort
+
+// as_order – The sort order:
+
+//
+
+// Order value Resulting sort order
+
+// ———————— —————————
+
+// a, asc, ascending, ai, i Case-insensitive ascending
+
+// d, desc, descending, di Case-insensitive descending
+
+// as, s Case-sensitive ascending
+
+// ds Case-sensitive descending
+
+//
+
+// DATE        PROG/ID DESCRIPTION OF CHANGE / REASON
+
+// ———-  ——– —————————————————–
+
+// 09/27/2016 RolandS Initial Coding
+
+// —————————————————————————–
+
+DataStore lds_sort
+
+String ls_source, ls_error
+
+Long ll_idx, ll_max, ll_len, ll_maxlen
+
+Integer li_rc
+
+// determine maximum length of values
+
+ll_max = UpperBound(lsa_array)
+
+For ll_idx = 1 To ll_max
+
+  ll_len = Len(lsa_array[ll_idx])
+
+  If ll_len > ll_maxlen Then
+
+  ll_maxlen = ll_len
+
+  End If
+
+Next
+
+// build DataWindow source code
+
+ls_source = "release 6; datawindow( processing=0 ) " + &
+  "table(column=(type=char(" + String(ll_maxlen) + &
+  ") name=array dbname=~"array~" ) )"
+
+// create DataStore
+
+lds_sort = Create DataStore
+
+li_rc = lds_sort.Create(ls_source, ls_error)
+
+If li_rc = 1 Then
+
+  // put data into DataStore
+
+  lds_sort.Object.array.Current = lsa_array
+
+  // sort the data
+
+  lds_sort.SetSort("array asc")
+
+  lds_sort.Sort()
+
+  // set array to sorted data
+
+  lsa_array = lds_sort.Object.array.Current
+
+Else
+
+  Return 0
+
+End If
+
+// destroy DataStore
+
+Destroy lds_sort
+
+Return 1
+
+end function
+

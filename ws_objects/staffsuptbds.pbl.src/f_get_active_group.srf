@@ -1,0 +1,25 @@
+﻿$PBExportHeader$f_get_active_group.srf
+global type f_get_active_group from function_object
+end type
+
+forward prototypes
+global function string f_get_active_group (radiobutton rb_all, radiobutton rb_corrections, radiobutton rb_patrol, radiobutton rb_judicial, radiobutton rb_emergsvcs)
+end prototypes
+
+global function string f_get_active_group (radiobutton rb_all, radiobutton rb_corrections, radiobutton rb_patrol, radiobutton rb_judicial, radiobutton rb_emergsvcs);//prototype: ls_rtn_group = f_get_active_group(rb_all, rb_corrections, rb_patrol, rb_judicial, rb_emergsvcs)
+string ls_rtn_active_group
+ls_rtn_active_group = "?"
+if(rb_all.checked = true) then
+	ls_rtn_active_group = "ALL"
+elseif(rb_corrections.checked = true) then
+	ls_rtn_active_group = "CORRECTIONS"
+elseif(rb_patrol.checked = true) then
+	ls_rtn_active_group = "PATROL"
+elseif(rb_judicial.checked = true) then
+	ls_rtn_active_group = "JUDICIAL"
+elseif(rb_emergsvcs.checked = true) then
+	ls_rtn_active_group = "EMERGSVCS"
+end if
+return ls_rtn_active_group
+end function
+

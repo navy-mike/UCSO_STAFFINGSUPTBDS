@@ -1,0 +1,21 @@
+﻿$PBExportHeader$f_update_callnum.srf
+global type f_update_callnum from function_object
+end type
+
+forward prototypes
+global function integer f_update_callnum (long ll_empno, string ls_curr_callnum, string ls_new_callnum, ref transaction tr_sqlca)
+end prototypes
+
+global function integer f_update_callnum (long ll_empno, string ls_curr_callnum, string ls_new_callnum, ref transaction tr_sqlca);//prototype: integer li_rtn_value = f_update_callnum(ll_empno, ls_curr_callnum, ls_new_callnum, ref sqlca)
+integer li_rtn_val
+li_rtn_val = 0
+
+
+
+
+
+
+return li_rtn_val
+
+end function
+

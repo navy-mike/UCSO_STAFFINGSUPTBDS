@@ -1,0 +1,52 @@
+﻿$PBExportHeader$f_readfile.srf
+global type f_readfile from function_object
+end type
+
+forward prototypes
+global function long f_readfile (string ls_full_filename, ref string lsa_items[], ref string ls_error)
+end prototypes
+
+global function long f_readfile (string ls_full_filename, ref string lsa_items[], ref string ls_error);long ll_returnvalue
+long ll_file
+ls_error = ""
+ll_returnvalue = 0
+if(FileExists(ls_full_filename) = false) then  //DirectoryExists
+	ll_returnvalue = -1
+else
+	integer li_num_lines
+	li_num_lines = f_file_count_lines_in_file(ls_full_filename)
+	if(li_num_lines > 0) then
+		integer li_num_alloc_items
+		long ll_fileread
+		integer li_count
+		string ls_text
+		li_count = 0
+		li_num_alloc_items = f_allocate_string_array(li_num_lines, ref lsa_items)
+		ll_file = FileOpen(ls_full_filename, LINEMODE!, READ!, SHARED!)
+		if(ll_file > 0) then
+			DO 
+				li_count ++
+				if(li_count > 32767) then
+					li_count = (li_count * -1) //return a negative max count
+					exit
+				end if
+				ll_fileread = FileReadEx(ll_file, ls_text)//read next line ll_fileread = -100 on EOF
+				if(ll_fileread > 0) then
+					lsa_items[li_count] = ls_text	
+				end if
+				if(li_count >= li_num_alloc_items) then
+					exit //thats all the array is allocated for
+				end if
+			Loop WHILE ll_fileread > 0
+			ll_returnvalue = long(li_count)		
+			fileclose(ll_file)
+		else
+			ll_returnvalue = ll_file //-1
+		end if
+	else
+		ll_returnvalue = 0 //no lines found
+	end if
+end if
+return ll_returnvalue
+end function
+

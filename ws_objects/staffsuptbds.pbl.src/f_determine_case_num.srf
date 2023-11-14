@@ -1,0 +1,100 @@
+﻿$PBExportHeader$f_determine_case_num.srf
+global type f_determine_case_num from function_object
+end type
+
+forward prototypes
+global function integer f_determine_case_num (string ls_drag_from_header, string ls_drag_from_text, long ll_drag_from_grpid, string ls_drag_from_empname, integer li_drag_from_row, string ls_mode, string ls_drag_drop_header, string ls_drag_drop_text, long ll_drag_drop_grpid, string ls_drag_drop_empname, integer li_drag_drop_row, integer li_num_avail_rows, integer li_drop_to_rowcount, string ls_icon, long ll_from_empno)
+end prototypes
+
+global function integer f_determine_case_num (string ls_drag_from_header, string ls_drag_from_text, long ll_drag_from_grpid, string ls_drag_from_empname, integer li_drag_from_row, string ls_mode, string ls_drag_drop_header, string ls_drag_drop_text, long ll_drag_drop_grpid, string ls_drag_drop_empname, integer li_drag_drop_row, integer li_num_avail_rows, integer li_drop_to_rowcount, string ls_icon, long ll_from_empno);//prototype: li_case_num = f_determine_case_num(ls_drag_from_header,ls_drag_from_text, ll_drag_from_grpid, ls_drag_from_empname, li_drag_from_row, ls_mode, ls_drag_drop_header, ls_drag_drop_text, ll_drag_drop_grpid, ls_drag_drop_empname, li_drag_drop_row,li_num_avail_rows,li_drop_to_rowcount,ls_icon,ll_from_empno)
+//CASE 1 = **same as case 6** MOVE EMPLOYEE FROM GROUP TO BLANK GROUP (WILL ADD EMPLOYEE TO TO-GROUP)
+//CASE 2 = MOVE EMPLOYE FROM GROUP AND REPLACE  EMPLOYEE  IN TO_GROUP. REPLACED EMPLOYEE WILL BE INSERTED INTO UNASSIGNED GROUP.
+//CASE 3 = IF RIGHTCLICK ON **UNFILLED** => REMOVE **UNFILLED** FROM GROUP and move to UNASSIGNED GROUP.
+//CASE 4 = IF RIGHT CLICK ON EMPLOYEE. => REMOVE EMPLOYEE FROM GROUP and move to UNASSIGNED GROUP.
+//CASE 5 = MOVE **UNFILLED** FROM UNASSIGNED TO TO_GROUP AND REMOVE **UNFILLED** FROM UNASSIGNED
+//CASE 6 = IF DRAG-DROP ON GROUP BLANK AREA, REMOVE EMPLOYEE FROM DRAG-FROM_GROUP AND INSERT IN TO_GROUP
+//CASE 7 = MOVE EMPLOYEE TO TO_GROUP AND REMOVE FROM UNASSIGNED AND MOVE THE EMPLOYEE DROPPED ON TO UNASSIGNED.
+//CASE 8 = DOUBLE CLICK ON SUPERVISOR TO CHANGE
+//
+integer li_case_num 
+li_case_num = 0
+ls_drag_from_header = trim(upper(ls_drag_from_header))
+ls_drag_from_text = trim(upper(ls_drag_from_text))
+ls_drag_from_empname = trim(upper(ls_drag_from_empname))
+ls_mode = trim(upper(ls_mode))
+ls_drag_drop_header = trim(upper(ls_drag_drop_header))
+ls_drag_drop_text = trim(upper(ls_drag_drop_text))
+ls_drag_drop_empname = trim(upper(ls_drag_drop_empname))
+ls_icon = trim(upper(ls_icon))
+////CASE 1
+//if((ls_drag_from_header <> ls_drag_drop_header) and (ls_drag_from_text = "SNS_EMPLOYEES_EMPNAME") and (ls_drag_drop_text = "DATAWINDOW") and (ll_drag_from_grpid <> ll_drag_drop_grpid) and (pos(ls_drag_from_empname, "UNFILLED") = 0) and (ls_drag_drop_empname = "INSERT") and (ls_mode = "EMPTY")) then
+//	li_case_num = 1
+//elseif((ls_drag_from_header <> ls_drag_drop_header) and (ls_drag_from_text = "SNS_EMPLOYEES_EMPNAME") and (ls_drag_drop_text = "SNS_EMPLOYEES_EMPNAME") and (ll_drag_from_grpid <> ll_drag_drop_grpid) and (pos(ls_drag_from_empname, "UNFILLED") = 0) and (ls_drag_drop_empname <> "INSERT") and (ls_mode = "DIFF")) then 
+//	li_case_num = 2
+//elseif((pos(ls_drag_from_header, "UNASSIGNED") > 0) and (ls_drag_from_text = "SNS_EMPLOYEES_EMPNAME") and (ls_drag_drop_text = "DATAWINDOW") and (li_drag_from_row <> li_drag_drop_row) and (pos(ls_drag_from_empname, "UNFILLED") > 0) and (ls_drag_drop_empname = "INSERT") and (ls_mode = "EMPTY")) then 
+//	li_case_num = 5	
+//end if
+
+//               case# = 6
+//ls_drag_from_header  = "TEAM D {4}"
+//ls_drag_from_text    = "SNS_BOARD_SPECS_OTHERS_EMPNAME"
+//ls_drag_from_empname = "PROVSTGAARD-JORY"
+//ls_mode              = "EMPTY"
+//ls_drag_drop_header  = "TEAM C {3}"
+//ls_drag_drop_text    = "DATAWINDOW"
+//ls_drag_drop_empname = "INSERT"
+//ls_icon              = "INSERT!"
+//li_drag_drop_row     = 0
+//li_drag_from_row     = 2
+//li_drop_to_rowcount  = 3
+//li_num_avail_rows    = 12
+//ll_drag_drop_grpid   = 3
+//ll_drag_from_grpid   = 4
+//ll_from_empno        = 13696
+//=== CASE#6 ===
+if((ls_drag_from_header <> ls_drag_drop_header) and (ls_drag_from_text = "SNS_BOARD_SPECS_OTHERS_EMPNAME") and ((li_drag_from_row >= 1) and (li_drag_from_row <= li_num_avail_rows))) then
+	if((ll_from_empno > 0) and (ls_mode = "EMPTY") and (ll_drag_from_grpid > 0) and (ls_drag_drop_text = "DATAWINDOW") and (ll_drag_from_grpid <> ll_drag_drop_grpid) and (ls_drag_drop_empname = "INSERT")) then
+		if((li_drop_to_rowcount > 0) and (li_drop_to_rowcount <= li_num_avail_rows)) then
+			if(ll_drag_from_grpid > 0) then
+				li_case_num = 6
+			end if
+		end if
+	end if
+end if
+//=== CASE#8 ===
+if((ls_drag_from_header <> ls_drag_drop_header) and (ls_drag_from_text = "SNS_BOARD_SPECS_OTHERS_EMPNAME") and ((li_drag_from_row >= 1) and (li_drag_from_row <= li_num_avail_rows))) then
+	if((ll_from_empno > 0) and (ls_mode = "UNFILLED") and (ll_drag_from_grpid > 0) and (ls_drag_drop_text = "SNS_BOARD_SPECS_OTHERS_EMPNAME") and (ll_drag_from_grpid <> ll_drag_drop_grpid) and (pos(ls_drag_drop_empname, "UNFILLED") > 0)) then
+		if((li_drop_to_rowcount > 0) and (li_drop_to_rowcount <= li_num_avail_rows)) then
+			if(ll_drag_from_grpid > 0) then
+				li_case_num = 8
+			end if
+		end if
+	end if
+end if
+if(li_case_num = 0) then
+	if((ll_drag_drop_grpid = ll_drag_from_grpid) and ((li_drag_drop_row > 0) and (li_drag_drop_row <= li_num_avail_rows)) and (ll_from_empno > 0) and (pos(ls_drag_drop_empname, "UNFILLED") > 0) and (ls_drag_drop_text = "SNS_BOARD_SPECS_OTHERS_EMPNAME")) then
+		li_case_num = 9
+	end if
+	if(li_case_num = 0) then
+		if((ll_drag_drop_grpid = ll_drag_from_grpid) and ((li_drag_drop_row > 0) and (li_drag_drop_row <= li_num_avail_rows)) and (ll_from_empno > 0) and (pos(ls_drag_drop_empname, "UNFILLED") = 0) and (ls_drag_drop_text = "SNS_BOARD_SPECS_OTHERS_EMPNAME")) then
+			li_case_num = 10
+		end if
+		if(li_case_num = 0) then
+			//=== CASE#1 ===
+			//same a case#6
+			
+			//=== CASE#2 ===
+			if((ls_drag_from_header <> ls_drag_drop_header) and (ls_drag_from_text = "SNS_BOARD_SPECS_OTHERS_EMPNAME") and ((li_drag_from_row >= 1) and (li_drop_to_rowcount <= li_num_avail_rows))) then
+				if((ll_from_empno > 0) and (ls_mode = "DIFF") and (ls_icon = "REPLACE!") and (ls_drag_drop_text = "SNS_BOARD_SPECS_OTHERS_EMPNAME") and (li_drag_drop_row > 0) and (ls_drag_drop_empname <> "INSERT")) then
+					if(ll_drag_from_grpid <> ll_drag_drop_grpid) then
+						li_case_num = 2
+					end if
+				end if
+			end if
+		end if
+	end if
+end if
+
+return li_case_num
+end function
+

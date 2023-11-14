@@ -1,0 +1,317 @@
+﻿$PBExportHeader$f_restore_board_specs_backup_tables.srf
+global type f_restore_board_specs_backup_tables from function_object
+end type
+
+forward prototypes
+global function integer f_restore_board_specs_backup_tables (integer li_case_num, string ls_from_hdrtext, string ls_to_hdrtext, long ll_pos_exists_id, long ll_bs_specs_others_exists_id, long ll_xref_exists_id, long ll_xrefmods_exists_id, long ll_emp_exists_id, ref string ls_errors, ref transaction tr_sqlca)
+end prototypes
+
+global function integer f_restore_board_specs_backup_tables (integer li_case_num, string ls_from_hdrtext, string ls_to_hdrtext, long ll_pos_exists_id, long ll_bs_specs_others_exists_id, long ll_xref_exists_id, long ll_xrefmods_exists_id, long ll_emp_exists_id, ref string ls_errors, ref transaction tr_sqlca);//prototype: li_rtn_value = f_restore_board_specs_backup_tables(li_case_num, ls_from_hdrtext, ls_to_hdrtext, ll_pos_exists_id, ll_bs_specs_others_exists_id, ll_xref_exists_id, ll_xrefmods_exists_id, ll_emp_exists_id, ref ls_errors, ref sqlca)
+integer li_rtn_value
+li_rtn_value = 0
+ls_errors = ""
+if((li_case_num > 0) and (IsNull(ls_from_hdrtext) = false) and (IsNull(ls_to_hdrtext) = false)) then
+	string ls_sqlerrtext
+	//--------------------
+	long ll_pos_id 
+	long ll_pos_grpid 
+	string ls_pos_callnum 
+	long ll_pos_assgnd_empno 
+	string ls_pos_funddept 
+	string ls_pos_addinfo 
+	string ls_pos_vehnum 
+	string ls_pos_positionid 
+	string ls_pos_jobcode 
+	string ls_pos_jobtitle 
+	long ll_pos_xrefid 
+	//--------------------
+	long ll_xref_id 
+	long ll_xref_pos2recid 
+	long ll_xref_empno 
+	long ll_xref_pos2idshort 
+	string ls_xref_spunitno 
+	long ll_xref_grpid 
+	string ls_xref_status 
+	string ls_xref_empname 
+	//--------------------
+	long ll_xrefmods_id 
+	long ll_xrefmods_ppos2recid 
+	long ll_xrefmods_pempno 
+	long ll_xrefmods_ppos2idshort 
+	string ls_xrefmods_pspunitno 
+	long ll_xrefmods_pgrpid 
+	integer li_xrefmods_pactive
+	integer li_xrefmods_active
+	//--------------------
+	long ll_emp_id 
+	string ls_emp_positionid 
+	string ls_emp_title 
+	string ls_emp_jobcode 
+	string ls_emp_jobtitle 
+	string ls_emp_supervisor 
+	string ls_emp_grps_resp 
+	long ll_emp_grpid 
+	//--------------------
+	long ll_bdspecs_id 
+	long ll_bdspecs_grpid 
+	string ls_bdspecs_nrow 
+	string ls_bdspecs_ncol 
+	string ls_bdspecs_empname 
+	long ll_bdspecs_empno 
+	string ls_bdspecs_callnum 
+	integer li_bdspecs_issuper
+	integer li_bdspecs_isunfilled
+	string ls_bdspecs_groupname 
+	string ls_bdspecs_positionid 
+	integer li_bdspecs_active 
+	//---------------------
+	ll_pos_id = 0
+	ll_pos_grpid = 0
+	ls_pos_callnum = ""
+	ll_pos_assgnd_empno = 0
+	ls_pos_funddept = ""
+	ls_pos_addinfo = ""
+	ls_pos_vehnum = ""
+	ls_pos_positionid = ""
+	ls_pos_jobcode = ""
+	ls_pos_jobtitle = ""
+	ll_pos_xrefid = 0
+	//--------------------
+	ll_xref_id = 0
+	ll_xref_pos2recid = 0
+	ll_xref_empno = 0
+	ll_xref_pos2idshort = 0
+	ls_xref_spunitno = ""
+	ll_xref_grpid = 0
+	ls_xref_status = ""
+	ls_xref_empname = ""
+	//--------------------
+	ll_xrefmods_id = 0
+	ll_xrefmods_ppos2recid = 0
+	ll_xrefmods_pempno = 0
+	ll_xrefmods_ppos2idshort = 0
+	ls_xrefmods_pspunitno = ""
+	ll_xrefmods_pgrpid = 0
+	li_xrefmods_pactive = 0
+	li_xrefmods_active = 0
+	//--------------------
+	ll_emp_id = 0
+	ls_emp_positionid = ""
+	ls_emp_title = ""
+	ls_emp_jobcode = ""
+	ls_emp_jobtitle = ""
+	ls_emp_supervisor = ""
+	ls_emp_grps_resp = ""
+	ll_emp_grpid = 0
+	//--------------------
+	ll_bdspecs_id = 0
+	ll_bdspecs_grpid = 0
+	ls_bdspecs_nrow = ""
+	ls_bdspecs_ncol = ""
+	ls_bdspecs_empname = ""
+	ll_bdspecs_empno = 0
+	ls_bdspecs_callnum = ""
+	li_bdspecs_issuper = 0
+	li_bdspecs_isunfilled = 0
+	ls_bdspecs_groupname = ""
+	ls_bdspecs_positionid = ""
+	li_bdspecs_active = 0
+	//---------------------	
+	select casenum, fromhdrtext, tohdrtext, pos_id, pos_grpid, pos_callnum, pos_assgnd_empno, pos_funddept, pos_addinfo, pos_vehnum, pos_positionid, pos_jobcode, pos_jobtitle, pos_xrefid,
+	xref_id, xref_pos2recid, xref_empno, xref_pos2idshort, xref_spunitno, xref_grpid, xref_status, xref_empname,
+	xrefmods_id, xrefmods_ppos2recid, xrefmods_pempno, xrefmods_ppos2idshort, xrefmods_pspunitno, xrefmods_grpid, xrefmods_pactive, xrefmods_active,
+	emp_id, emp_positionid, emp_title, emp_jobcode, emp_jobtitle, emp_supervisor, emp_grps_resp, emp_grpid,
+	bdspecs_id, bdspecs_grpid, bdspecs_nrow, bdspecs_ncol, bdspecs_empname, bdspecs_empno, bdspecs_callnum, bdspecs_issuper, bdspecs_isunfilled, bdspecs_groupname, bdspecs_positionid,
+	active into :li_case_num, :ls_from_hdrtext, :ls_to_hdrtext, :ll_pos_id, :ll_pos_grpid, :ls_pos_callnum, :ll_pos_assgnd_empno, :ls_pos_funddept, :ls_pos_addinfo, :ls_pos_vehnum, :ls_pos_positionid, :ls_pos_jobcode, :ls_pos_jobtitle, :ll_pos_xrefid,
+   :ll_xref_id, :ll_xref_pos2recid, :ll_xref_empno, :ll_xref_pos2idshort, :ls_xref_spunitno, :ll_xref_grpid, :ls_xref_status, :ls_xref_empname,
+   :ll_xrefmods_id, :ll_xrefmods_ppos2recid, :ll_xrefmods_pempno, :ll_xrefmods_ppos2idshort, :ls_xrefmods_pspunitno, :ll_xrefmods_pgrpid, :li_xrefmods_pactive, :li_xrefmods_active,
+   :ll_emp_id, :ls_emp_positionid, :ls_emp_title, :ls_emp_jobcode, :ls_emp_jobtitle, :ls_emp_supervisor, :ls_emp_grps_resp, :ll_emp_grpid,
+   :ll_bdspecs_id, :ll_bdspecs_grpid, :ls_bdspecs_nrow, :ls_bdspecs_ncol, :ls_bdspecs_empname, :ll_bdspecs_empno, :ls_bdspecs_callnum, :li_bdspecs_issuper, :li_bdspecs_isunfilled, :ls_bdspecs_groupname, :ls_bdspecs_positionid, :li_bdspecs_active
+	from sns_board_specs_backup
+	where casenum = :li_case_num and fromhdrtext = :ls_from_hdrtext and tohdrtext = :ls_to_hdrtext
+	using tr_sqlca;
+	//---------------------
+	integer li_num_restores
+	li_num_restores = 0
+	if(ll_pos_id > 0) then
+		//restore sns_staffing_grps_positions2
+		ls_sqlerrtext = ""
+		//
+		insert into sns_staffing_grps_positions2(grpid, callnum, assgnd_empno, funddept, addinfo, vehnum, positionid, jobcode, jobtitle, xrefid, active)
+		values(:ll_pos_grpid, :ls_pos_callnum, :ll_pos_assgnd_empno, :ls_pos_funddept, :ls_pos_addinfo, :ls_pos_vehnum, :ls_pos_positionid, :ls_pos_jobcode, :ls_pos_jobtitle, :ll_pos_xrefid, 1)
+		using tr_sqlca;
+		//
+		if(tr_sqlca.sqlcode <> -1) then
+			//
+			commit using tr_sqlca;
+			//
+			li_num_restores++
+		else
+			ls_sqlerrtext = tr_sqlca.sqlerrtext
+			//
+			rollback using tr_sqlca;
+			//
+			ls_errors += ls_sqlerrtext
+			ls_errors += "^"
+		end if
+		//
+	end if
+	if((f_len_ext(ls_sqlerrtext) = 0) and (ll_xref_id > 0)) then
+		//restore sns_pos_xref
+		//
+		insert into sns_pos_xref(pos2recid, empno, pos2idshort, spunitno, grpid, status, empname, active)
+		values(:ll_xref_pos2recid, :ll_xref_empno, :ll_xref_pos2idshort, :ls_xref_spunitno, :ll_xref_grpid, :ls_xref_status, :ls_xref_empname, 1)
+		using tr_sqlca;
+		//
+		if(tr_sqlca.sqlcode <> -1) then
+			//
+			commit using tr_sqlca;
+			//
+			li_num_restores++
+			//
+			long ll_xrefid
+			ll_xrefid = 0
+			//
+			select id into :ll_xrefid from sns_pos_xref where empno = :ll_pos_assgnd_empno using tr_sqlca;
+			//
+			if(ll_xrefid > 0) then
+				//
+				update sns_staffing_grps_positions2 set xrefid = :ll_xrefid where assgnd_empno = :ll_pos_assgnd_empno using tr_sqlca;
+				//
+				if(tr_sqlca.sqlcode <> -1) then
+					//
+					commit using tr_sqlca;
+					//
+					if(ll_xrefmods_id = 0) then
+						long ll_ppos2recid
+						string ls_positionid
+						long ll_ppos2idshort
+						string ls_psunitno
+						long ll_pgrpid
+						ll_ppos2recid = 0
+						ls_positionid = ""
+						ll_ppos2idshort = 0
+						ls_psunitno = ""
+						ll_pgrpid = 0
+						//
+						select id, positionid, callnum, grpid into :ll_ppos2recid, :ls_positionid, :ls_psunitno, :ll_pgrpid from sns_staffing_grps_positions2 where assgnd_empno = :ll_pos_assgnd_empno using tr_sqlca;
+						//
+						int li_pos
+						li_pos = pos(ls_positionid, "-")
+						if(li_pos > 0) then
+							ll_ppos2idshort = f_stol(trim(mid(ls_positionid, (li_pos + 1))))
+						end if
+						//
+						insert into sns_pos_xref_mods(pid, ppos2recid, pempno, ppos2idshort, pspunitno, pgrpid, pactive, active)
+						values(0, :ll_ppos2recid, :ll_pos_assgnd_empno, :ll_ppos2idshort, :ls_psunitno, :ls_psunitno, 1, 1)
+						using tr_sqlca;
+						//
+						if(tr_sqlca.sqlcode <> -1) then
+							//
+							commit using tr_sqlca;
+							//
+						else
+							ls_sqlerrtext = tr_sqlca.sqlerrtext
+							//
+							rollback using tr_sqlca;
+							//
+							ls_errors += ls_sqlerrtext + "^"
+						end if
+						//
+					end if
+				else
+					ls_sqlerrtext = tr_sqlca.sqlerrtext
+					//
+					rollback using tr_sqlca;
+					//
+					ls_errors += ls_sqlerrtext + "^"
+				end if
+			end if
+		else
+			ls_sqlerrtext = tr_sqlca.sqlerrtext
+			//
+			rollback using tr_sqlca;
+			//
+			ls_errors += ls_sqlerrtext + "^"
+		end if
+		//		
+	end if
+	if((f_len_ext(ls_sqlerrtext) = 0) and (ll_xrefmods_id > 0)) then
+		//restore sns_pos_xref_mods
+		//
+		insert into sns_pos_xref_mods(pid, ppos2recid, pempno, ppos2idshort, pspunitno, pgrpid, pactive, active)
+		values(0, :ll_xrefmods_ppos2recid, :ll_xrefmods_pempno, :ll_xrefmods_ppos2idshort, :ls_xrefmods_pspunitno, :ll_xrefmods_pgrpid, :li_xrefmods_pactive, :li_xrefmods_active)
+		using tr_sqlca;
+		//
+		if(tr_sqlca.sqlcode <> -1) then
+			//
+			commit using tr_sqlca;
+			//
+			li_num_restores++
+		else
+			ls_sqlerrtext = tr_sqlca.sqlerrtext
+			//
+			rollback using tr_sqlca;
+			//
+			ls_errors += ls_sqlerrtext + "^"
+		end if
+		//
+	end if
+	if((f_len_ext(ls_sqlerrtext) = 0) and (ll_emp_id > 0)) then
+		//restore sns_employees settings for employee
+		//
+		update sns_employees set positionid = :ls_emp_positionid, title = :ls_emp_title, jobcode = :ls_emp_jobcode, jobtitle = :ls_emp_jobtitle, supervisor = :ls_emp_supervisor, grps_resp = :ls_emp_grps_resp, grpid = :ll_emp_grpid	
+		where id = :ll_emp_id 
+		using tr_sqlca;
+		//
+		if(tr_sqlca.sqlcode <> -1) then
+			//
+			commit using tr_sqlca;
+			//
+			li_num_restores++
+		else
+			ls_sqlerrtext = tr_sqlca.sqlerrtext
+			//
+			rollback using tr_sqlca;
+			//
+			ls_errors += ls_sqlerrtext + "^"
+		end if
+		//	
+	end if
+	if((f_len_ext(ls_sqlerrtext) = 0) and (ll_bdspecs_id > 0)) then
+		long ll_empname_exists_id
+		ll_empname_exists_id = 0
+		//
+		select id into :ll_empname_exists_id from sns_board_specs_others where ltrim(rtrim(upper(empname))) = :ls_bdspecs_empname using tr_sqlca;
+		//
+		if(ll_empname_exists_id = 0) then
+			//restores sns_board_specs_others settings
+			update sns_board_specs_others set grpid = :ll_bdspecs_grpid, nrow = :ls_bdspecs_nrow, ncol = :ls_bdspecs_ncol, empname = :ls_bdspecs_empname, empno = :ll_bdspecs_empno, issuper = :li_bdspecs_issuper, //callnum = :ls_bdspecs_callnum,
+			isunfilled = :li_bdspecs_isunfilled, groupname = :ls_bdspecs_groupname, positionid = :ls_bdspecs_positionid, active = :li_bdspecs_active	
+			where id = :ll_bdspecs_id
+			using tr_sqlca;
+			//
+			if(tr_sqlca.sqlcode <> -1) then
+				//
+				commit using tr_sqlca;
+				//
+				li_num_restores++
+			else
+				ls_sqlerrtext = tr_sqlca.sqlerrtext
+				//
+				rollback using tr_sqlca;
+				//
+				ls_errors += ls_sqlerrtext + "^"
+			end if
+			//	
+		end if
+	end if
+else
+	li_rtn_value = -1
+end if
+if(li_num_restores >= 4) then
+	li_rtn_value = 1
+end if
+return li_rtn_value
+end function
+

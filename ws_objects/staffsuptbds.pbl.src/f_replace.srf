@@ -1,0 +1,37 @@
+﻿$PBExportHeader$f_replace.srf
+global type f_replace from function_object
+end type
+
+forward prototypes
+global function string f_replace (string as_str_in, string as_old, string as_new)
+end prototypes
+
+global function string f_replace (string as_str_in, string as_old, string as_new);int ls_pos
+ls_pos = Pos (as_str_in,as_old)
+do while ls_pos > 0
+	as_str_in = Replace (as_str_in,ls_pos,Len (as_old),as_new)
+	ls_pos = Pos (as_str_in,as_old,ls_pos + Len (as_new))
+loop
+return as_str_in
+
+//f_shift_spaces(as_text)
+//long ll_pos
+//as_text = trim (as_text)
+//ll_pos = pos (as_text,"  ") //2 spaces
+//do while ll_pos > 0
+//	as_text = left (as_text,ll_pos) + right (as_text,len (as_text) - ll_pos - 1)
+//	ll_pos = pos (as_text,"  ",ll_pos)
+//loop
+//return as_text
+
+//f_squish(as_string)
+//int li_pos
+//as_string = Trim (as_string)
+//li_pos = Pos (as_string," ")  //1 space
+//do while li_pos > 0
+//	as_string = Left (as_string,li_pos - 1) + Mid (as_string,li_pos + 1)
+//	li_pos = Pos (as_string," ")
+//loop
+//return as_string
+end function
+

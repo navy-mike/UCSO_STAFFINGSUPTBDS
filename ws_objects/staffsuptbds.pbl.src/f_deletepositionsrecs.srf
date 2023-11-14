@@ -1,0 +1,146 @@
+﻿$PBExportHeader$f_deletepositionsrecs.srf
+global type f_deletepositionsrecs from function_object
+end type
+
+forward prototypes
+global function integer f_deletepositionsrecs (ref datawindow dw_object, long row, boolean bshowmsgs, ref transaction tr_sqlca)
+end prototypes
+
+global function integer f_deletepositionsrecs (ref datawindow dw_object, long row, boolean bshowmsgs, ref transaction tr_sqlca);//prototype li_rtn_value = f_deletepositionrecs(ref dw_object, row, bshowmsgs, ref sqlca)
+integer li_rtn_value
+li_rtn_value = 1
+string ls_callnum
+string ls_empname
+integer li_super_lvl
+string ls_positionid
+long ll_grpid
+long ll_posid
+//------------------
+ls_callnum = dw_object.getitemstring(row, 'sns_board_specs_others_callnum')
+ls_empname = dw_object.getitemstring(row, 'sns_board_specs_others_empname')
+li_super_lvl = dw_object.getitemnumber(row, 'sns_board_specs_others_issuper')
+//ls_positionid = dw_object.getitemstring(row, 'sns_staffing_grps_positions2_positionid')
+string ls_dwobject_name
+ls_dwobject_name = dw_object.dataobject
+long ll_dwo_grpid
+ll_dwo_grpid = f_getgrpidbydwobject(ls_dwobject_name)
+if(f_len_ext(ls_dwobject_name) > 0) then
+	ll_grpid = f_getGrpidByDwObject(ls_dwobject_name)
+	//ll_grpid = dw_object.getitemnumber(row, 'sns_staffing_grps_positions2_grpid')
+	string ls_posid
+	ls_posid = dw_object.getitemstring(row, 'pos') //POS-1818
+	integer li_pos
+	li_pos = pos(ls_posid, "-")
+	if(li_pos > 0) then
+		ls_posid = mid(ls_posid, (li_pos + 1))
+	end if
+	ll_posid = f_stol(ls_posid)
+	if(ll_posid > 0) then
+		integer li_rtn_rslt
+		string ls_msg
+		if(bshowmsgs = true) then
+			ls_msg = "Are you sure you want to remove the ***UNFILLED*** position?"
+			li_rtn_rslt = MessageBox("Notifications", ls_msg, QUESTION!, YESNO!, 1)
+		else
+			li_rtn_rslt = 1
+		end if
+		if(li_rtn_rslt = 1) then
+			string ls_sql_error_text
+			long ll_xrefid
+			boolean bDeletedXrefMods
+			boolean bDeletedXref
+			boolean bChangedGrpid 
+			bChangedGrpid = false
+			bDeletedXref = false
+			bDeletedXrefMods = false
+			//
+			select xrefid into :ll_xrefid from sns_staffing_grps_positions2 where id = :ll_posid using tr_sqlca;
+			//
+			if(ll_xrefid > 0) then
+				integer li_pos2recid
+				//
+				select pos2recid into :li_pos2recid from sns_pos_xref where id = :ll_xrefid using tr_sqlca;
+				//
+				if(li_pos2recid > 0) then
+					long ll_xref_mods_id
+					//
+					select id into :ll_xref_mods_id from sns_pos_xref_mods where ppos2idshort = :li_pos2recid using tr_sqlca;
+					//
+					if(ll_xref_mods_id > 0) then
+						//
+						delete from sns_pos_xref_mods where id = :ll_xref_mods_id using tr_sqlca;
+						//
+						if(sqlca.sqlcode <> -1) then
+							//
+							commit using tr_sqlca;
+							//
+							bDeletedXrefMods = true;
+						else
+							ls_sql_error_text = tr_sqlca.sqlerrtext
+							//
+							rollback using tr_sqlca;
+							//
+						end if
+					end if
+				end if
+				//
+				delete from sns_pos_xref where id = :ll_xrefid using tr_sqlca;
+				//
+				if(sqlca.sqlcode <> -1) then
+					//
+					commit using tr_sqlca;
+					//
+					bDeletedXref = true;
+				else
+					ls_sql_error_text += "|" + tr_sqlca.sqlerrtext
+					//
+					rollback using tr_sqlca;
+					//
+				end if
+				if(f_len_ext(ls_sql_error_text) > 0) then
+					if(bshowmsgs = true) then
+						ls_msg = "One or more errors. " + ls_sql_error_text + gs_crlf
+						ls_msg += "Delete position record " + ls_positionid + " anyway?"
+						li_rtn_rslt = MessageBox("Notification", ls_msg, QUESTION!, YESNO!, 1)
+					else
+						li_rtn_rslt = 1
+					end if
+					if(li_rtn_rslt = 1) then
+						//
+						delete from sns_staffing_grps_positions2 where id = :ll_posid using tr_sqlca;
+						//
+						if(sqlca.sqlcode <> -1) then
+							//
+							commit using tr_sqlca;
+							//
+							MessageBox("Notifications","Successfully deleted positionid!")
+						else
+							MessageBox("Notifications","Failed to delete positionid. error=" + tr_sqlca.sqlerrtext)
+						end if
+					
+					end if
+				end if
+			else
+				//
+				delete from sns_staffing_grps_positions2 where id = :ll_posid using tr_sqlca;
+				//
+				if(sqlca.sqlcode <> -1) then
+					//
+					commit using tr_sqlca;
+					//
+					if(bshowmsgs = true) then
+						MessageBox("Notifications","Successfully deleted positionid!")
+					end if
+				else
+					if(bshowmsgs = true) then
+						MessageBox("Notifications","Failed to delete positionid. error=" + tr_sqlca.sqlerrtext)
+					end if
+				end if
+			end if
+		end if
+		dw_object.Retrieve(ll_dwo_grpid)
+	end if
+end if
+return li_rtn_value
+end function
+

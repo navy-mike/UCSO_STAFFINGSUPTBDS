@@ -1,0 +1,584 @@
+﻿$PBExportHeader$f_fix_xrefid.srf
+global type f_fix_xrefid from function_object
+end type
+
+forward prototypes
+global function long f_fix_xrefid (long ll_empno_to_fix, ref transaction tr_sqlca)
+end prototypes
+
+global function long f_fix_xrefid (long ll_empno_to_fix, ref transaction tr_sqlca);//prototype: f_fix_xrefid(ll_empno_to_fix, ref sqlca)
+long ll_rtn_value
+ll_rtn_value = 0
+long ll_empno 
+ll_empno = ll_empno_to_fix
+if(ll_empno <> -1) then //> 0) then
+	boolean bcheckfm
+	//if(cbx_check_fm.checked = true) then
+		bcheckfm = true
+	//else
+	//	bcheckfm = false
+	//end if
+	integer li_num_fm_recs
+	integer li_num_emp_recs
+	integer li_num_pos_recs
+	integer li_num_xref_recs
+	//
+	long ll_pos2idshort
+	integer li_pos
+	string ls_pos2idshort
+	long ll_next_xref_id
+	long ll_exists_xrefid
+	//string ls_callnum
+	long ll_grpid
+	//string ls_empname
+	string ls_callnum
+	string ls_empname
+	li_num_fm_recs = 0
+	li_num_emp_recs = 0
+	li_num_pos_recs = 0
+	li_num_xref_recs = 0
+	//
+	select count(*) into :li_num_fm_recs from fm.io_employee where empno = :ll_empno using sqlca;
+	//
+	select count(*) into :li_num_emp_recs from sns_employees where empno = :ll_empno using sqlca;
+	//
+	select count(*) into :li_num_pos_recs from sns_staffing_grps_positions2 where assgnd_empno = :ll_empno using sqlca;
+	//
+	select count(*) into :li_num_xref_recs from sns_pos_xref where empno = :ll_empno using sqlca;
+	//
+	boolean lb_ok_to_process
+	lb_ok_to_process = false
+	if((li_num_emp_recs = 1) and (li_num_pos_recs = 1) and (li_num_xref_recs > 0)) then
+		if((bcheckfm = true) and (li_num_fm_recs = 1)) then
+			lb_ok_to_process = true
+		else
+			lb_ok_to_process = true
+		end if
+	end if	
+	long ll_sle_xrefid
+	long ll_sle_xref_empno
+	ll_sle_xref_empno = ll_empno //f_stol(sle_xref_empno.text)
+	ll_sle_xrefid = 0 //f_stol(sle_xrefid.text)
+	if((ll_sle_xrefid > 0) and (ll_sle_xref_empno > 0)) then
+		lb_ok_to_process = false //no need to fix if xrefid > 0
+	else
+		if((ll_sle_xrefid = 0) or (ll_sle_xref_empno = 0)) then
+			lb_ok_to_process = true //no need to fix if xrefid > 0
+		end if
+	end if
+	if(lb_ok_to_process = true) then
+		string lsa_fm[1, 8]
+		string lsa_emp[1,15]
+		string lsa_pos[100,16]
+		string lsa_xref[100,12]
+		//populate arrays
+		string ls_retrieve_sql
+		string lsa_nulls[]
+		string lsa_info[]
+		integer li_num_info_items
+		integer li_valid_num_arrays_populated
+		integer li_iloop
+		string ls_iloopdata
+		string lsa_parseoutdata[]
+		integer li_num_parse_items
+		integer li_cloop
+		string ls_cloopdata
+		integer li_num_array_values
+		ls_callnum = ""
+		li_num_array_values = 0
+		li_valid_num_arrays_populated = 0
+		lsa_fm = lsa_nulls
+		lsa_emp = lsa_nulls
+		lsa_pos = lsa_nulls
+		lsa_xref = lsa_nulls
+		string ls_sql_err_text
+		string lsa_errors[]
+		lsa_errors = lsa_nulls
+		//fm.io_employee vars
+		integer li_fm_fte_status
+		CONSTANT integer FMFTESTATUS = 8
+		long ll_fm_empno
+		CONSTANT integer FMEMPNO = 1
+		string ls_fm_title
+		CONSTANT integer FMTITLE = 4
+		long ll_fm_jobcode
+		CONSTANT integer FMJOBCODE = 5
+		long ll_fm_super_empno
+		CONSTANT integer FMSUPEREMPNO = 6
+		string ls_fm_positionid
+		CONSTANT integer FMPOSITIONID = 7
+		//sns_employees vars
+		long ll_emp_empno
+		CONSTANT integer EMPEMPNO = 2
+		integer li_emp_fund
+		CONSTANT integer EMPFUND = 6
+		long ll_emp_dept
+		constant integer EMPDEPT = 7
+		string ls_emp_depttitle
+		CONSTANT integer EMPDEPTTITLE = 8
+		string ls_emp_jobtitle
+		CONSTANT integer EMPJOBTITLE = 9
+		string ls_emp_jobcode
+		CONSTANT integer EMPJOBCODE = 10
+		long ll_emp_super_empno
+		CONSTANT integer EMPSUPEREMPNO = 12
+		string ls_emp_supervisor
+		CONSTANT integer EMPSUPERVISOR = 13
+		integer li_emp_fte
+		CONSTANT integer EMPFTE = 14
+		string ls_emp_name
+		CONSTANT integer EMPNAME = 15
+		//sns_staffing_grps_positions2 vars
+		long ll_pos_id
+		CONSTANT integer POSID = 1
+		long ll_pos_grpid
+		CONSTANT integer POSGRPID = 4
+		string ls_pos_funddept
+		CONSTANT integer POSFUNDDEPT = 7
+		string ls_pos_addinfo
+		CONSTANT integer POSADDINFO = 8
+		string ls_pos_positionid
+		CONSTANT integer POSPOSITIONID = 10
+		string ls_pos_jobcode
+		CONSTANT integer POSJOBCODE = 11
+		string ls_pos_jobtitle
+		CONSTANT integer POSJOBTITLE = 12
+		integer li_pos_active
+		CONSTANT integer POSACTIVE = 13
+		long ll_pos_xrefid
+		CONSTANT integer POSXREFID = 15
+		//sns_pos_xref vars
+		long ll_xref_id
+		CONSTANT integer XREFID = 1
+		date ldt_xref_lupdated_dt
+		CONSTANT integer XREFLUPDATEDDT = 3
+		long ll_xref_pos2recid
+		CONSTANT integer XREFPOS2RECID = 4
+		long ll_xref_empno
+		CONSTANT integer XREFEMPNO = 5
+		long ll_xref_pos2idshort
+		CONSTANT integer XREFPOS2IDSHORT = 6
+		long ll_xref_grpid
+		CONSTANT integer XREFGRPID = 9
+		string ls_xref_status
+		CONSTANT integer XREFSTATUS = 10
+
+		//fm.io_employee data retrieve
+		if(ll_empno > 0) then
+			li_num_info_items = 0
+			if(ll_empno > 0) then
+				ls_retrieve_sql = "select empno, fund, dept, title, jobcode, super_empno, position_id, fte_status from fm.io_employee where empno = " + string(ll_empno)
+				li_num_info_items = f_app_ds_populate_string_array_by_sql(ref lsa_info, ls_retrieve_sql, gi_pad_len, gs_delim, gb_compress, ref sqlca)
+			end if
+			if(li_num_info_items = 1) then
+				//f_pop_multi_array(li_num_info_items, ref lsa_info, gs_delim)
+				for li_iloop = 1 to li_num_info_items
+					ls_iloopdata = lsa_info[li_iloop]
+					li_num_parse_items = f_parseoutstring_ext(ls_iloopdata, gs_delim, ref lsa_parseoutdata)
+					if(li_num_parse_items > 0) then
+						for li_cloop = 1 to li_num_parse_items
+							ls_cloopdata = lsa_parseoutdata[li_cloop]
+							lsa_fm[li_iloop, li_cloop] = ls_cloopdata
+						next
+					end if	
+				next
+			end if	
+			//sns_employees data retrieve
+			li_num_info_items = 0
+			if(ll_empno > 0) then
+				ls_retrieve_sql = "select id, empno, active, empname, positionid, fund, dept, depttitle, jobtitle, jobcode, super_lvl, super_empno, supervisor, fte, empname from sns_employees where empno = " + string(ll_empno)
+				li_num_info_items = f_app_ds_populate_string_array_by_sql(ref lsa_info, ls_retrieve_sql, gi_pad_len, gs_delim, gb_compress, ref sqlca)
+			end if
+			if(li_num_info_items = 1) then
+				//f_pop_multi_array(li_num_info_items, ref lsa_info, gs_delim)
+				for li_iloop = 1 to li_num_info_items
+					ls_iloopdata = lsa_info[li_iloop]
+					li_num_parse_items = f_parseoutstring_ext(ls_iloopdata, gs_delim, ref lsa_parseoutdata)
+					if(li_num_parse_items > 0) then
+						for li_cloop = 1 to li_num_parse_items
+							ls_cloopdata = lsa_parseoutdata[li_cloop]
+							lsa_emp[li_iloop, li_cloop] = ls_cloopdata
+						next
+					end if	
+				next
+			end if	
+		end if //ll_empno > 0
+		//sns_staffing_grps_positions2 retrieve
+		li_num_info_items = 0
+		if(ll_empno > 0) then
+			ls_retrieve_sql = "select id,created_dt,lupdated_dt,grpid,callnum,assgnd_empno,funddept,addinfo,vehnum,positionid,jobcode,jobtitle,active,basepay,xrefid,hls  from sns_staffing_grps_positions2 where assgnd_empno = " + string(ll_empno)
+			li_num_info_items = f_app_ds_populate_string_array_by_sql(ref lsa_info, ls_retrieve_sql, gi_pad_len, gs_delim, gb_compress, ref sqlca)
+		end if
+		if(li_num_info_items >= 1)then
+			if(li_num_info_items > 1) then
+			
+			end if
+			//f_pop_multi_array(li_num_info_items, ref lsa_info, gs_delim)
+			for li_iloop = 1 to li_num_info_items
+				ls_iloopdata = lsa_info[li_iloop]
+				li_num_parse_items = f_parseoutstring_ext(ls_iloopdata, gs_delim, ref lsa_parseoutdata)
+				if(li_num_parse_items > 0) then
+					for li_cloop = 1 to li_num_parse_items
+						ls_cloopdata = lsa_parseoutdata[li_cloop]
+						lsa_pos[li_iloop, li_cloop] = ls_cloopdata
+					next
+				end if	
+			next
+		end if	
+		//sns_pos_xref
+		if(ll_empno > 0) then
+			ls_retrieve_sql = "select id,created_dt,lupdated_dt,pos2recid,empno,pos2idshort,spunitno,active,grpid,status,empname from sns_pos_xref where empno = " + string(ll_empno) + " order by id desc"
+		else
+			ls_retrieve_sql = "select id,created_dt,lupdated_dt,pos2recid,empno,pos2idshort,spunitno,active,grpid,status,empname from sns_pos_xref where empno = " + string(ll_empno) + " and active = 1 and status = 'A' order by id desc"
+		end if
+		li_num_info_items = f_app_ds_populate_string_array_by_sql(ref lsa_info, ls_retrieve_sql, gi_pad_len, gs_delim, gb_compress, ref sqlca)
+		if(li_num_info_items >= 1) then
+			//f_pop_multi_array(li_num_info_items, ref lsa_info, gs_delim)
+			for li_iloop = 1 to li_num_info_items
+				ls_iloopdata = lsa_info[li_iloop]
+				li_num_parse_items = f_parseoutstring_ext(ls_iloopdata, gs_delim, ref lsa_parseoutdata)
+				if(li_num_parse_items > 0) then
+					for li_cloop = 1 to li_num_parse_items
+						ls_cloopdata = lsa_parseoutdata[li_cloop]
+						lsa_xref[li_iloop, li_cloop] = ls_cloopdata
+					next
+				end if	
+			next
+		end if	
+		//assign variables
+		if(ll_empno > 0) then
+			if(UpperBound(lsa_fm) = 1) then
+				//fm.io_employee vars
+				li_fm_fte_status = f_stoi(lsa_fm[1, FMFTESTATUS]);
+				ll_fm_empno = f_stol(lsa_fm[1, FMEMPNO])
+				ls_fm_title = trim(upper(lsa_fm[1, FMTITLE]))
+				ll_fm_jobcode = f_stol(lsa_fm[1, FMJOBCODE])
+				ll_fm_super_empno = f_stol(lsa_fm[1, FMSUPEREMPNO])
+				ls_fm_positionid = trim(upper(lsa_fm[1, FMPOSITIONID]))
+			end if
+			if(UpperBound(lsa_emp) = 1) then
+				//sns_employees vars
+				ll_emp_empno = f_stol(lsa_emp[1,EMPEMPNO])
+				li_emp_fund = f_stoi(lsa_emp[1, EMPFUND])
+				ll_emp_dept = f_stol(lsa_emp[1, EMPDEPT])
+				ls_emp_depttitle = trim(upper(lsa_emp[1,EMPDEPTTITLE]))
+				ls_emp_jobtitle = trim(upper(lsa_emp[1, EMPJOBTITLE]))
+				ls_emp_jobcode = trim(upper(lsa_emp[1, EMPJOBCODE]))
+				ll_emp_super_empno = f_stol(lsa_emp[1, EMPSUPEREMPNO])
+				ls_emp_supervisor = trim(upper(lsa_emp[1, EMPSUPERVISOR]))
+				li_emp_fte = f_stoi(lsa_emp[1, EMPFTE])
+				ls_emp_name = trim(upper(lsa_emp[1, EMPNAME]))
+			end if
+			//determine x value of empno
+			integer li_found_pos_x_value //lsa_pos[x position of empno
+			li_found_pos_x_value = 0
+			integer li_num_upperbound_pos 
+			li_num_upperbound_pos = UpperBound(lsa_pos)
+			if(li_num_upperbound_pos >= 100) then
+				integer li_pos_xloop
+				string ls_pos_xloopdata
+				long ll_pos_xloop_empno
+				for li_pos_xloop = 1 to li_num_upperbound_pos
+					ls_pos_xloopdata = lsa_pos[li_pos_xloop, 6]
+					ll_pos_xloop_empno = f_stol(ls_pos_xloopdata)
+					if(ll_pos_xloop_empno = ll_empno) then
+						li_found_pos_x_value = li_pos_xloop
+						exit
+					end if
+				next
+			end if
+			if(li_found_pos_x_value > 0) then
+				ll_pos_id = f_stol(lsa_pos[li_found_pos_x_value, POSID])
+				ll_pos_grpid = f_stol(lsa_pos[li_found_pos_x_value, POSGRPID])
+				ls_pos_funddept = lsa_pos[li_found_pos_x_value, POSFUNDDEPT];
+				ls_pos_addinfo = trim(upper(lsa_pos[li_found_pos_x_value, POSADDINFO]))
+				ls_pos_positionid = trim(upper(lsa_pos[li_found_pos_x_value, POSPOSITIONID]))
+				ls_pos_jobcode = trim(upper(lsa_pos[li_found_pos_x_value, POSJOBCODE]))
+				ls_pos_jobtitle = trim(upper(lsa_pos[li_found_pos_x_value, POSJOBTITLE]))
+				li_pos_active = f_stoi(lsa_pos[li_found_pos_x_value, POSACTIVE])
+				ll_pos_xrefid = f_stol(lsa_pos[li_found_pos_x_value, POSXREFID])		
+			end if
+		end if
+		//process fix 
+		integer li_valid_xref_id_count
+		li_valid_xref_id_count = 0
+		li_num_array_values = UpperBound(lsa_xref)
+		for li_iloop = 1 to li_num_array_values
+			ll_xref_id = f_stol(lsa_xref[li_iloop, XREFID])
+			if(ll_xref_id > 0) then
+				li_valid_xref_id_count++
+			end if
+		next
+		if((li_valid_xref_id_count >= 1) and (ll_empno > 0)) then
+			//update sns_staffing_grps_positions2 xrefid's that are blank or zero 
+			//and if dups add top record(s) id's to delete array
+			string lsa_ids_to_delete[]
+			for li_iloop = 1 to li_valid_xref_id_count
+				ll_xref_id = f_stol(lsa_xref[li_iloop, XREFID])
+				if(ll_xref_id > 0) then
+					ldt_xref_lupdated_dt = f_stodt(lsa_xref[li_iloop, XREFLUPDATEDDT])
+					ll_xref_pos2recid = f_stol(lsa_xref[li_iloop, XREFPOS2RECID])
+					ll_xref_empno = f_stol(lsa_xref[li_iloop, XREFEMPNO])
+					ll_xref_pos2idshort = f_stol(lsa_xref[li_iloop, XREFPOS2IDSHORT])
+					ll_xref_grpid = f_stol(lsa_xref[li_iloop, XREFGRPID])
+					ls_xref_status = trim(upper(lsa_xref[li_iloop, XREFSTATUS]))			
+					if((li_valid_xref_id_count > 1) and (li_iloop < li_valid_xref_id_count)) then
+						//delete record - its a dup
+						f_add_item_to_string_array_ext(ref lsa_ids_to_delete, string(ll_xref_id), true)
+					else
+						if(ll_pos_xrefid = 0) then
+							//
+							update sns_staffing_grps_positions2 set xrefid = :ll_xref_id where id = :ll_pos_id using sqlca;
+							//
+							if(sqlca.sqlcode <> -1) then
+								//
+								commit using sqlca;
+								//
+							else
+								ls_sql_err_text = sqlca.sqlerrtext
+								//
+								rollback using sqlca;
+								//
+								f_add_item_to_string_array_ext(ref lsa_errors, ls_sql_err_text, true)
+							end if
+						end if
+						if((ll_sle_xref_empno = 0) and (ll_xref_pos2recid > 0)) then
+						
+							//
+							update sns_pos_xref set empno = :ll_emp_empno where id = :ll_xref_pos2recid using sqlca;
+							//
+							if(sqlca.sqlcode <> -1) then
+								//
+								commit using sqlca;
+								//
+							else
+								ls_sql_err_text = sqlca.sqlerrtext
+								//
+								rollback using sqlca;
+								//
+								f_add_item_to_string_array_ext(ref lsa_errors, ls_sql_err_text, true)
+							end if
+						
+						end if
+					end if
+				end if
+			next //li_iloop
+			if(UpperBound(lsa_ids_to_delete) > 0) then
+				//delete dup records
+				long ll_id_to_delete
+				li_num_array_values = UpperBound(lsa_ids_to_delete)
+				for li_cloop = 1 to li_num_array_values
+					ls_cloopdata = lsa_ids_to_delete[li_cloop]
+					ll_id_to_delete = f_stol(ls_cloopdata)
+					if(ll_id_to_delete > 0) then
+						//
+						delete from sns_pos_xref where id = :ll_id_to_delete using sqlca;
+						//
+						if(sqlca.sqlcode <> -1) then
+							//
+							commit using sqlca;
+							//
+						else
+							ls_sql_err_text = sqlca.sqlerrtext
+							//
+							rollback using sqlca;
+							//
+							f_add_item_to_string_array_ext(ref lsa_errors, ls_sql_err_text, true)
+						end if
+					end if
+				next
+			end if
+		else
+			if(ll_empno > 0) then
+				//no sns_pos_xref record so add it and update sns_pos_xref_mods	
+				li_pos = pos(ls_pos_positionid, "-")
+				if(li_pos > 0) then
+					ls_pos2idshort = trim(mid(ls_pos_positionid, (li_pos + 1)))
+					ll_pos2idshort = f_stol(ls_pos2idshort)
+				else
+					ll_pos2idshort = 0
+				end if
+				//get next avail sns_pos_xref record
+				ll_next_xref_id = 0
+				ll_next_xref_id = f_get_next_avail_pos_xref_id(ref sqlca)
+				if(ll_next_xref_id > 0) then
+					//update sns_pos_xref available record
+					//
+					update sns_pos_xref set pos2recid = :ll_exists_xrefid, empno = 0, pos2idshort = :ll_pos2idshort, spunitno = :ls_callnum, grpid = :ll_grpid, status = 'A', empname = :ls_empname where id = :ll_next_xref_id using sqlca;
+					//
+					if(sqlca.sqlcode <> -1) then
+						//
+						commit using sqlca;
+						//
+					else
+						ls_sql_err_text = sqlca.sqlerrtext
+						//
+						rollback using sqlca;
+						//
+						f_add_item_to_string_array_ext(ref lsa_errors, ls_sql_err_text, true)
+					end if
+					integer li_sns_xref_mods_count
+					//
+					select count(*) into :li_sns_xref_mods_count from sns_pos_xref_mods where pempno = :ll_emp_empno and ppos2idshort = :ll_pos2idshort using sqlca;
+					//
+					if(li_sns_xref_mods_count = 0) then
+						//
+						insert into sns_pos_xref_mods(pid, ppos2recid, pempno, ppos2idshort, pspunitno, pgrpid, pactive, aid, apos2recid, aempno,apos2idshort, aspunitno, agrpid, aactive, active)
+						values(0, :ll_pos_id, :ll_emp_empno, :ll_pos2idshort, 'TBD', :ll_pos_grpid, 1, 0, 0, 0, 0, '', 0, 0, 1)
+						using sqlca;		
+						//
+						if(sqlca.sqlcode <> -1) then
+							//
+							commit using sqlca;
+							//
+						else
+							ls_sql_err_text = sqlca.sqlerrtext
+							//
+							rollback using sqlca;
+							//
+							f_add_item_to_string_array_ext(ref lsa_errors, ls_sql_err_text, true)
+						end if
+					end if				
+				end if			
+			else
+				//ll_empno = 0 code
+				//fix missing xrefid for those unfilled positions (ll_empno = 0)
+				integer li_zloop
+				string ls_zloopdata
+				integer li_zloopmax
+				li_zloopmax = UpperBound(lsa_pos)
+				long ll_pos_xref_id
+				long ll_zgrpid
+				long ll_zxrefid
+				long ll_zpos2recid
+				long ll_zpos2idshort
+				string ls_zpositionid
+				integer li_zpos
+				string ls_zjobprofile
+				string ls_zjobcode
+				for li_zloop = 1 to li_zloopmax
+					ls_zloopdata = trim(upper(lsa_pos[li_zloop,1]))
+					ll_pos_xref_id = f_stol(ls_zloopdata)
+					if(ll_pos_xref_id > 0) then
+						ll_zgrpid = 0
+						ll_zxrefid = 0
+						ls_zpositionid = ""
+						//
+						select grpid, xrefid, positionid into :ll_zgrpid, :ll_zxrefid, :ls_zpositionid from sns_staffing_grps_positions2 where id = :ll_pos_xref_id using sqlca;
+						//
+						if(ll_zxrefid = 0) then
+							li_zpos = pos(ls_zpositionid, "-")
+							if(li_zpos > 0) then
+								ll_zpos2idshort = f_stol(mid(ls_zpositionid, (li_zpos + 1)))
+								if(ll_zpos2idshort > 0) then
+									ll_zpos2recid = 0
+									//
+									select id into :ll_zpos2recid from sns_pos_xref where pos2idshort = :ll_zpos2idshort and empno = 0 and grpid = :ll_zgrpid using sqlca;
+									//
+									if(ll_zpos2recid > 0) then 
+										//sns_pos_xref record exists UPDATE
+										ls_zjobprofile = ""
+										ls_zjobcode = ""
+										//
+										select JOBPROFILE, JOBCODE into :ls_zjobprofile, :ls_zjobcode from sns_unassigned_status where positionid = :ls_zpositionid using sqlca;
+										//
+										//
+										update sns_staffing_grps_positions2 set xrefid = :ll_zpos2recid, jobcode = :ls_zjobcode, jobtitle = :ls_zjobprofile where id = :ll_pos_xref_id using sqlca;
+										//
+										if(sqlca.sqlcode <> -1) then
+											//
+											commit using sqlca;
+											//
+										else
+											ls_sql_err_text = sqlca.sqlerrtext
+											//
+											rollback using sqlca;
+											//
+											f_insert_log("w_insert_new_position_mod", "Failed to update xrefid in postions2 table. positionid=" + ls_zpositionid, "E", gs_winuser, 1, ref sqlca)
+										end if
+									else
+										//sns_pos_xref record does not exist so update next avail record
+										//get next avail sns_pos_xref record
+										ll_next_xref_id = 0
+										ll_next_xref_id = f_get_next_avail_pos_xref_id(ref sqlca)
+										if(ll_next_xref_id > 0) then										
+											//update sns_pos_xref available record
+											//
+											update sns_pos_xref set pos2recid = :ll_pos_xref_id, empno = 0, pos2idshort = :ll_zpos2idshort, spunitno = :ls_callnum, grpid = :ll_zgrpid, status = 'A', empname = :ls_empname where id = :ll_next_xref_id using sqlca;
+											//
+											if(sqlca.sqlcode <> -1) then
+												//
+												commit using sqlca;
+												//
+											else
+												ls_sql_err_text = sqlca.sqlerrtext
+												//
+												rollback using sqlca;
+												//
+												f_insert_log("w_insert_new_position_mod", "Failed to update xrefid in postions2 table. positionid=" + ls_zpositionid, "E", gs_winuser, 1, ref sqlca)
+											end if
+											li_sns_xref_mods_count = 0
+											//
+											select count(*) into :li_sns_xref_mods_count from sns_pos_xref_mods where pempno = :ll_emp_empno and ppos2idshort = :ll_pos2idshort using sqlca;
+											//
+											if(li_sns_xref_mods_count = 0) then
+												//
+												insert into sns_pos_xref_mods(pid, ppos2recid, pempno, ppos2idshort, pspunitno, pgrpid, pactive, aid, apos2recid, aempno,apos2idshort, aspunitno, agrpid, aactive, active)
+												values(0, :ll_pos_xref_id, :ll_empno, :ll_zpos2idshort, 'TBD', :ll_zgrpid, 1, 0, 0, 0, 0, '', 0, 0, 1)
+												using sqlca;		
+												//
+												if(sqlca.sqlcode <> -1) then
+													//
+													commit using sqlca;
+													//
+												else
+													ls_sql_err_text = sqlca.sqlerrtext
+													//
+													rollback using sqlca;
+													//
+													f_insert_log("w_insert_new_position_mod", "Failed to insert sns_pos_xref_mods record. positionid=" + ls_zpositionid, "E", gs_winuser, 1, ref sqlca)
+												end if
+											end if											
+										else
+											f_insert_log("w_insert_new_position_mod", "NO AVAILABLE SNS_POS_XREF 'U' POSITIONS", "E", gs_winuser, 1, ref sqlca)
+										end if
+									end if
+								end if //ll_zpos2idshort > 0
+							end if //li_zpos > 0
+						end if //ll_zxrefid = 0
+					end if //ll_pos_xref_id > 0
+				next //end li_zloop
+			end if
+		end if		
+	else
+		if(ll_sle_xrefid = 0) then
+			//unable to fix-missing one or more table records
+			ls_sql_err_text = "Cannot do fix. Missing one or more table records. #fmrecs=" + string(li_num_fm_recs) + " #emprecs=" + string(li_num_emp_recs)
+			ls_sql_err_text = " #posrecs=" + string(li_num_pos_recs) + " #xrefrecs=" + string(li_num_xref_recs) + "."
+			f_add_item_to_string_array_ext(ref lsa_errors, ls_sql_err_text, true)
+		end if
+	end if
+	if(UpperBound(lsa_errors) > 0) then
+		string ls_error_msg_text
+		li_num_array_values = UpperBound(lsa_errors)
+		ls_error_msg_text = "One or more errors:" + gs_crlf
+		for li_iloop = 1 to li_num_array_values
+			ls_iloopdata = lsa_errors[li_iloop]
+			ls_error_msg_text += ls_iloopdata
+			if(li_iloop < li_num_array_values) then
+				ls_error_msg_text += gs_crlf
+			end if
+		next
+		MessageBox("Notification", ls_error_msg_text)
+	else
+		//refresh
+		//w_insert_new_position_mod.TriggerEvent('OPEN')
+	end if
+
+end if
+
+
+return ll_rtn_value
+
+end function
+

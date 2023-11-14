@@ -1,0 +1,278 @@
+﻿$PBExportHeader$f_insert_pos2_support_table_records.srf
+global type f_insert_pos2_support_table_records from function_object
+end type
+
+forward prototypes
+global function integer f_insert_pos2_support_table_records (long ll_grpid, string ls_callnum, long ll_empno, string ls_funddept, string ls_addinfo, string ls_vehnum, string ls_positionid, string ls_jobcode, string ls_jobtitle, decimal dec_basepay, boolean b_modify_positions2_table, ref string ls_error, ref transaction tr_sqlca)
+end prototypes
+
+global function integer f_insert_pos2_support_table_records (long ll_grpid, string ls_callnum, long ll_empno, string ls_funddept, string ls_addinfo, string ls_vehnum, string ls_positionid, string ls_jobcode, string ls_jobtitle, decimal dec_basepay, boolean b_modify_positions2_table, ref string ls_error, ref transaction tr_sqlca);//prototype: integer li_rtn_value = f_insert_pos2_support_table_records(ll_grpid, ls_callnum, ll_empno, ls_funddept, ls_addinfo, ls_vehinfo, ls_positionid, ls_jobcode, ls_jobtitle, dec_basepay, b_modify_positions2_table, ref ls_error, ref sqlca)
+integer li_rtn_value
+li_rtn_value = 0
+//  1 = successful
+// -1 = no action taken
+// -2 = li_assgnd_empno_count > 0
+// -3 = li_positionid_count > 0
+// -4 = assgnd_empno not found in pos2
+// -5 = ll_pos2idshort invalid
+// -6 = tr_sqlca sqlcode = -1 sns_staffing_grps_positions2
+// -7 = tr_sqlca sqlcode = -1 sns_pos_xref
+// -8 = tr_sqlca sqlcode = -1 sns_pos_xref_mods
+// -9 = tr_sqlca sqlcode = -1 sns_group_ids
+//-10 = ll_pos2idshort <0 or > 90000 
+ls_error = ""
+integer li_assgnd_empno_count
+integer li_positionid_count
+ls_positionid = trim(upper(ls_positionid))
+integer li_case_num
+long ll_exists_id_assgnd_empno
+long ll_exists_id_positionid
+long ll_exists_id
+long ll_pos2idshort
+ll_pos2idshort = 0
+integer li_pos
+li_pos = pos(ls_positionid, "-")
+string ls_group_type
+boolean b_continue
+string ls_sql_err_text
+string ls_empname
+if(((f_len_ext(ls_funddept) = 0) or (f_len_ext(ls_jobcode) = 0) or (f_len_ext(ls_jobtitle) = 0)) and (ll_empno > 0)) then
+	//
+	select to_char(fund) || '-' || to_char(dept), jobcode, jobtitle into :ls_funddept, :ls_jobcode, :ls_jobtitle from sns_employees where empno = :ll_empno using tr_sqlca;
+	//
+	if(f_len_ext(ls_funddept) = 0) then
+		//
+		select to_char(fund) || '-' || to_char(dept) into :ls_funddept from fm.io_employee where empno = :ll_empno using tr_sqlca;
+		//
+	end if
+	if(f_len_ext(ls_jobcode) = 0) then
+		//
+		select job_code into :ls_jobcode from fm.io_employee where empno = :ll_empno using tr_sqlca;
+		//
+	end if
+	if(f_len_ext(ls_jobtitle) = 0) then
+		//
+		select title into :ls_jobtitle from fm.io_employee where empno = :ll_empno using tr_sqlca;
+		//
+	end if
+end if
+//
+long ll_exists_xrefid
+//
+if(li_pos > 0) then
+	ll_pos2idshort = f_stol(trim(mid(ls_positionid, (li_pos + 1))))
+end if
+if(((ll_pos2idshort > 0) and (ll_pos2idshort < 90000)) or (b_modify_positions2_table = true)) then
+	ll_exists_id_assgnd_empno = 0
+	ll_exists_id_positionid = 0
+	b_continue = false
+	ls_sql_err_text = ""
+	//
+	select empname into :ls_empname from sns_employees where empno = :ll_empno using tr_sqlca;
+	//
+	select count(*) into :li_assgnd_empno_count from sns_staffing_grps_positions2 where assgnd_empno = :ll_empno using tr_sqlca;
+	//
+	select count(*) into :li_positionid_count from sns_staffing_grps_positions2 where ltrim(rtrim(upper(positionid))) = :ls_positionid using tr_sqlca;
+	//
+	if((li_assgnd_empno_count > 1) and (ll_empno > 0)) then
+		li_rtn_value = -2
+	elseif(li_positionid_count > 1) then
+		li_rtn_value = -3
+	end if
+	if((li_rtn_value <> -2) and (li_rtn_value <> -3)) then
+		//continue processing
+		//
+		select id into :ll_exists_id_positionid from sns_staffing_grps_positions2 where ltrim(rtrim(upper(positionid))) = :ls_positionid using tr_sqlca;
+		//
+		if(b_modify_positions2_table = true) then
+			if(ll_exists_id_positionid > 0) then
+				//update sns_staffing_grps_positions2
+				update sns_staffing_grps_positions2 set grpid = :ll_grpid, callnum = :ls_callnum, assgnd_empno = :ll_empno, funddept = :ls_funddept, addinfo = :ls_addinfo, vehnum = :ls_vehnum, jobcode = :ls_jobcode, jobtitle = :ls_jobtitle, basepay = :dec_basepay
+				where id = :ll_exists_id_positionid
+				using tr_sqlca;
+			else
+				//insert sns_staffing_grps_positions2
+				insert into sns_staffing_grps_positions2(grpid, callnum, assgnd_empno, funddept, addinfo, vehnum, positionid, jobcode, jobtitle, basepay, xrefid, active)
+				values(:ll_grpid, :ls_callnum, :ll_empno, :ls_funddept, :ls_addinfo, :ls_vehnum, :ls_positionid, :ls_jobcode, :ls_jobtitle, :dec_basepay, 0, 1)
+				using tr_sqlca;
+				//
+			end if
+			b_continue = false
+			if(tr_sqlca.sqlcode <> -1) then
+				//
+				commit using tr_sqlca;
+				//
+				b_continue = true
+			else
+				ls_error = tr_sqlca.sqlerrtext
+				//
+				rollback using tr_sqlca;
+				//
+				b_continue = false
+				li_rtn_value = -6
+			end if
+		else
+			b_continue = true
+		end if
+		if(b_continue = true) then
+			ll_exists_id_assgnd_empno = 0
+			//
+			select id into :ll_exists_id_assgnd_empno from sns_staffing_grps_positions2 where assgnd_empno = :ll_empno using tr_sqlca;
+			//
+			if(ll_exists_id_assgnd_empno > 0) then
+				ll_exists_id = 0
+				//
+				select id into :ll_exists_id from sns_pos_xref where empno = :ll_empno and pos2idshort = :ll_pos2idshort using tr_sqlca;
+				//
+				if(ll_exists_id = 0) then
+					//get next avail sns_pos_xref record id
+					//
+					select id into :ll_exists_id from sns_pos_xref where pos2recid = 0 and empno = 0 and grpid is null and status is null and empname is null order by id fetch first row only using tr_sqlca;
+					//
+					if(ll_exists_id > 0) then
+						//
+						update sns_pos_xref set pos2recid = :ll_exists_id_assgnd_empno, empno = :ll_empno, pos2idshort = :ll_pos2idshort, grpid = :ll_grpid, empname = :ls_empname, spunitno = :ls_callnum, status = 'A', active = 1
+						where id = :ll_exists_id
+						using tr_sqlca;
+						//
+					else
+						//
+						insert into sns_pos_xref(pos2recid, empno, pos2idshort, spunitno, grpid, active, status, empname)
+						values(:ll_exists_id_assgnd_empno, :ll_empno, :ll_pos2idshort, :ls_callnum, :ll_grpid, 1, 'A', :ls_empname)
+						using tr_sqlca;
+						//						
+					end if
+					//insert sns_pos_xref
+					//old insert code
+					//insert into sns_pos_xref(pos2recid, empno, pos2idshort, spunitno, grpid, active, status, empname)
+					//values(:ll_exists_id_assgnd_empno, :ll_empno, :ll_pos2idshort, :ls_callnum, :ll_grpid, 1, 'A', :ls_empname)
+					//using tr_sqlca;
+					//					
+				else
+					//update sns_pos_xref
+					update sns_pos_xref set spunitno = :ls_callnum, grpid = :ll_grpid, empname = :ls_empname
+					where id = :ll_exists_id
+					using tr_sqlca;
+				end if
+				b_continue = false
+				if(tr_sqlca.sqlcode <> -1) then
+					//
+					commit using tr_sqlca;
+					//
+					b_continue = true
+				else
+					ls_error = tr_sqlca.sqlerrtext
+					//
+					rollback using tr_sqlca;
+					//
+					b_continue = false
+					li_rtn_value = -7
+				end if
+				if(b_continue = true) then
+					ll_exists_id = 0
+					//
+					select id into :ll_exists_id from sns_pos_xref_mods where pempno = :ll_empno and ppos2idshort = :ll_pos2idshort using tr_sqlca;
+					//
+					if(ll_exists_id = 0) then
+						//insert sns_pos_xref_mods
+						insert into sns_pos_xref_mods(pid, ppos2recid, pempno, ppos2idshort, pspunitno, pgrpid, pactive, aid, apos2recid, aempno, apos2idshort, aspunitno, agrpid, aactive, active)
+						values(0, :ll_exists_id_assgnd_empno, :ll_empno, :ll_pos2idshort, :ls_callnum, :ll_grpid, 1, 0, 0, 0, 0, '', 0, 0, 1)
+						using tr_sqlca;
+						//
+					else
+						//update sns_pos_xref_mods
+						update sns_pos_xref_mods set apos2recid = :ll_exists_id_assgnd_empno, aempno = :ll_empno, apos2idshort = :ll_pos2idshort, aspunitno = :ls_callnum, agrpid = :ll_grpid, aactive = 1, active = 0
+						using tr_sqlca;
+						//
+					end if
+					b_continue = false
+					if(tr_sqlca.sqlcode <> -1) then
+						//
+						commit using tr_sqlca;
+						//
+						b_continue = true
+					else
+						ls_error = tr_sqlca.sqlerrtext
+						//
+						rollback using tr_sqlca;
+						//
+						b_continue = false
+						li_rtn_value = -8
+					end if					
+					if(b_continue = true) then
+						li_rtn_value = 1
+						//determine ls_group_type PAT, CORR, OTHR, ?
+						ls_group_type = ""
+						ls_group_type =f_determine_group_ids_type(ll_grpid)
+						//
+						ll_exists_id = 0
+						//
+						select id into :ll_exists_id from sns_group_ids where grptype = :ls_group_type and grpid = :ll_grpid using tr_sqlca;
+						//
+						if(ll_exists_id = 0) then
+							//insert into sns_group_ids
+							insert into sns_group_ids(grptype, grpid, active)
+							values(:ls_group_type, :ll_grpid, 1)
+							using tr_sqlca;
+						else
+							//update sns_group_ids set active = 1
+							update sns_group_ids
+							set grptype = :ls_group_type
+							where id = :ll_exists_id
+							using tr_sqlca;
+						end if
+						if(tr_sqlca.sqlcode <> -1) then
+							//
+							commit using tr_sqlca;
+							//
+						else
+							ls_error = tr_sqlca.sqlerrtext
+							//
+							rollback using tr_sqlca;
+							//
+							li_rtn_value = -9
+						end if						
+					else
+						li_rtn_value = -8
+					end if
+				else
+					li_rtn_value = -7
+				end if
+			else
+				li_rtn_value = -4
+			end if
+		else
+			li_rtn_value = -6
+		end if
+	else
+		li_rtn_value = -5	
+	end if
+else
+	li_rtn_value = -10
+end if
+if((li_rtn_value = 0) and (ll_exists_id_assgnd_empno > 0)) then
+	//update sns_staffing_grps_positions2 xrefid
+	long ll_xref_id
+	//
+	select id into :ll_xref_id from sns_pos_xref where pos2recid = :ll_exists_id_assgnd_empno using tr_sqlca;
+	//
+	if(ll_xref_id > 0) then
+		//
+		update sns_staffing_grps_positions2 set xrefid = :ll_xref_id where id = :ll_exists_id_assgnd_empno using tr_sqlca;
+		//
+		if(tr_sqlca.sqlcode <> -1) then
+			//
+			commit using tr_sqlca;
+			//
+		else
+			ls_error = tr_sqlca.sqlerrtext
+			//
+			rollback using tr_sqlca;
+			//
+			li_rtn_value = -6;
+		end if
+	end if
+end if
+return li_rtn_value
+end function
+

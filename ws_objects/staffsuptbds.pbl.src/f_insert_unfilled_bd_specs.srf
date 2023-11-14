@@ -1,0 +1,57 @@
+﻿$PBExportHeader$f_insert_unfilled_bd_specs.srf
+global type f_insert_unfilled_bd_specs from function_object
+end type
+
+forward prototypes
+global function integer f_insert_unfilled_bd_specs (string ls_groupname, string ls_row, string ls_col, long ll_grpid, string ls_empname, long ll_empno, string ls_callnum, integer li_issuper, integer li_isunfilled, integer li_active)
+global function integer f_insert_unfilled_bd_specs (string ls_groupname, string ls_row, string ls_col, long ll_grpid, string ls_empname, long ll_assgnd_empno, string ls_callnum, integer li_issuper, integer li_isunfilled, integer li_active, ref transaction tr_sqlca)
+end prototypes
+
+global function integer f_insert_unfilled_bd_specs (string ls_groupname, string ls_row, string ls_col, long ll_grpid, string ls_empname, long ll_empno, string ls_callnum, integer li_issuper, integer li_isunfilled, integer li_active);//prototype: f_insert_unfilled_bd_specs(ls_groupname, ls_row, ls_col, ll_grpid, ls_empname, ll_empno, ls_callnum, li_issuper, li_isunfilled, li_active)
+integer li_rtn_value
+li_rtn_value = 0
+
+
+
+
+return li_rtn_value
+end function
+
+global function integer f_insert_unfilled_bd_specs (string ls_groupname, string ls_row, string ls_col, long ll_grpid, string ls_empname, long ll_assgnd_empno, string ls_callnum, integer li_issuper, integer li_isunfilled, integer li_active, ref transaction tr_sqlca);//prototype: li_rtn_value = f_insert_unfilled_bd_specs(ls_groupname, ls_row, ls_col, ll_grpid, ls_empname, ll_empno, ls_callnum, li_issuper, li_isunfilled, li_active, ref sqlca)
+integer li_rtn_value
+li_rtn_value = 0
+if((f_len_ext(ls_groupname) = 0) or (f_len_ext(ls_row) = 0) or (f_len_ext(ls_col) = 0) or (ll_grpid = 0) or (f_len_ext(ls_callnum) = 0)) then
+	li_rtn_value = -1
+else
+	if(f_len_ext(ls_row) < 2) then
+		ls_row = f_lpad(ls_row, 2, "0")
+	end if
+	if(f_len_ext(ls_col) < 2) then
+		ls_row = f_lpad(ls_col, 2, "0")
+	end if
+	if(IsNull(ls_empname) = true) then
+		ls_empname = ""
+	end if
+	if(IsNull(ls_callnum) = true) then
+		ls_callnum = ""
+	end if
+	//                                  vc10       vc2  vc2    n10    vc40     n10     vc10     n1        n1         n1
+	insert into sns_board_specs_others(groupname, nrow, ncol, grpid, empname, empno, callnum, issuper, isunfilled, active)
+	values(:ls_groupname, :ls_row, :ls_col, :ll_grpid, '', :ll_assgnd_empno, :ls_callnum, :li_issuper, :li_isunfilled, :li_active)
+	using tr_sqlca;
+	//
+	if(tr_sqlca.sqlcode <> -1) then
+		//
+		commit using tr_sqlca;
+		//
+		li_rtn_value = 1
+	else
+		//
+		rollback using tr_sqlca;
+		//
+		li_rtn_value = -2
+	end if
+end if
+return li_rtn_value
+end function
+

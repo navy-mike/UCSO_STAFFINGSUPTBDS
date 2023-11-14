@@ -1,0 +1,91 @@
+﻿$PBExportHeader$f_extract_firstlastmi.srf
+global type f_extract_firstlastmi from function_object
+end type
+
+forward prototypes
+global function integer f_extract_firstlastmi (string ls_empname, ref string ls_empfname, ref string ls_emplname, ref string ls_empmi)
+end prototypes
+
+global function integer f_extract_firstlastmi (string ls_empname, ref string ls_empfname, ref string ls_emplname, ref string ls_empmi);	//prototype: returninteger = f_extract_firstlastmi(ls_empname)
+	//extracts the first, last and middle initial from ls_empname
+	// and returns them via reference
+	integer li_return
+	integer li_num_dashs
+	integer li_pos
+	string lsa_parseoutdata1[]
+	integer li_num_parse_items1
+	integer li_length
+	integer li_start
+	string ls_empname_firstpart
+	string ls_empname_lastpart
+	integer li_comma_pos
+	integer li_space_count
+	string ls_space
+	ls_space = " "
+	ls_empfname = ""
+	ls_emplname = ""
+	ls_empmi = ""
+	li_return = 0
+	//ls_empname formats
+	// 1 = JOHNSON-MICHAEL  with dashs
+	// 2 = OLSON, CALEB     with commas
+	string ls_char_delim
+	ls_char_delim = "-"
+	li_comma_pos = pos(ls_empname, ",")
+	if(li_comma_pos > 0) then
+		ls_char_delim = ","
+	end if
+	li_num_dashs = f_count_num_characters(ls_empname, ls_char_delim)
+	if(li_num_dashs > 1) then
+		li_num_parse_items1 =  f_parseoutstring_ext(ls_empname, ls_char_delim, ref lsa_parseoutdata1)
+		if(li_num_parse_items1 >= 3) then
+			ls_empmi = lsa_parseoutdata1[1]
+			ls_emplname = lsa_parseoutdata1[2]
+			ls_empfname = lsa_parseoutdata1[3]
+			li_return = 3
+		end if
+	else
+		li_pos = pos(ls_empname, " ")
+		if(li_pos > 0) then
+			ls_empname_firstpart = Mid(ls_empname, 1, li_pos)
+			ls_empname_lastpart = Mid(ls_empname, li_pos)
+			//if num spaces > 1 then assign middle initial
+			li_space_count = f_count_num_characters(ls_empname, ls_space)
+			if(li_space_count > 1) then
+				ls_empmi = ls_empname_firstpart
+			end if
+			ls_empfname = trim(ls_empname_firstpart)
+			ls_emplname = trim(ls_empname_lastpart)
+			li_return = 2
+		else
+			ls_empname_firstpart = ""
+			ls_empname_lastpart = ls_empname
+		end if
+		li_pos = pos(ls_empname_lastpart, ls_char_delim)
+		if(li_pos > 0) then
+			li_length = (li_pos - 1)
+			ls_emplname = Mid(ls_empname, 1, li_length)
+			li_start = (li_pos + 1)
+			ls_empfname = Mid(ls_empname, li_start)
+			ls_empmi = ""
+			li_return = 2
+		end if
+	end if
+	if(Len(ls_empmi) > 1) then
+		ls_empmi = Mid(ls_empmi, 1, 1)
+		if(li_return < 3) then
+			li_return = 3
+		end if
+	end if
+	if(li_comma_pos > 0) then
+		ls_emplname = ls_empname_firstpart
+		ls_empfname = ls_empname_lastpart
+		ls_emplname = f_compress_string(ls_emplname, ",") 
+		ls_empfname = f_compress_string(ls_empfname, ",")
+	end if
+	ls_empfname = trim(ls_empfname)
+	ls_emplname = trim(ls_emplname)
+	ls_empmi = trim(ls_empmi)
+	return li_return
+end function
+

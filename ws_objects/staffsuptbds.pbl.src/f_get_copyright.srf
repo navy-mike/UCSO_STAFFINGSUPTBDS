@@ -1,0 +1,17 @@
+﻿$PBExportHeader$f_get_copyright.srf
+global type f_get_copyright from function_object
+end type
+
+forward prototypes
+global function string f_get_copyright (statictext st_text)
+end prototypes
+
+global function string f_get_copyright (statictext st_text);string ls_copyright
+ls_copyright = st_text.Text
+ls_copyright = f_replace_string_in_string(ls_copyright, "CCCCCC", gs_copyright_symbol)
+ls_copyright = f_replace_string_in_string(ls_copyright, "DDDDDD", gs_dbconnection)
+ls_copyright = f_replace_string_in_string(ls_copyright, "UUUUUU", gs_winuser)
+ls_copyright += " [" + gs_dbconnection + "]"
+return ls_copyright
+end function
+

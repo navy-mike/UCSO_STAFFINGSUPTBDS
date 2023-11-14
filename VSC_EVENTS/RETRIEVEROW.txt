@@ -1,0 +1,26 @@
+//===================
+//### RETRIEVEROW ###
+//===================
+string ls_empname
+long ll_assgnd_empno
+string ls_callnum
+//=======================
+long ll_clicked_grpid
+ll_clicked_grpid = 3
+//=======================
+datawindow dw_clicked_object
+dw_clicked_object = f_getDwobjectByGrpid(ll_clicked_grpid, dw_a, dw_b, dw_c, dw_d, dw_rec1, dw_rec2, dw_em1, dw_em2, dw_emsro, dw_vine, dw_smcont, dw_fto, dw_team_resvrs, dw_unfilled,	dw_unassigned)
+if(IsNull(dw_clicked_object) = false) then
+	ll_assgnd_empno = dw_clicked_object.getitemnumber(row, 'sns_board_specs_others_empno')
+	ls_callnum = dw_clicked_object.getitemstring(row, 'sns_board_specs_others_callnum')
+	ls_empname = dw_clicked_object.getitemstring(row, 'sns_board_specs_others_empname')
+	if(IsNull(ls_callnum) = true) then
+		ls_callnum = ""
+	end if
+	if((ll_assgnd_empno = 0) and (f_len_ext(ls_empname) = 0) and (f_len_ext(ls_callnum) > 0)) then
+		dw_clicked_object.setitem(row, 'sns_board_specs_others_empname', '*** UNFILLED ***')
+	end if
+end if
+
+
+

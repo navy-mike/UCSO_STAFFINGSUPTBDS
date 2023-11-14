@@ -1,0 +1,48 @@
+﻿$PBExportHeader$f_getdwobjectbygrpid.srf
+global type f_getdwobjectbygrpid from function_object
+end type
+
+forward prototypes
+global function datawindow f_getdwobjectbygrpid (long ll_grpid, ref datawindow dw_team_a, ref datawindow dw_team_b, ref datawindow dw_team_c, ref datawindow dw_team_d, ref datawindow dw_rec1, ref datawindow dw_rec2, ref datawindow dw_em1, ref datawindow dw_em2, ref datawindow dw_emsro, ref datawindow dw_vine, ref datawindow dw_smcont, ref datawindow dw_fto, ref datawindow dw_team_resvrs, ref datawindow dw_unfilled, ref datawindow dw_unassigned, ref datawindow dw_supervisors, ref datawindow dw_admin)
+end prototypes
+
+global function datawindow f_getdwobjectbygrpid (long ll_grpid, ref datawindow dw_team_a, ref datawindow dw_team_b, ref datawindow dw_team_c, ref datawindow dw_team_d, ref datawindow dw_rec1, ref datawindow dw_rec2, ref datawindow dw_em1, ref datawindow dw_em2, ref datawindow dw_emsro, ref datawindow dw_vine, ref datawindow dw_smcont, ref datawindow dw_fto, ref datawindow dw_team_resvrs, ref datawindow dw_unfilled, ref datawindow dw_unassigned, ref datawindow dw_supervisors, ref datawindow dw_admin);//prototype: dw_object = f_getDwobjectByGrpid(ll_grpid)
+datawindow dw_object
+if(ll_grpid = 1) then //team a
+	dw_object = dw_team_a
+elseif(ll_grpid = 2) then //team b
+	dw_object = dw_team_b
+elseif(ll_grpid = 3) then //team c
+	dw_object = dw_team_c
+elseif(ll_grpid = 4) then //team d
+	dw_object = dw_team_d
+elseif(ll_grpid = 5) then //rec1
+	dw_object = dw_rec1
+elseif(ll_grpid = 6) then //rec2
+	dw_object = dw_rec2
+elseif(ll_grpid = 8) then //em1
+	dw_object = dw_em1
+elseif(ll_grpid = 9) then //em2
+	dw_object = dw_em2
+elseif(ll_grpid = 10) then //emsro
+	dw_object = dw_emsro
+elseif(ll_grpid = 11) then //vine
+	dw_object = dw_vine
+elseif(ll_grpid = 12) then //smcont
+	dw_object = dw_smcont	
+elseif(ll_grpid = 52) then //fto
+	dw_object = dw_fto
+elseif(ll_grpid = 129) then //reserves
+	dw_object = dw_team_resvrs
+elseif(ll_grpid = 128) then //unfilled
+	dw_object = dw_unfilled
+elseif(ll_grpid = 131) then //unfilled
+	dw_object = dw_unassigned
+elseif(ll_grpid = 64) then //supervisors
+	dw_object = dw_supervisors
+elseif(ll_grpid = 63) then //admin
+	dw_object = dw_admin	
+end if
+return dw_object
+end function
+

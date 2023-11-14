@@ -1,0 +1,45 @@
+﻿$PBExportHeader$f_replace_string_in_string.srf
+global type f_replace_string_in_string from function_object
+end type
+
+forward prototypes
+global function string f_replace_string_in_string (string ls_instr, string ls_str_to_replace, string ls_replace_str)
+end prototypes
+
+global function string f_replace_string_in_string (string ls_instr, string ls_str_to_replace, string ls_replace_str);//====================================================================|
+//Function Name: f_replace_string_in_string                           |
+//      Purpose: This function will replace the ls_str_to_replace     |
+//               with the ls_replace_str within the ls_instr.         |
+//   Programmer: m.k.johnson                                          |
+//     On Entry: string ls_instr = string to replace a string in.     |
+//               string ls_str_to_replace = string to be replace from |
+//                                        within ls_instr.            |
+//               string ls_replace_str = the string that will replace |
+//                              the ls_str_to_replace string.         |
+//    On Return: string ls_new_string = the ls_instr that has had the |
+//                  ls_str_to_replace remove and replaced with the    |
+//                  ls_replace_str.                                   |
+//    NOTES: if the function fails then the ls_instr is the result.   |
+//    Revisions: 11/30/2017 ORIGINAL                                  |
+//====================================================================|
+string ls_new_string
+string ls_temp
+integer li_found_pos
+integer li_replace_str_len
+//ls_instr   = SELECT distinct status, count(*) as mycount from wotrack_log where ((CATEGORY <> 'DELETED') or (CATEGORY is null)) and ENTERED_DT >= (sysdate-28) group by status order by status
+//ls_str_to_replace = and ENTERED_DT >= (sysdate-28) 
+//ls_replace_str = and ENTERED_DT between '02-NOV-2017' and '30-NOV-2017' 
+ls_instr = trim(ls_instr)
+ls_temp = trim(ls_str_to_replace)
+if(f_len(ls_temp) > 0) then //ls_str_to_replace is not just spaces so trim it. do not want to trim a string of just spaces as that is the replacement.
+	ls_str_to_replace = trim(ls_str_to_replace)
+end if
+ls_new_string = ls_instr //default the returned new string as the input string in the case where nothing is done.
+li_found_pos = pos(ls_instr, ls_str_to_replace, 1)
+if(li_found_pos > 0) then
+	li_replace_str_len = len(ls_str_to_replace)
+	ls_new_string = replace(ls_instr, li_found_pos, li_replace_str_len, ls_replace_str)
+end if
+return ls_new_string
+end function
+

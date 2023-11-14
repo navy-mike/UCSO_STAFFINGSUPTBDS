@@ -1,0 +1,17 @@
+﻿$PBExportHeader$f_get_next_avail_pos_xref_id.srf
+global type f_get_next_avail_pos_xref_id from function_object
+end type
+
+forward prototypes
+global function long f_get_next_avail_pos_xref_id (ref transaction tr_sqlca)
+end prototypes
+
+global function long f_get_next_avail_pos_xref_id (ref transaction tr_sqlca);//prototype: ll_next_id = f_get_next_avail_pos_xref_id(ref sqlca)
+long ll_next_id
+ll_next_id = 0
+//
+select id into :ll_next_id from sns_pos_xref where pos2recid = 0 and empno = 0 and status is null order by id  fetch first row only using tr_sqlca;
+//
+return ll_next_id
+end function
+

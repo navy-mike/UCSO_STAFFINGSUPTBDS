@@ -1,0 +1,17 @@
+﻿$PBExportHeader$f_get_db_identity.srf
+global type f_get_db_identity from function_object
+end type
+
+forward prototypes
+global function string f_get_db_identity (ref transaction tr_sqlca)
+end prototypes
+
+global function string f_get_db_identity (ref transaction tr_sqlca);//prototype: ls_identity = f_get_db_identity(ref sqlca)
+string ls_identity
+ls_identity = ""
+//
+select dbidentity into :ls_identity from sns_db_identity where active = 1 using sqlca;
+//
+return ls_identity
+end function
+

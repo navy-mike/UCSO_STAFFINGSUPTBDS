@@ -1,0 +1,233 @@
+﻿$PBExportHeader$f_deleteunfilledposition.srf
+global type f_deleteunfilledposition from function_object
+end type
+
+forward prototypes
+global function integer f_deleteunfilledposition (ref datawindow dw_object, long row, ref datawindow dw_unfilled_object, ref transaction tr_sqlca)
+end prototypes
+
+global function integer f_deleteunfilledposition (ref datawindow dw_object, long row, ref datawindow dw_unfilled_object, ref transaction tr_sqlca);//prototype li_rtn_value = deleteUnfilledPosition(ref dw_object, row, ref sqlca)
+integer li_rtn_value
+li_rtn_value = 0
+string ls_callnum
+string ls_empname
+integer li_super_lvl
+//string ls_positionid
+string ls_grpid
+string ls_hdrtext
+long ll_grpid
+long ll_empno
+string ls_row
+integer li_row
+integer li_is_unfilled
+string ls_groupname
+long ll_posid
+//------------------
+ls_callnum = dw_object.getitemstring(row, 'sns_board_specs_others_callnum')
+ls_empname = dw_object.getitemstring(row, 'sns_board_specs_others_empname')
+li_super_lvl = dw_object.getitemnumber(row, 'sns_board_specs_others_issuper')
+ls_hdrtext = dw_object.getitemstring(row, "grpteamid")
+string ls_from_hdrtext
+string ls_to_hdrtext
+ls_from_hdrtext = ls_hdrtext
+ls_to_hdrtext = ls_from_hdrtext
+ls_grpid = f_extract_bracketed_item(ls_hdrtext, "{","}", true)
+ll_grpid = f_stol(ls_grpid)
+ll_empno = dw_object.getitemnumber(row, 'sns_board_specs_others_empno')
+ls_row = dw_object.getitemstring(row, 'sns_board_specs_others_nrow')
+li_row = f_stoi(ls_row)
+li_is_unfilled = dw_object.getitemnumber(row, 'sns_board_specs_others_isunfilled')
+ls_groupname = dw_object.getitemstring(row, 'sns_board_specs_others_groupname')
+long ll_pos_grpid
+ll_pos_grpid = dw_object.getitemnumber(row, 'sns_board_specs_others_grpid')
+string ls_posid
+boolean bDeletePositions2
+bDeletePositions2 = false
+string ls_positionid
+ls_positionid = dw_object.getitemstring(row, 'sns_board_specs_others_positionid')
+if(f_len_ext(ls_positionid) > 0) then
+	integer li_pos
+	li_pos = pos(ls_posid, "-")
+	if(li_pos > 0) then
+		ls_posid = mid(ls_posid, (li_pos + 1))
+	end if
+	ll_posid = f_stol(ls_posid)
+end if
+if(ll_posid > 0) then
+	bDeletePositions2 = true
+end if
+if((ll_grpid > 0) and (f_len_ext(ls_callnum) > 0) and (pos(ls_empname, "UNFILLED") > 0)) then
+		string ls_sql_error_text
+		long ll_xrefid
+		boolean bDeletedXrefMods
+		boolean bDeletedXref
+		boolean bChangePosGrpid
+		integer li_num_deletes
+		long ll_pos2_xrefid
+		long ll_pos2_assgnd_empno
+		string ls_pos2_spunitno		
+		string ls_pos2_positionid		
+		integer li_pos2recid
+		long ll_xref_mods_id
+		integer li_rtn_pos_xref
+		integer li_rtn_pos_xref_mods
+		long ll_pos2_pos2recid
+		integer li_pos2idshort
+		integer li_xref_active
+		string ls_xref_status
+		string ls_xref_empname
+		string ls_xref_error		
+		long ll_emp_exists_id
+		string ls_msg
+		integer li_rtn_rslt
+		integer li_case_num = 99 //backup unassigned
+		long ll_backup_id
+		integer li_num_greater_than_zero_ids
+		li_num_greater_than_zero_ids = 0
+		if(((f_len_ext(ls_from_hdrtext) > 0) and (f_len_ext(ls_to_hdrtext) > 0)) and (ls_from_hdrtext = ls_to_hdrtext)) then
+			long ll_bs_specs_others_exists_id
+			//
+			select id into :ll_bs_specs_others_exists_id from sns_board_specs_others where grpid = :ll_grpid and callnum = :ls_callnum and (instr(ltrim(rtrim(upper(:ls_empname))), 'UNFILLED') > 0) using tr_sqlca;
+			//
+			li_num_deletes = 0
+			bChangePosGrpid = false
+			bDeletedXref = false
+			bDeletedXrefMods = false		
+			if((bDeletePositions2 = true) and (ll_posid > 0)) then
+				//
+				select xrefid into :ll_xrefid from sns_staffing_grps_positions2 where id = :ll_posid using tr_sqlca;
+				//
+				select xrefid, assgnd_empno, callnum, positionid into :ll_pos2_xrefid, :ll_pos2_assgnd_empno, :ls_pos2_spunitno, :ls_pos2_positionid from sns_staffing_grps_positions2 where id = :ll_posid using tr_sqlca;
+				//		
+				if(ll_xrefid > 0) then
+					//
+					select pos2recid into :li_pos2recid from sns_pos_xref where id = :ll_xrefid using tr_sqlca;
+					//
+				end if
+				if(li_pos2recid > 0) then
+					//
+					select id into :ll_xref_mods_id from sns_pos_xref_mods where ppos2idshort = :li_pos2recid using tr_sqlca;
+					//				
+				end if
+				if(ll_pos2_assgnd_empno > 0) then
+					//
+					select id, empname into :ll_emp_exists_id, :ls_xref_empname from sns_employees where empno = :ll_pos2_assgnd_empno using tr_sqlca;
+					//
+				end if	
+			end if
+			//prototype: ll_rtn_value = f_backup_board_specs_tables(li_case_num, ls_from_hdrtext, ls_to_hdrtext, ll_pos_exists_id, ll_bs_specs_others_exists_id, ll_xref_exists_id, ll_xrefmods_exists_id, ll_emp_exists_id, ref sqlca)
+			//**** SPECIAL PROCESSING FOR RIGHT CLICK DELETIONS ****
+			//if backup is for the f_delete_filled_position or f_deleteunfilledposition functions
+			// ls_from_hdrtext = the right clicked group hdrtext
+			// ls_to_hdrtext = ls_from_hdrtext
+			// li_case_num = 99
+			// ll_pos_exists_id = sns_staffing_grps_positions2 record ID
+			// ll_bs_specs_others_exists_id = sns_board_specs_others record ID
+			// ll_xref_exists_id = sns_pos_xref record ID
+			// ll_xrefmods_exists_id = sns_pos_xref_mods record ID
+			// ll_emp_exists_id = sns_employees record ID
+			//******************************************************					
+			
+			if(ll_bs_specs_others_exists_id > 0) then
+				ll_backup_id = 0
+				ll_backup_id = f_backup_board_specs_tables(li_case_num, ls_from_hdrtext, ls_to_hdrtext, ll_posid, ll_bs_specs_others_exists_id, ll_xrefid, ll_xref_mods_id, ll_emp_exists_id, ref tr_sqlca)
+				if(ll_backup_id > 0) then
+					li_num_greater_than_zero_ids++
+					//
+					delete from sns_board_specs_others where id = :ll_bs_specs_others_exists_id using tr_sqlca;
+					//
+					if(tr_sqlca.sqlcode <> -1) then
+						//
+						commit using tr_sqlca;
+						//
+						li_num_deletes++
+					else
+						//
+						rollback using tr_sqlca;
+						//
+					end if
+				end if
+			end if
+			if(ll_posid > 0) then
+				li_num_greater_than_zero_ids++
+				//
+				delete from sns_staffing_grps_positions2 where id = :ll_posid using tr_sqlca;
+				//
+				if(tr_sqlca.sqlcode <> -1) then
+					//
+					commit using tr_sqlca;
+					//
+					li_num_deletes++
+				else
+					//
+					rollback using tr_sqlca;
+					//
+				end if				
+			end if
+			if(ll_xrefid > 0) then
+				li_num_greater_than_zero_ids++
+				//
+				delete from sns_pos_xref where id = :ll_xrefid using tr_sqlca;
+				//
+				if(tr_sqlca.sqlcode <> -1) then
+					//
+					commit using tr_sqlca;
+					//
+					li_num_deletes++
+				else
+					//
+					rollback using tr_sqlca;
+					//
+				end if					
+			end if
+			if(ll_xref_mods_id > 0) then
+				li_num_greater_than_zero_ids++
+				//
+				delete from sns_pos_xref_mods where id = :ll_xref_mods_id using tr_sqlca;
+				//
+				if(tr_sqlca.sqlcode <> -1) then
+					//
+					commit using tr_sqlca;
+					//
+					li_num_deletes++
+				else
+					//
+					rollback using tr_sqlca;
+					//
+				end if					
+			end if
+			if(ll_emp_exists_id > 0) then
+				li_num_greater_than_zero_ids++
+				//
+				update sns_employees set positionid = '', grpid = 0, supervisor = 0, super_empno = 0, grps_resp = 0, super_lvl = 0 where id = :ll_emp_exists_id using tr_sqlca;
+				//
+				if(tr_sqlca.sqlcode <> -1) then
+					//
+					commit using tr_sqlca;
+					//
+					li_num_deletes++
+				else
+					//
+					rollback using tr_sqlca;
+					//
+				end if					
+			end if
+			if(li_num_greater_than_zero_ids <> li_num_deletes) then
+				string ls_dummy_errors
+				f_restore_board_specs_backup_tables(li_case_num, ls_from_hdrtext, ls_to_hdrtext, ll_posid, ll_bs_specs_others_exists_id, ll_xrefid, ll_xref_mods_id, ll_emp_exists_id, ref ls_dummy_errors, ref sqlca)
+				li_rtn_value = 1
+			else
+				li_rtn_value = 1
+			end if
+		end if
+		//--------------------------------------
+		dw_object.Retrieve(ll_grpid)
+		if(bChangePosGrpid = true) then
+			dw_unfilled_object.Retrieve(ll_grpid)
+			li_rtn_value = 1
+		end if
+		//--------------------------------------
+end if
+return li_rtn_value
+end function
+

@@ -1,0 +1,77 @@
+//==================
+//### DRAGWITHIN ###
+//==================
+//dragwithin
+if(bIsDragging = true) then
+	sle_is_dragging.text = string(bIsDragging)
+	sle_dragwithin_row.text = ""
+	sle_dragwithin_header.text = ""
+	sle_dragwithin_text.text = ""
+	sle_dragwithin_empno.text = ""
+	string ls_hdrtext
+	long ll_empno
+	string ls_dwoname	
+	ls_dwoname = trim(upper(dwo.name))
+	
+	//=======================
+	long ll_clicked_grpid
+	ll_clicked_grpid = 3
+	//=======================
+	datawindow dw_clicked_object
+	dw_clicked_object = f_getDwobjectByGrpid(ll_clicked_grpid, dw_a, dw_b, dw_c, dw_d, dw_rec1, dw_rec2, dw_em1, dw_em2, dw_emsro, dw_vine, dw_smcont, dw_fto, dw_team_resvrs, dw_unfilled,	dw_unassigned)
+	if(IsNull(dw_clicked_object) = false) then
+		ls_hdrtext = ""
+		ll_empno = 0	
+		string ls_empname
+		string ls_callnum
+		ls_hdrtext = trim(upper(dw_clicked_object.getitemstring(row, "grpteamid")))
+		ll_empno = 0
+		ls_empname = ""
+		sle_drag_drop_empname.text = ls_empname
+		//ls_callnum = dw_c.getitemstring(row, "sns_board_specs_others_callnum")
+		//ll_empno = dw_c.getitemnumber(row, "sns_board_specs_others_empno")
+		if(row > 0) then
+			ll_empno = dw_clicked_object.getitemnumber(row, "sns_board_specs_others_empno")
+			ls_empname = dw_clicked_object.getitemstring(row, "sns_board_specs_others_empname")	
+			sle_dragwithin_row.text = string(row)
+			sle_dragwithin_header.text = ls_hdrtext
+			sle_dragwithin_text.text = ls_dwoname
+			sle_dragwithin_empno.text = string(ll_empno)
+			if(sle_drag_from_hdrtext.text <> ls_hdrtext) then
+				//dragicon logic
+				if(pos(ls_dwoname, "sns_board_specs_others_empname") > 0) then
+					if(ll_empno > 0) then
+						this.dragicon = "UserObject5!"
+						sle_icon_filenanme.text = "UserObject5!"
+					else
+						this.dragicon = "StopSign!"
+						sle_icon_filenanme.text = "StopSign1!"
+					end if
+				elseif(pos(ls_dwoname, "DATAWINDOW") > 0) then
+					//if(ll_empno > 0) then
+						//this.dragicon = "\\ucfs1\apps\pix\ucso_staffing\UCSOSTAFFDROP.ICO"
+						//sle_icon_filenanme.text = "Drop!"
+					//else
+						this.dragicon = "StopSign!"
+						sle_icon_filenanme.text = "StopSign2!"			
+					//end if
+				else
+					//this.dragicon = "StopSign!"
+					//sle_icon_filenanme.text = "StopSign3!"			
+					this.dragicon = "\\ucfs1\apps\pix\ucso_staffing\UCSOSTAFFREPLACE.ICO"
+					sle_icon_filenanme.text = "Replace!"
+				end if
+			else
+				this.dragicon = "\\ucfs1\apps\pix\ucso_staffing\UCSOSTAFFGRN.ICO"
+				sle_icon_filenanme.text = "\\ucfs1\apps\pix\ucso_staffing\UCSOSTAFFGRN.ICO"
+			end if
+		else
+			this.dragicon = "\\ucfs1\apps\pix\ucso_staffing\UCSOSTAFFINSERT.ICO"
+			sle_icon_filenanme.text = "Insert!"
+			sle_dragwithin_row.text = string(row)
+			sle_dragwithin_header.text = ls_hdrtext
+			sle_dragwithin_text.text = ls_dwoname
+			sle_dragwithin_empno.text = string(ll_empno)
+		end if
+	end if
+end if

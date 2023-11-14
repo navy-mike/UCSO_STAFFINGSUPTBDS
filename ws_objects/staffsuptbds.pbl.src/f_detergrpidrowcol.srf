@@ -1,0 +1,52 @@
+﻿$PBExportHeader$f_detergrpidrowcol.srf
+global type f_deterGrpidRowCol from function_object
+end type
+
+forward prototypes
+global function integer f_detergrpidrowcol (long ll_grpid, long ll_row, ref integer li_gcol)
+end prototypes
+
+global function integer f_detergrpidrowcol (long ll_grpid, long ll_row, ref integer li_gcol);//prototype: integer li_grow = f_deterGrpidRowCol(ll_grpid, ll_row, ref li_gcol)
+integer li_grow
+li_grow = 0
+li_gcol = 0
+li_grow = (ll_row + 1)
+choose case ll_grpid
+	case 1
+		li_gcol = 1
+	case 2
+		li_gcol = 2
+   case 3
+		li_gcol = 3
+	case 4
+		li_gcol = 4
+	case 5
+		li_gcol = 5
+	case 6
+		li_gcol = 6
+	case 8
+		li_gcol = 1
+	case 9
+		li_gcol = 2
+	case 10
+		li_gcol = 3
+	case 11
+		li_gcol = 4
+	case 12
+		li_gcol = 5
+	case 52
+		li_gcol = 6
+	case 128
+		li_gcol = 5
+	case 64
+		li_gcol = 3
+	case 131
+		li_gcol = 2
+	case 129
+		li_gcol = 6
+	case else
+		//do nothing
+end choose
+return li_grow
+end function
+

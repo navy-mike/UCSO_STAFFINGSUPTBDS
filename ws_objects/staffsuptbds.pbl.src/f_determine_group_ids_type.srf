@@ -1,0 +1,23 @@
+﻿$PBExportHeader$f_determine_group_ids_type.srf
+global type f_determine_group_ids_type from function_object
+end type
+
+forward prototypes
+global function string f_determine_group_ids_type (long ll_grpid)
+end prototypes
+
+global function string f_determine_group_ids_type (long ll_grpid);//prototype: ls_rtn_type = f_determine_group_ids_type(ll_grpid)
+string ls_rtn_type
+ls_rtn_type = "?"
+string ls_lookfor_grpid
+ls_lookfor_grpid = "|" + string(ll_grpid) + "|"
+if(pos(gsa_grptypes[gi_grptype_othr], ls_lookfor_grpid) > 0) then
+	ls_rtn_type = "OTHR"
+elseif(pos(gsa_grptypes[gi_grptype_corr], ls_lookfor_grpid) > 0) then
+	ls_rtn_type = "CORR"
+elseif(pos(gsa_grptypes[gi_grptype_pat], ls_lookfor_grpid) > 0) then
+	ls_rtn_type = "PAT"
+end if
+return ls_rtn_type
+end function
+

@@ -1,0 +1,50 @@
+﻿$PBExportHeader$f_insert_log.srf
+global type f_insert_log from function_object
+end type
+
+forward prototypes
+global function integer f_insert_log (string ls_func, string ls_info, string ls_type, string ls_username, integer li_active, ref transaction tr_sqlca)
+end prototypes
+
+global function integer f_insert_log (string ls_func, string ls_info, string ls_type, string ls_username, integer li_active, ref transaction tr_sqlca);//                                                 50       512       1         30          1
+//prototype: integer return_value = f_insert_log(ls_func, ls_info, ls_type, ls_username, li_active, ref sqlca)
+//shs_log structur
+// [1] = ID						N10
+// [2] = CREATED_DT		DATE
+// [3] = LUPDATED_DT	DATE
+// [4] = FUNC					VC50
+// [5] = INFO					VC512
+// [6] = TYPE					VC1    'L' log record or 'E' error record
+// [7] = ACTIVE				N1
+// [8] = USERNAME			VC30
+integer li_return_value
+string ls_function_error
+ls_function_error = ""
+li_return_value = 0
+//field max len checks
+if(Len(ls_func) > 50) then
+	ls_func = Mid(ls_func, 1, 50)
+end if
+if(Len(ls_info) > 512) then
+	ls_info = Mid(ls_info, 1, 512)
+end if
+if(Len(ls_type) > 1) then
+	ls_type = Mid(ls_type, 1, 1)
+end if
+if(Len(ls_username) > 30) then
+	ls_username = Mid(ls_username, 1, 30)
+end if
+//
+insert into shs_log(func, info, type, active, username) values(:ls_func, :ls_info, :ls_type, :li_active, :ls_username) using tr_sqlca;
+//
+if(tr_sqlca.sqlcode = 0) then
+  li_return_value = 1
+	commit using tr_sqlca;
+else
+	li_return_value = -1
+	ls_function_error = tr_sqlca.SQLErrText
+	rollback using tr_sqlca;
+end if
+return li_return_value
+end function
+

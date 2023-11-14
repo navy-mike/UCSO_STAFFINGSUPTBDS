@@ -1,0 +1,26 @@
+﻿$PBExportHeader$f_trim_trailing_char.srf
+global type f_trim_trailing_char from function_object
+end type
+
+forward prototypes
+global function string f_trim_trailing_char (string ls_instring, string ls_trim_char)
+end prototypes
+
+global function string f_trim_trailing_char (string ls_instring, string ls_trim_char);string ls_trimmed_string
+ls_trimmed_string = ""
+ls_instring = trim(ls_instring)
+if(f_len_ext(ls_instring) > 0) then
+	if(ls_instring = ls_trim_char) then
+		ls_trimmed_string = ""
+	else
+		if(mid(ls_instring, len(ls_instring) , 1) = ls_trim_char) then
+			ls_trimmed_string = mid(ls_instring, 1, len(ls_instring) - 1)
+		end if
+	end if
+end if
+if(f_len_ext(ls_trimmed_string) = 0) then
+	ls_trimmed_string = ls_instring
+end if
+return ls_trimmed_string
+end function
+

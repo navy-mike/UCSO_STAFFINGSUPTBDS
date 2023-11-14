@@ -1,0 +1,34 @@
+﻿$PBExportHeader$f_deter_grpdesc_colnum.srf
+global type f_deter_grpdesc_colnum from function_object
+end type
+
+forward prototypes
+global function integer f_deter_grpdesc_colnum (ref listbox lb_col_xref, string ls_grpdesc)
+end prototypes
+
+global function integer f_deter_grpdesc_colnum (ref listbox lb_col_xref, string ls_grpdesc);//prototype: li_col_found = f_deter_grpdesc_colnum(ref lb_col_xref, ls_grpdesc)
+integer li_col_found
+li_col_found = 0
+ls_grpdesc = trim(upper(ls_grpdesc))
+integer li_num_items
+li_num_items = lb_col_xref.totalitems()
+integer li_loop
+string ls_lbtext
+int li_pos
+string ls_col_num
+for li_loop = 1 to li_num_items
+	ls_lbtext = trim(upper(lb_col_xref.text(li_loop)))
+	if(pos(ls_lbtext, ls_grpdesc) > 0) then
+		li_pos = pos(ls_lbtext, "|")
+		if(li_pos > 0) then
+			ls_col_num = mid(ls_lbtext, (li_pos + 1))
+			li_col_found = f_stoi(ls_col_num)
+			if(li_col_found > 0) then
+				exit			
+			end if
+		end if
+	end if
+next
+return li_col_found
+end function
+

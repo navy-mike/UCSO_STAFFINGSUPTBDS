@@ -1,0 +1,19 @@
+﻿$PBExportHeader$f_get_dwobject_number.srf
+global type f_get_dwobject_number from function_object
+end type
+
+forward prototypes
+global function long f_get_dwobject_number (ref datawindow dwobject)
+end prototypes
+
+global function long f_get_dwobject_number (ref datawindow dwobject);//prototype: long ll_number = f_get_dwobject_number(ref dwobject)
+long ll_dw_number
+ll_dw_number = 0
+
+
+return ll_dw_number
+
+
+
+end function
+

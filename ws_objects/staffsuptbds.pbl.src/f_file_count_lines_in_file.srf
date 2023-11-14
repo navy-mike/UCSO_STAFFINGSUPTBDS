@@ -1,0 +1,71 @@
+﻿$PBExportHeader$f_file_count_lines_in_file.srf
+global type f_file_count_lines_in_file from function_object
+end type
+
+forward prototypes
+global function integer f_file_count_lines_in_file (string ls_filename)
+end prototypes
+
+global function integer f_file_count_lines_in_file (string ls_filename);//====================================================================|
+//Function Name: f_file_count_lines_in_file                           |
+//      Purpose: This function will count the number of text lines    |
+//               ending in a cr/lf.                                   |
+//   Programmer: m.k.johnson                                          |
+//     On Entry: string ls_filename = full path of file name to count |
+//                                    the lines in.                   |
+//    On Return: long ll_returnvalue = 0 no lines counted             |
+//                                   = -1 files does not exist        |
+//                                   = >0 number of lines counted.    |
+//                                   = -35767 reached max int count   |
+//    NOTES: if the function fails then the ls_instring is the result.|
+//    Revisions: 8/7/2017 ORIGINAL                                    |
+//====================================================================|
+long ll_file
+long ll_returnvalue
+integer li_fileread
+integer li_count
+String ls_text
+ll_returnvalue = 0
+if(FileExists(ls_filename) = false) then
+	ll_returnvalue = -1
+else
+	ll_file = FileOpen(ls_filename, LINEMODE!, READ!)
+	if(ll_file > 0) then
+		li_FileRead = FileReadEx(ll_file, ls_Text) 
+		DO WHILE li_FileRead > 0
+			li_count ++
+			if(li_count > 32767) then
+				li_count = (li_count * -1) //return a negative max count
+				exit
+			end if
+			li_fileread = FileReadEx(ll_file, ls_Text)//read next line
+		Loop
+		fileclose(ll_file)
+		ll_returnvalue = long(li_count)
+	end if
+end if
+
+return ll_returnvalue
+
+//FILEMODE fmode
+//FILEACCESS faccess
+//choose case li_filemode
+//	case IFILEMODE_LINEMODE
+//		fmode = LINEMODE!
+//	case IFILEMODE_STREAMMODE
+//		fmode = STREAMMODE!
+//	case IFILEMODE_TEXTMODE
+//		fmode = TEXTMODE!
+//	case else
+//		fmode = TEXTMODE!
+//end choose
+//choose case li_fileaccess
+//	case IFILEACCESS_READ
+//		faccess = READ!
+//	case IFILEACCESS_WRITE
+//		faccess = WRITE!
+//	case else
+//		faccess = READ!
+//end choose
+end function
+

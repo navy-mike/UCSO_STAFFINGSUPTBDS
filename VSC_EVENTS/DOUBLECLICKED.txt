@@ -1,0 +1,283 @@
+//=====================
+//### DOUBLECLICKED ###
+//=====================
+string ls_dwo_name
+ls_dwo_name = dwo.name
+integer li_stop
+//======================= 
+long ll_clicked_grpid
+ll_clicked_grpid = 3
+//=======================
+datawindow dw_clicked_object
+dw_clicked_object = f_getDwobjectByGrpid(ll_clicked_grpid, dw_a, dw_b, dw_c, dw_d, dw_rec1, dw_rec2, dw_em1, dw_em2, dw_emsro, dw_vine, dw_smcont, dw_fto, dw_team_resvrs, dw_unfilled,	dw_unassigned)
+if(IsNull(dw_clicked_object) = false) then
+if(ls_dwo_name = "sns_board_specs_others_issuper") then  //old = sns_employees_super_lvl
+		integer li_super_lvl 
+		long ll_empno
+		ll_empno = dw_clicked_object.getitemnumber(row, 'sns_board_specs_others_empno') //old = sns_staffing_grps_positions2_assgnd_empno
+		li_super_lvl = dw_clicked_object.getitemnumber(row, 'sns_board_specs_others_issuper')
+		if(li_super_lvl = 1) then
+			dw_clicked_object.setitem(row, 'sns_board_specs_others_issuper', 0)
+			f_set_employees_super_lvl(0, ll_empno, ref sqlca)
+		else
+			dw_clicked_object.setitem(row, 'sns_board_specs_others_issuper', 1)
+			f_set_employees_super_lvl(1, ll_empno, ref sqlca)		
+		end if
+	else
+		if(ls_dwo_name = "datawindow") then
+			integer li_rtn_result		
+			//add employee
+			long ll_grpteamid_grpid
+			string ls_groupname
+			ls_groupname = dw_clicked_object.getitemstring(1, "grpteamid")
+			string ls_grpid
+			ls_grpid = f_extract_bracketed_item(ls_groupname, "{", "}", true)
+			ll_grpteamid_grpid = f_stol(ls_grpid)
+			long ll_to_grpid
+			ll_to_grpid = ll_clicked_grpid
+			if(ll_to_grpid > 0) then
+				string ls_messageparm
+				ls_messageparm = string(ll_clicked_grpid)
+				OpenWithParm(w_add_user, ls_messageparm)
+				string ls_selected_username
+				ls_selected_username = Message.StringParm
+				if(f_len_ext(ls_selected_username) > 0) then
+					li_rtn_result = MessageBox("Notification","Do you want to add User " + ls_selected_username + " to group " + ls_groupname, QUESTION!, YESNO!)
+					if(li_rtn_result = 1) then
+						long ll_add_user_empno
+						ll_add_user_empno = 0
+						string ls_selected_empno
+						ls_selected_empno = f_extract_bracketed_item(ls_selected_username, "[", "]", true)
+						ll_add_user_empno = f_stol(ls_selected_empno)
+						if(ll_add_user_empno > 0) then
+							string ls_selected_empname
+							int li_epos
+							li_epos = pos(ls_selected_username, "[")
+							if(li_epos > 0) then
+								ls_selected_empname = trim(mid(ls_selected_username, 1, (li_epos - 1)))
+							end if
+							//===================================
+							//*** INSERT INTO DRAG_TO GROUP ***
+							//===================================
+							string ls_to_callnum
+							integer li_num_updates
+							string ls_from_empname
+							long ll_from_bs_specs_others_exists_id
+							long ll_from_emp_exists_id
+							long ll_from_empno
+							string ls_from_positionid
+							string ls_sqlerrtext
+							string lsa_dd_errors[]
+							integer li_rtn_value
+							string ls_from_funddept
+							string ls_from_jobcode
+							string ls_from_jobtitle
+							string ls_error
+							string ls_to_positionid
+							
+							boolean bInsertNewUser
+							bInsertNewUser = false
+							string lsa_avail_callnums[]
+							integer li_num_avail_callnums
+							string ls_csql
+							ls_csql = "select callnum from sns_board_specs_others where grpid = " + string(ll_to_grpid) + " and empname in ('*** UNFILLED ***') and callnum is not null order by nrow, ncol"
+							li_num_avail_callnums = f_app_ds_populate_string_array_by_sql(ref lsa_avail_callnums, ls_csql, gi_pad_len, gs_delim, gb_compress, ref sqlca)
+							if(li_num_avail_callnums = 1) then
+								li_rtn_result = MessageBox("Notification","Only one available callnum position available [" + lsa_avail_callnums[1] + "]. Assign new user to that callnum?", QUESTION!, YESNO!)
+								if(li_rtn_result = 1) then
+									ls_to_callnum = lsa_avail_callnums[1]
+									bInsertNewUser = true
+								end if
+							elseif(li_num_avail_callnums > 1) then
+								integer li_cloop
+								string ls_callnums
+								for li_cloop = 1 to li_num_avail_callnums
+									ls_callnums += lsa_avail_callnums[li_cloop]
+									ls_callnums += ","
+								next
+								ls_callnums = f_trim_trailing_char(ls_callnums, ",")
+								string ls_selected_callnum
+								ls_selected_callnum = ""
+								ls_messageparm = ls_callnums
+								OpenWithParm(w_callnum_select, ls_messageparm)
+								ls_selected_callnum = Message.StringParm
+								if(f_len_ext(ls_selected_callnum) > 0) then
+									ls_to_callnum = ls_selected_callnum
+									bInsertNewUser = true							
+								end if
+							else
+								li_rtn_result = MessageBox("Notification","There are no available unfilled positions with call numbers. Add new user anyway?", QUESTION!, YESNO!)
+								if(li_rtn_result = 1) then
+									ls_to_callnum = "NEW"
+									bInsertNewUser = true
+								end if
+							end if
+							if(bInsertNewUser = true) then
+								//to add user empno must not exist in sns_staffing_grps_positions2 table
+								long ll_pos_assgnd_empno
+								//
+								select id into :ll_pos_assgnd_empno from sns_staffing_grps_positions2 where assgnd_empno = :ll_add_user_empno using sqlca;
+								//
+								if(ll_pos_assgnd_empno = 0) then
+								
+									li_num_updates = 0
+									long ll_to_bs_specs_others_exists_id
+									ll_to_bs_specs_others_exists_id = 0
+									//determine next avail call num to add user to
+									//
+									select id into :ll_to_bs_specs_others_exists_id from sns_board_specs_others where callnum = :ls_to_callnum and  grpid = :ll_to_grpid using sqlca;
+									//
+									if((ll_to_bs_specs_others_exists_id > 0) and (ll_to_grpid > 0)) then
+										//
+										select callnum into :ls_to_callnum from sns_board_specs_others where id = :ll_to_bs_specs_others_exists_id using sqlca;
+										//
+										update sns_board_specs_others set empname = :ls_selected_empname, empno = :ll_add_user_empno, positionid = ''
+										where id = :ll_to_bs_specs_others_exists_id
+										using sqlca;
+										//
+										if(sqlca.sqlcode <> -1) then
+											//
+											commit using sqlca;
+											//
+											li_num_updates++
+										else
+											ls_sqlerrtext = sqlca.sqlerrtext
+											//
+											rollback using sqlca;
+											//
+											ls_sqlerrtext = "update to sns_board_specs_others error=" + ls_sqlerrtext
+											f_add_item_to_string_array_ext(ref lsa_dd_errors, ls_sqlerrtext, false)
+										end if								
+										li_rtn_value = 0
+										string ls_to_addinfo
+										ls_to_addinfo = f_replace_string_in_string(ls_to_callnum, "1J", " ")
+										ls_to_addinfo = f_compress_string(ls_to_addinfo, " ")
+										//  0 = successful
+										// -1 = no action taken
+										// -2 = li_assgnd_empno_count > 0
+										// -3 = li_positionid_count > 0
+										// -4 = assgnd_empno not found in pos2
+										// -5 = ll_pos2idshort invalid
+										// -6 = tr_sqlca sqlcode = -1 sns_staffing_grps_positions2
+										// -7 = tr_sqlca sqlcode = -1 sns_pos_xref
+										// -8 = tr_sqlca sqlcode = -1 sns_pos_xref_mods
+										// -9 = tr_sqlca sqlcode = -1 sns_group_ids
+										//-10 = ll_pos2idshort <0 or > 90000 
+										
+										//ll_to_grpid = 3
+										//ls_to_callnum = 1j132
+										//ll_add_user_empno = 17545
+										//ls_from_funddept = 
+										//ls_to_addinfo =
+										//ls_from_positionid =
+										//ls_from_jobcode =
+										//ls_from_jobtitle =
+										
+										//
+										select to_char(fund) || '-' || to_char(dept), positionid, jobcode, jobtitle into :ls_from_funddept, :ls_from_positionid, :ls_from_jobcode, :ls_from_jobtitle
+										from sns_employees where empno = :ll_add_user_empno 
+										using sqlca;
+										//
+										if((IsNull(ls_from_funddept) = true) or (IsNull(ls_from_positionid) = true) or (IsNull(ls_from_jobcode) = true) or (IsNull(ls_from_jobtitle) = true)) then
+											//retrieve fm.io_employee data
+											//
+											select to_char(fund) || '-' || to_char(dept), position_id, job_code, title into :ls_from_funddept, :ls_from_positionid, :ls_from_jobcode, :ls_from_jobtitle
+											from fm.io_employee where empno = :ll_add_user_empno 
+											using sqlca;
+											//
+											if(IsNull(ls_from_funddept) = true) then
+												ls_from_funddept = ""
+											end if
+											if(IsNull(ls_from_jobcode) = true) then
+												ls_from_jobcode = ""
+											end if
+											if(IsNull(ls_from_jobtitle) = true) then
+												ls_from_jobtitle = ""
+											end if
+										end if
+										ls_from_positionid = trim(upper(ls_from_positionid))
+										ls_from_jobtitle = trim(upper(ls_from_jobtitle))
+										
+										li_stop = 0
+
+										if((IsNull(ls_from_funddept) = false) and (IsNull(ls_from_positionid) = false) and (IsNull(ls_from_jobcode) = false) and (IsNull(ls_from_jobtitle) = false)) then
+
+											li_rtn_value = f_insert_pos2_support_table_records(ll_to_grpid, ls_to_callnum, ll_add_user_empno, ls_from_funddept, ls_to_addinfo, &
+																												".", ls_from_positionid, ls_from_jobcode, ls_from_jobtitle, 0.0, true, &
+   																											ref ls_error, ref sqlca)
+											if(li_rtn_value >= 1) then
+												if(ll_from_emp_exists_id > 0) then
+													//update sns_board_specs_others positionid
+													//
+													select positionid into :ls_to_positionid from sns_staffing_grps_positions2 where assgnd_empno = :ll_add_user_empno using sqlca;
+													//
+													update sns_board_specs_others set positionid = :ls_to_positionid where id = :ll_to_bs_specs_others_exists_id using sqlca;
+													//
+												
+													// - update sns_employees set positionid = "", title = "", jobcode = "", jobtitle = "", supervisor = 0, grps_resp = "", grpid = 0 where id = ll_from_emp_exists_id
+													update sns_employees set positionid = :ls_to_positionid, title = :ls_from_jobtitle, jobcode = :ls_from_jobcode, grpid = :ll_to_grpid
+													where id = :ll_add_user_empno
+													using sqlca;
+													//
+													if(sqlca.sqlcode <> -1) then
+														//
+														commit using sqlca;
+														//
+														li_num_updates++
+													else
+														ls_sqlerrtext = sqlca.sqlerrtext
+														//
+														rollback using sqlca;
+														//
+														ls_sqlerrtext = "update to sns_employees columns error=" + ls_sqlerrtext
+														f_add_item_to_string_array_ext(ref lsa_dd_errors, ls_sqlerrtext, false)
+													end if										
+													if((ll_to_grpid > 0) and (li_num_updates >= 2)) then
+														long ll_grps_resp
+														long ll_grp_super_empno
+														ll_grps_resp = 0
+														ll_grp_super_empno = 0
+														//
+														select grp_super_empno, root_grp_super_empno into :ll_grp_super_empno, :ll_grps_resp from sns_staffing_groups where id = :ll_to_grpid using sqlca;
+														//
+														update sns_employees set grps_resp = :ll_grps_resp, supervisor = :ll_grp_super_empno using sqlca;
+														//
+														if(sqlca.sqlcode <> -1) then
+															//
+															commit using sqlca;
+															//
+															li_num_updates++
+														else
+															ls_sqlerrtext = sqlca.sqlerrtext
+															//
+															rollback using sqlca;
+															//
+															ls_sqlerrtext = "update to sns_employees grps_resp,supervisor error=" + ls_sqlerrtext
+															f_add_item_to_string_array_ext(ref lsa_dd_errors, ls_sqlerrtext, false)
+														end if											
+													end if //ll_to_grpid > 0
+												end if//ll_from_emp_exists_id > 0
+											end if //li_rtn_value = 0
+										else
+											string ls_msg_text
+											ls_msg_text = "One or more Null Values. Cannot add new user."
+											if(ls_to_positionid = "") or (IsNull(ls_to_positionid) = true) then
+												ls_msg_text += " Positionid is blank!"
+											end if
+											MessageBox("Notification",ls_msg_text)
+										end if //check for IsNull for funddept, positionid, jobcode, jobtitle
+									end if //ll_from_bs_specs_others_exists_id > 0											
+								else
+									MessageBox("Notification","Cannot add Employee " + ls_selected_empname + ". They already Exist/Assigned in the positions table.")
+								end if
+							else
+								//bInsertNewUser = false code block
+								MessageBox("Notification","One or more callnum preset code block failed!")
+							end if //bInsertNewUser = true
+						end if //ll_add_user_empno > 0
+					end if
+				end if
+			end if //ll_to_grpid > 0
+		end if
+	end if 
+end if	

@@ -1,0 +1,33 @@
+﻿$PBExportHeader$f_count_num_strings.srf
+global type f_count_num_strings from function_object
+end type
+
+forward prototypes
+global function integer f_count_num_strings (string ls_instring, string ls_count_string)
+end prototypes
+
+global function integer f_count_num_strings (string ls_instring, string ls_count_string);//prototype: f_count_num_string(ls_instring, ls_count_string)
+//on entry: ls_instring ie: 1J115
+//          ls_count_string ie: 1J
+//on exit: li_count ie: 1
+integer li_count
+li_count = 0
+integer li_instr_len
+integer li_count_str_len
+li_instr_len = len(ls_instring)
+li_count_str_len = len(ls_count_string)
+if(li_count_str_len <= li_instr_len) then
+	integer li_start_pos
+	integer li_found_pos
+	li_start_pos = 1
+	do
+		li_found_pos = pos(ls_instring, ls_count_string, li_start_pos)
+		if(li_found_pos > 0) then
+			li_start_pos = (li_found_pos + 1)
+			li_count++
+		end if
+	loop while(li_found_pos <> 0)
+end if
+return li_count
+end function
+

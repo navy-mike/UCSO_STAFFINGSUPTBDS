@@ -1,0 +1,27 @@
+﻿$PBExportHeader$f_trimstr_multi_chars_ext.srf
+global type f_trimstr_multi_chars_ext from function_object
+end type
+
+forward prototypes
+global function string f_trimstr_multi_chars_ext (string ls_strtotrim, string ls_string_to_trim)
+end prototypes
+
+global function string f_trimstr_multi_chars_ext (string ls_strtotrim, string ls_string_to_trim);//prototype: ls_trimmed_string = f_trimstr_multi_chars_ext(ls_strtotrim, ls_chars_to_trim)
+//on entry: ls_strtotrim ie: 1J115
+//          ls_chars_to_trim ie: 1J
+//				lb_both_ends ie: true
+//on exit: ls_trimmed_string = 115
+//
+string ls_trimmed_string
+ls_trimmed_string = ""
+string ls_rep_string
+ls_rep_string = gs_delim
+integer li_num_count_strings
+li_num_count_strings = f_count_num_strings(ls_strtotrim, ls_string_to_trim)
+if(li_num_count_strings > 0) then
+	ls_trimmed_string = f_replace(ls_strtotrim, ls_string_to_trim, ls_rep_string) // f_replace_string_in_string(ls_strtotrim, ls_string_to_trim, ls_rep_string)
+	ls_trimmed_string = f_compress_string(ls_trimmed_string, ls_rep_string)
+end if
+return ls_trimmed_string
+end function
+

@@ -1,0 +1,46 @@
+﻿$PBExportHeader$f_insert_sns_pos_xref_modes.srf
+global type f_insert_sns_pos_xref_modes from function_object
+end type
+
+forward prototypes
+global function integer f_insert_sns_pos_xref_modes (long ll_pid, long ll_ppos2recid, long ll_pempno, long ll_pos2idshort, string ls_pspunitno, long ll_pgrpid, integer li_pactive, ref string ls_error, ref transaction tr_sqlca)
+end prototypes
+
+global function integer f_insert_sns_pos_xref_modes (long ll_pid, long ll_ppos2recid, long ll_pempno, long ll_pos2idshort, string ls_pspunitno, long ll_pgrpid, integer li_pactive, ref string ls_error, ref transaction tr_sqlca);//prototype: li_rtn_value = f_insert_sns_pos_xref_modes(ll_pid, ll_ppos2recid, ll_pempno, ll_pos2idshort, ls_pspunitno, ll_pgrpid, li_pactive, ref ls_error, ref sqlca)
+integer li_rtn_value
+li_rtn_value = 0
+long ll_exists_id = 0
+//
+select id into :ll_exists_id from sns_pos_xref_mods where pempno = :ll_pempno and ppos2recid = :ll_ppos2recid using sqlca;
+//
+if(ll_exists_id = 0) then
+	//insert sns_pos_xref_mods
+	insert into sns_pos_xref_mods(pid, ppos2recid, pempno, ppos2idshort, pspunitno, pgrpid, pactive, aid, apos2recid, aempno, apos2idshort, aspunitno, agrpid, aactive, active)
+	values(0, :ll_ppos2recid, :ll_pempno, :ll_pos2idshort, :ls_pspunitno, :ll_pgrpid, 1, 0, 0, 0, 0, '', 0, 0, 1)
+	using tr_sqlca;
+	//
+else
+	//update sns_pos_xref_mods
+	update sns_pos_xref_mods set apos2recid = :ll_exists_id, aempno = :ll_pempno, apos2idshort = :ll_pos2idshort, aspunitno = :ls_pspunitno, agrpid = :ll_pgrpid, aactive = 1, active = 0
+	using tr_sqlca;
+	//
+end if
+if(tr_sqlca.sqlcode <> -1) then
+	//
+	commit using tr_sqlca;
+	//
+	li_rtn_value = 1
+else
+	ls_error = tr_sqlca.sqlerrtext
+	//
+	rollback using tr_sqlca;
+	//
+	li_rtn_value = -1
+end if	
+return li_rtn_value				
+
+
+
+
+end function
+

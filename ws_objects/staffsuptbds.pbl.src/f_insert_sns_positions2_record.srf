@@ -1,0 +1,47 @@
+﻿$PBExportHeader$f_insert_sns_positions2_record.srf
+global type f_insert_sns_positions2_record from function_object
+end type
+
+forward prototypes
+global function integer f_insert_sns_positions2_record (long ll_grpid, string ls_callnum, long ll_assgnd_empno, string ls_funddept, string ls_addinfo, string ls_vehnum, string ls_positionid, string ls_jobcode, string ls_jobtitle, long ll_xrefid, ref string ls_error, ref transaction tr_sqlca)
+end prototypes
+
+global function integer f_insert_sns_positions2_record (long ll_grpid, string ls_callnum, long ll_assgnd_empno, string ls_funddept, string ls_addinfo, string ls_vehnum, string ls_positionid, string ls_jobcode, string ls_jobtitle, long ll_xrefid, ref string ls_error, ref transaction tr_sqlca);//prototype: li_rtn_value = f_insert_sns_positions2_record(ll_grpid, ls_callnum, ll_assgnd_empno, ls_funddept, ls_addinfo, ls_vehnum, ls_positionid, ls_jobcode, ls_jobtitle, ll_xrefid, ref ls_error, ref sqlca)
+integer li_rtn_value
+li_rtn_value = 0
+string ls_sql_err_text
+ls_sql_err_text = ""
+ls_error = ""
+ls_positionid = trim(upper(ls_positionid))
+long ll_exists_id
+ll_exists_id = 0
+//
+select id into :ll_exists_id from sns_staffing_grps_positions2 where positionid = :ls_positionid using tr_sqlca;
+//
+if(ll_exists_id = 0) then
+	//
+	insert into sns_staffing_grps_positions2(grpid, callnum, assgnd_empno, funddept, addinfo, vehnum, positionid, jobcode, jobtitle, basepay, xrefid, active)
+	values(:ll_grpid, :ls_callnum, :ll_assgnd_empno, :ls_funddept, :ls_addinfo, :ls_vehnum, :ls_positionid, :ls_jobcode, :ls_jobtitle, 0.0, :ll_xrefid, 1)
+	using tr_sqlca;
+	//
+else
+	//
+	update sns_staffing_grps_positions2 set grpid = :ll_grpid, callnum = :ls_callnum, assgnd_empno = :ll_assgnd_empno, addinfo = :ls_addinfo, vehnum = :ls_vehnum, jobcode = :ls_jobcode, jobtitle = :ls_jobtitle, xrefid = :ll_xrefid
+	using tr_sqlca;
+	//
+end if
+if(tr_sqlca.sqlcode <> -1) then
+	//
+	commit using tr_sqlca;
+	//
+	li_rtn_value = 1
+else
+	ls_sql_err_text = tr_sqlca.sqlerrtext
+	//
+	rollback using tr_sqlca;
+	//
+	ls_error = ls_sql_err_text
+end if
+return li_rtn_value
+end function
+

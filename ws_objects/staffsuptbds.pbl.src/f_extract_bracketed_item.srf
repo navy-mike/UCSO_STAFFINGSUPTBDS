@@ -1,0 +1,38 @@
+﻿$PBExportHeader$f_extract_bracketed_item.srf
+global type f_extract_bracketed_item from function_object
+end type
+
+forward prototypes
+global function string f_extract_bracketed_item (string ls_instr, string ls_first_bracket_char, string ls_second_bracket_char, boolean lb_trim_extracted)
+end prototypes
+
+global function string f_extract_bracketed_item (string ls_instr, string ls_first_bracket_char, string ls_second_bracket_char, boolean lb_trim_extracted);//prototype: ls_extracted_string = f_extract_bracketed_item(ls_instr, ls_first, ls_second, lb_trim_extracted)
+//example: ls_instr = "SECURITY CENTER JAIL {104}"
+//         ls_first = "{"
+//         ls_second = "}"
+//         lb_trim_extracted   = true to trim extracted string, false to not trim.
+//
+string ls_extracted_str
+integer li_pos1
+integer li_pos2
+integer li_str_len
+integer li_extrack_len
+integer li_extrack_start
+ls_extracted_str = ""
+li_str_len = len(ls_instr)
+li_pos1 = pos(ls_instr, ls_first_bracket_char, 1)
+if(li_pos1 > 0) then
+	li_pos2 = pos(ls_instr, ls_second_bracket_char, li_pos1)
+	if((li_pos2 > li_pos1) and (li_pos2 <= li_str_len)) then
+		li_extrack_len = (li_pos2 - li_pos1) - 1
+		li_extrack_start = li_pos1 + 1
+		ls_extracted_str = mid(ls_instr, li_extrack_start, li_extrack_len)
+		if(lb_trim_extracted = true) then
+			ls_extracted_str = f_trimstr(ls_extracted_str, " ", true)
+		end if
+	end if
+end if
+return ls_extracted_str
+
+end function
+

@@ -1,0 +1,373 @@
+﻿$PBExportHeader$f_insert_into_dragto_group.srf
+global type f_insert_into_dragto_group from function_object
+end type
+
+forward prototypes
+global function integer f_insert_into_dragto_group (integer li_case_num, string lsa_parameters[], ref integer li_num_updates, ref string lsa_dd_errors[], ref transaction tr_sqlca)
+end prototypes
+
+global function integer f_insert_into_dragto_group (integer li_case_num, string lsa_parameters[], ref integer li_num_updates, ref string lsa_dd_errors[], ref transaction tr_sqlca);//prototype: li_inserted_status = f_insert_into_dragto_group(li_case_num, lsa_parameters, ref li_num_updates, ref lsa_dd_errors, ref sqlca)
+integer li_inserted_status
+string ls_sqlerrtext
+string ls_error
+integer li_rtn_value
+li_inserted_status = 0
+//====================================================================
+long ll_from_bs_specs_others_exists_id
+long ll_from_emp_exists_id
+long ll_from_pos_exists_id
+long ll_from_pos_xrefid
+long ll_from_xref_exists_id
+string ls_from_empname
+long ll_from_empno
+string ls_from_positionid
+string ls_from_funddept
+string ls_from_jobtitle
+string ls_from_jobcode
+string ls_from_grpid
+long ll_from_row
+string ls_from_pos_addinfo
+string ls_from_pos_funddept
+string ls_from_pos_jobcode
+string ls_from_pos_jobtitle
+long ll_to_grpid
+string ls_to_positionid
+long ll_to_row
+long ll_to_rowcount
+string ls_to_empname
+string ls_callnum
+string ls_dragfrom_hdrtext
+string ls_empname
+string ls_hdrtext
+string ls_mode
+string ls_row
+string ls_fm_fund
+string ls_fm_dept
+string ls_fm_title
+string ls_fm_super_empno
+string ls_fm_fte_status
+string ls_fm_job_code
+string ls_fm_position_id
+string ls_sp_lname
+string ls_sp_fname
+string ls_sp_unitno
+string ls_sp_descr
+//====================================================================
+ll_from_bs_specs_others_exists_id = f_stol(lsa_parameters[1])
+ll_from_emp_exists_id = f_stol(lsa_parameters[2])
+ll_from_pos_exists_id = f_stol(lsa_parameters[3])
+ll_from_pos_xrefid = f_stol(lsa_parameters[4])
+ll_from_xref_exists_id = f_stol(lsa_parameters[5])
+ls_from_empname = lsa_parameters[6]
+ll_from_empno = f_stol(lsa_parameters[7])
+ls_from_positionid = lsa_parameters[8]
+ls_from_funddept = lsa_parameters[9]
+ls_from_jobtitle = lsa_parameters[10]
+ls_from_jobcode = lsa_parameters[11]
+ls_from_grpid = lsa_parameters[12]
+ll_from_row = f_stol(lsa_parameters[13])
+ls_from_pos_addinfo = lsa_parameters[14]
+ls_from_pos_funddept = lsa_parameters[15]
+ls_from_pos_jobcode = lsa_parameters[16]
+ls_from_pos_jobtitle = lsa_parameters[17]
+ll_to_grpid = f_stol(lsa_parameters[18])
+ls_to_positionid = lsa_parameters[19]
+ll_to_row = f_stol(lsa_parameters[20])
+ll_to_rowcount = f_stol(lsa_parameters[21])
+ls_to_empname = lsa_parameters[22]
+ls_callnum = lsa_parameters[23]
+ls_dragfrom_hdrtext = lsa_parameters[24]
+ls_empname = lsa_parameters[25]
+ls_hdrtext = lsa_parameters[26]
+ls_mode = lsa_parameters[27]
+ls_row = lsa_parameters[28]
+//lookup fm and spillman
+//====================================================================
+integer li_fm_fund
+long ll_fm_dept
+long ll_fm_super_empno
+integer li_fm_fte_status
+long ll_fm_jobcode
+string ls_fm_positionid
+//====================================================================
+select fund, dept, title, super_empno, fte_status, job_code, position_id 
+into :li_fm_fund, :ll_fm_dept, :ls_fm_title, :ll_fm_super_empno, :li_fm_fte_status, :ll_fm_jobcode, :ls_fm_positionid
+from fm.io_employee
+where empno = :ll_from_empno
+using tr_sqlca;
+//====================================================================
+li_fm_fund = f_stoi(lsa_parameters[29])
+ll_fm_dept = f_stol(lsa_parameters[30])
+ls_fm_title = trim(upper(lsa_parameters[31]))
+ll_fm_super_empno = f_stol(lsa_parameters[32])
+li_fm_fte_status = f_stoi(lsa_parameters[33])
+ll_fm_jobcode = f_stol(lsa_parameters[34])
+ls_fm_positionid = trim(upper(lsa_parameters[35]))
+//====================================================================
+string ls_from_empno
+ls_from_empno = string(ll_from_empno)
+select lname, fname, unitno, descr into :ls_sp_lname, :ls_sp_fname, :ls_sp_unitno, :ls_sp_descr
+from sns_spillman_master
+where eidnum = :ls_from_empno
+using tr_sqlca;
+//====================================================================
+ls_sp_lname = trim(upper(lsa_parameters[36]))
+ls_sp_fname = trim(upper(lsa_parameters[37]))
+ls_sp_unitno = trim(upper(lsa_parameters[38]))
+ls_sp_descr = trim(upper(lsa_parameters[39]))
+//====================================================================
+//===================================
+//*** INSERT INTO DRAG_TO GROUP ***
+//===================================
+if((li_case_num = 8) or (li_case_num = 6)) then
+	//===================================
+	// update sns_board_specs_others
+	//===================================
+	string ls_to_callnum 
+	li_num_updates = 0
+	if(ll_from_bs_specs_others_exists_id > 0) then
+		if(f_len_ext(ls_callnum) = 0) then
+			//
+			select callnum into :ls_to_callnum from sns_board_specs_others where id = :ll_from_bs_specs_others_exists_id using tr_sqlca;
+			//
+		else
+			ls_to_callnum = ls_callnum
+		end if
+		long ll_empname_exists_id
+		ll_empname_exists_id = 0
+		//
+		select id into :ll_empname_exists_id from sns_board_specs_others where ltrim(rtrim(upper(empname))) = :ls_from_empname using tr_sqlca;
+		//
+		if(ll_empname_exists_id = 0) then
+			update sns_board_specs_others set empname = :ls_from_empname, empno = :ll_from_empno, positionid = :ls_from_positionid
+			where id = :ll_from_bs_specs_others_exists_id
+			using tr_sqlca;
+			//
+			if(sqlca.sqlcode <> -1) then
+				//
+				commit using tr_sqlca;
+				//
+				li_num_updates++
+			else
+				ls_sqlerrtext = tr_sqlca.sqlerrtext
+				//
+				rollback using tr_sqlca;
+				//
+				ls_sqlerrtext = "update to sns_board_specs_others error=" + ls_sqlerrtext
+				f_add_item_to_string_array_ext(ref lsa_dd_errors, ls_sqlerrtext, false)
+			end if	
+			//=======================================================================================================
+			//check that empno does not exist in positions2,posxref,posxrefmods tables. If exists then delete records
+			//=======================================================================================================
+			long ll_assgnd_empno_exists_id
+			long ll_delete_xrefid
+			//
+			select id, xrefid into :ll_assgnd_empno_exists_id, :ll_delete_xrefid
+			from sns_staffing_grps_positions2
+			where assgnd_empno = :ll_from_empno
+			using tr_sqlca;
+			//
+			if(ll_assgnd_empno_exists_id > 0) then
+				//delete positions2, xref, xrefmods records
+				delete from sns_staffing_grps_positions2 where id = :ll_assgnd_empno_exists_id using tr_sqlca;
+				if(sqlca.sqlcode <> -1) then
+					//
+					commit using tr_sqlca;
+					//
+					if(ll_delete_xrefid > 0) then
+						delete from sns_pos_xref where id = :ll_delete_xrefid using tr_sqlca;
+						if(sqlca.sqlcode <> -1) then
+							//
+							commit using tr_sqlca;
+							//
+							delete from sns_pos_xref_mods where pempno = :ll_from_empno using tr_sqlca;
+							if(sqlca.sqlcode <> -1) then
+								//
+								commit using tr_sqlca;
+								//
+							else
+								ls_sqlerrtext = tr_sqlca.sqlerrtext
+								//
+								rollback using tr_sqlca;
+								//
+								ls_sqlerrtext = "delete posxrefmods table record error [empno=" + string(ll_from_empno) + "] error="+ ls_sqlerrtext
+								f_add_item_to_string_array_ext(ref lsa_dd_errors, ls_sqlerrtext, false)
+							end if
+						else
+							ls_sqlerrtext = tr_sqlca.sqlerrtext
+							//
+							rollback using tr_sqlca;
+							//
+							ls_sqlerrtext = "delete posxref table record error [id=" + string(ll_delete_xrefid) + "] error="+ ls_sqlerrtext
+							f_add_item_to_string_array_ext(ref lsa_dd_errors, ls_sqlerrtext, false)
+						end if	
+					end if			
+				else
+					ls_sqlerrtext = tr_sqlca.sqlerrtext
+					//
+					rollback using tr_sqlca;
+					//
+					ls_sqlerrtext = "delete positions2 table record error [id=" + string(ll_assgnd_empno_exists_id) + "] error="+ ls_sqlerrtext
+					f_add_item_to_string_array_ext(ref lsa_dd_errors, ls_sqlerrtext, false)
+				end if	
+			end if
+			//=======================================================================================================
+			//=======================================================================================================
+			li_rtn_value = 0
+			string ls_to_addinfo
+			ls_to_addinfo = f_replace_string_in_string(ls_to_callnum, "1J", " ")
+			ls_to_addinfo = f_compress_string(ls_to_addinfo, " ")
+			//  0 = successful
+			// -1 = no action taken
+			// -2 = li_assgnd_empno_count > 0
+			// -3 = li_positionid_count > 0
+			// -4 = assgnd_empno not found in pos2
+			// -5 = ll_pos2idshort invalid
+			// -6 = tr_sqlca sqlcode = -1 sns_staffing_grps_positions2
+			// -7 = tr_sqlca sqlcode = -1 sns_pos_xref
+			// -8 = tr_sqlca sqlcode = -1 sns_pos_xref_mods
+			// -9 = tr_sqlca sqlcode = -1 sns_group_ids
+			//-10 = ll_pos2idshort <0 or > 90000 
+			li_rtn_value = f_insert_pos2_support_table_records(ll_to_grpid, ls_to_callnum, ll_from_empno, ls_from_funddept, ls_to_addinfo, ".", ls_from_positionid, ls_from_jobcode, ls_from_jobtitle, 0.0, true, ref ls_error, ref tr_sqlca)
+			if(li_rtn_value >= 1) then
+				if(ll_from_emp_exists_id > 0) then
+					// - update sns_employees set positionid = "", title = "", jobcode = "", jobtitle = "", supervisor = 0, grps_resp = "", grpid = 0 where id = ll_from_emp_exists_id
+					update sns_employees set positionid = :ls_to_positionid, title = :ls_from_jobtitle, jobcode = :ls_from_jobcode, grpid = :ll_to_grpid
+					where id = :ll_from_emp_exists_id
+					using tr_sqlca;
+					//
+					if(sqlca.sqlcode <> -1) then
+						//
+						commit using tr_sqlca;
+						//
+						li_num_updates++
+					else
+						ls_sqlerrtext = sqlca.sqlerrtext
+						//
+						rollback using tr_sqlca;
+						//
+						ls_sqlerrtext = "update to sns_employees columns error=" + ls_sqlerrtext
+						f_add_item_to_string_array_ext(ref lsa_dd_errors, ls_sqlerrtext, false)
+					end if										
+					if((ll_to_grpid > 0) and (li_num_updates >= 2)) then
+						long ll_grps_resp
+						long ll_grp_super_empno
+						ll_grps_resp = 0
+						ll_grp_super_empno = 0
+						//
+						select grp_super_empno, root_grp_super_empno into :ll_grp_super_empno, :ll_grps_resp from sns_staffing_groups where id = :ll_to_grpid using tr_sqlca;
+						//
+						update sns_employees set grps_resp = :ll_grps_resp, supervisor = :ll_grp_super_empno using tr_sqlca;
+						//
+						if(sqlca.sqlcode <> -1) then
+							//
+							commit using tr_sqlca;
+							//
+							li_num_updates++
+						else
+							ls_sqlerrtext = tr_sqlca.sqlerrtext
+							//
+							rollback using tr_sqlca;
+							//
+							ls_sqlerrtext = "update to sns_employees grps_resp,supervisor error=" + ls_sqlerrtext
+							f_add_item_to_string_array_ext(ref lsa_dd_errors, ls_sqlerrtext, false)
+						end if											
+					end if //ll_to_grpid > 0
+				end if//ll_from_emp_exists_id > 0
+			end if //li_rtn_value = 0
+			if(UpperBound(lsa_dd_errors) = 0) then
+				li_inserted_status = 1
+			end if
+		end if
+	end if //ll_from_bs_specs_others_exists_id > 0
+else //other casenums
+	if(ll_from_bs_specs_others_exists_id > 0) then
+		//----------------------------------------------------------------------
+		//
+		select callnum into :ls_to_callnum from sns_board_specs_others where id = :ll_from_bs_specs_others_exists_id using tr_sqlca;
+		//
+		update sns_board_specs_others set empname = :ls_from_empname, empno = :ll_from_empno, positionid = :ls_from_positionid
+		where id = :ll_from_bs_specs_others_exists_id
+		using tr_sqlca;
+		//
+		if(sqlca.sqlcode <> -1) then
+			//
+			commit using tr_sqlca;
+			//
+			li_num_updates++
+		else
+			ls_sqlerrtext = tr_sqlca.sqlerrtext
+			//
+			rollback using tr_sqlca;
+			//
+			ls_sqlerrtext = "update to sns_board_specs_others error=" + ls_sqlerrtext
+			f_add_item_to_string_array_ext(ref lsa_dd_errors, ls_sqlerrtext, false)
+		end if	
+		//----------------------------------------------------------------------
+		li_rtn_value = 0
+		ls_to_addinfo = f_replace_string_in_string(ls_to_callnum, "1J", " ")
+		ls_to_addinfo = f_compress_string(ls_to_addinfo, " ")
+		//  0 = successful
+		// -1 = no action taken
+		// -2 = li_assgnd_empno_count > 0
+		// -3 = li_positionid_count > 0
+		// -4 = assgnd_empno not found in pos2
+		// -5 = ll_pos2idshort invalid
+		// -6 = tr_sqlca sqlcode = -1 sns_staffing_grps_positions2
+		// -7 = tr_sqlca sqlcode = -1 sns_pos_xref
+		// -8 = tr_sqlca sqlcode = -1 sns_pos_xref_mods
+		// -9 = tr_sqlca sqlcode = -1 sns_group_ids
+		//-10 = ll_pos2idshort <0 or > 90000 
+		li_rtn_value = f_insert_pos2_support_table_records(ll_to_grpid, ls_to_callnum, ll_from_empno, ls_from_funddept, ls_to_addinfo, ".", ls_from_positionid, ls_from_jobcode, ls_from_jobtitle, 0.0, true, ref ls_error, ref tr_sqlca)
+		if(li_rtn_value >= 1) then
+			if(ll_from_emp_exists_id > 0) then
+				// - update sns_employees set positionid = "", title = "", jobcode = "", jobtitle = "", supervisor = 0, grps_resp = "", grpid = 0 where id = ll_from_emp_exists_id
+				update sns_employees set positionid = :ls_to_positionid, title = :ls_from_jobtitle, jobcode = :ls_from_jobcode, grpid = :ll_to_grpid
+				where id = :ll_from_emp_exists_id
+				using tr_sqlca;
+				//
+				if(sqlca.sqlcode <> -1) then
+					//
+					commit using tr_sqlca;
+					//
+					li_num_updates++
+				else
+					ls_sqlerrtext = sqlca.sqlerrtext
+					//
+					rollback using tr_sqlca;
+					//
+					ls_sqlerrtext = "update to sns_employees columns error=" + ls_sqlerrtext
+					f_add_item_to_string_array_ext(ref lsa_dd_errors, ls_sqlerrtext, false)
+				end if										
+				if((ll_to_grpid > 0) and (li_num_updates >= 2)) then
+					ll_grps_resp = 0
+					ll_grp_super_empno = 0
+					//
+					select grp_super_empno, root_grp_super_empno into :ll_grp_super_empno, :ll_grps_resp from sns_staffing_groups where id = :ll_to_grpid using tr_sqlca;
+					//
+					update sns_employees set grps_resp = :ll_grps_resp, supervisor = :ll_grp_super_empno using tr_sqlca;
+					//
+					if(sqlca.sqlcode <> -1) then
+						//
+						commit using tr_sqlca;
+						//
+						li_num_updates++
+					else
+						ls_sqlerrtext = tr_sqlca.sqlerrtext
+						//
+						rollback using tr_sqlca;
+						//
+						ls_sqlerrtext = "update to sns_employees grps_resp,supervisor error=" + ls_sqlerrtext
+						f_add_item_to_string_array_ext(ref lsa_dd_errors, ls_sqlerrtext, false)
+					end if											
+				end if //ll_to_grpid > 0
+			end if//ll_from_emp_exists_id > 0
+		end if //li_rtn_value = 0
+		if(UpperBound(lsa_dd_errors) = 0) then
+			li_inserted_status = 1
+		end if
+	end if //ll_from_bs_specs_others_exists_id > 0			
+end if //li_case_num = 8
+return li_inserted_status
+end function
+

@@ -1,0 +1,117 @@
+﻿$PBExportHeader$f_populate_listbox.srf
+global type f_populate_listbox from function_object
+end type
+
+forward prototypes
+global function integer f_populate_listbox (ref listbox lb_listbox, string ls_pop_sql, string ls_cols2disp, string ls_col_spacing_chars, string ls_col_disp_lens, integer li_col_pad_len, boolean lb_compress, ref transaction tr_sqlca)
+end prototypes
+
+global function integer f_populate_listbox (ref listbox lb_listbox, string ls_pop_sql, string ls_cols2disp, string ls_col_spacing_chars, string ls_col_disp_lens, integer li_col_pad_len, boolean lb_compress, ref transaction tr_sqlca);//prototype: li_num_items = f_populate_listbox(ref lb_listbox, ls_pop_sql, ls_cols2disp, ls_col_spacing_chars, ls_col_disp_lens, li_col_pad_len, lb_compress, ref sqlca)
+//example: li_num_items = f_populate_listbox(ref lb_groupids, ls__sql, "groupname", " ", "50", 50, true, ref sqlca)
+//lb_listbox = listbox object
+//ls_pop_sql = sql used to populate listbox
+//ls_cols2disp = '1,2,3'
+//ls_col_spacing_chars = character to used to space with
+//ls_col_disp_lens, 20,10,10    note: -1 will skip padding that column
+//li_col_pad_len = 10
+//lb_compress = true to trim column data.
+integer li_num_lb_items
+li_num_lb_items = 0
+lb_listbox.reset()
+if(li_col_pad_len = 0) then
+	li_col_pad_len = 20 //default column pad length to 20 chars
+end if
+integer li_num_disp_cols
+li_num_disp_cols = f_count_num_characters(ls_cols2disp, ",")
+if((f_len_ext(ls_cols2disp) > 0) and (li_num_disp_cols = 0)) then
+	li_num_disp_cols = 1
+else
+	li_num_disp_cols++
+end if
+if((li_num_disp_cols > 0) and (f_len_ext(ls_cols2disp) > 0)) then
+	if(f_len_ext(ls_cols2disp) > 0) then
+		ls_cols2disp = f_replace_chars_in_string(ls_cols2disp, ",", "|") 
+		ls_cols2disp = "|" + ls_cols2disp + "|"
+	else
+		ls_cols2disp = "|1|" //just display column 1
+	end if
+	string lsa_lb_items[]
+	string ls_delim
+	string ls_spaces
+	ls_spaces = Space(128)
+	ls_delim = char(128)
+	li_num_lb_items = f_app_ds_populate_string_array_by_sql(ref lsa_lb_items, ls_pop_sql, li_col_pad_len, ls_delim, lb_compress, tr_sqlca)
+	if(li_num_lb_items > 0) then
+		string lsa_parseoutdata[]
+		integer li_num_parse_items
+		integer li_loop
+		string ls_data
+		//populate col len array lai_col_lens[]
+		string ls_col_lens[]
+		integer lai_col_lens[]
+		integer li_num_col_lens
+		li_num_col_lens = f_parseoutstring_ext(ls_col_disp_lens, ",", lsa_parseoutdata)
+		if(li_num_col_lens > 0) then
+			for li_loop = 1 to li_num_col_lens
+				if(IsNumber(lsa_parseoutdata[li_loop]) = true) then
+					lai_col_lens[li_loop] = integer(lsa_parseoutdata[li_loop])
+				else	
+					lai_col_lens[li_loop] = li_col_pad_len //default if specific col len is not a number
+				end if
+			next
+		end if
+		li_num_col_lens = upperbound(lai_col_lens)
+		integer li_ploop
+		string ls_pdata
+		string ls_lb_text
+		integer li_pdata_len
+		integer li_lbtext_ptr
+		integer li_pad_len
+		for li_loop = 1 to li_num_lb_items
+			ls_lb_text = ""
+			ls_data = lsa_lb_items[li_loop]		
+			li_num_parse_items = f_parseoutstring_ext(ls_data, ls_delim, ref lsa_parseoutdata)
+			if(li_num_parse_items > 0) then
+				li_lbtext_ptr = 1
+				for li_ploop = 1 to li_num_parse_items
+					if(pos(ls_cols2disp, "|" + string(li_ploop) + "|") > 0) then //add this column to the lbtext
+						ls_pdata = lsa_parseoutdata[li_ploop]
+						li_pdata_len = f_len_abs(ref ls_pdata)
+						if(lai_col_lens[li_lbtext_ptr] > 0) then //if col len spec is -1 then skip padding of column length
+							try
+								if(li_lbtext_ptr <= li_num_col_lens) then //pointer must be within the lai_col_lens bounds
+									if(li_pdata_len > lai_col_lens[li_lbtext_ptr]) then //text len > than col length specified
+										ls_pdata = left(ls_pdata, lai_col_lens[li_lbtext_ptr])
+									elseif((li_pdata_len < lai_col_lens[li_lbtext_ptr]) and (lb_compress = false)) then
+										li_pad_len = lai_col_lens[li_lbtext_ptr] - li_pdata_len
+										ls_pdata = ls_pdata + mid(ls_spaces, 1, li_pad_len)
+//									else
+//										integer li_stop
+//										li_stop = 0
+									end if
+									li_lbtext_ptr++
+								end if
+							catch(exception ex)
+								ls_pdata = "?"
+								li_lbtext_ptr++
+							end try
+						end if //not -1 so pad
+						ls_lb_text += ls_pdata
+						if(li_ploop < li_num_col_lens) then
+							if(li_num_disp_cols > 1) then
+								ls_lb_text += ls_col_spacing_chars
+							end if
+						end if
+					end if //add column to lbtext
+				next
+				if(f_len_ext(ls_lb_text) > 0) then
+					lb_listbox.additem(ls_lb_text)
+				end if
+			end if
+		next
+	end if //li_num_lb_items > 0
+end if //li_num_disp_cols > 0
+
+return li_num_lb_items
+end function
+

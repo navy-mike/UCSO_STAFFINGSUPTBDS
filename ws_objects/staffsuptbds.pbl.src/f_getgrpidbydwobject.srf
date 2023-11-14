@@ -1,0 +1,46 @@
+﻿$PBExportHeader$f_getgrpidbydwobject.srf
+global type f_getGrpidByDwobject from function_object
+end type
+
+forward prototypes
+global function long f_getgrpidbydwobject (string dw_object_name)
+end prototypes
+
+global function long f_getgrpidbydwobject (string dw_object_name);//prototype: ll_rtn_grpid = f_getGrpidByDwObject(dw_object_name)
+long ll_rtn_grpid
+ll_rtn_grpid = 0
+dw_object_name = trim(upper(dw_object_name))
+if(dw_object_name = "DW_TEAM_A") then //team a
+	ll_rtn_grpid = 1
+elseif(dw_object_name = "DW_TEAM_B") then //team b
+	ll_rtn_grpid = 2
+elseif(dw_object_name = "DW_TEAM_C") then //team b
+	ll_rtn_grpid = 3
+elseif(dw_object_name = "DW_TEAM_D") then //team b
+	ll_rtn_grpid = 4
+elseif(dw_object_name = "DW_REC1") then //team b
+	ll_rtn_grpid = 5
+elseif(dw_object_name = "DW_REC2") then //team b
+	ll_rtn_grpid = 6
+elseif(dw_object_name = "DW_EM1") then //team b
+	ll_rtn_grpid = 8
+elseif(dw_object_name = "DW_EM2") then //team b
+	ll_rtn_grpid = 9
+elseif(dw_object_name = "DW_EMSRO") then //team b
+	ll_rtn_grpid = 10
+elseif(dw_object_name = "DW_VINE") then //team b
+	ll_rtn_grpid = 11
+elseif(dw_object_name = "DW_SMCONT") then //team b
+	ll_rtn_grpid = 12
+elseif(dw_object_name = "DW_FTO") then //team b
+	ll_rtn_grpid = 52
+elseif(dw_object_name = "DW_TEAM_RESVRS") then //team b
+	ll_rtn_grpid = 129
+elseif(dw_object_name = "DW_UNFILLED") then //team b
+	ll_rtn_grpid = 128
+elseif(dw_object_name = "DW_UNASSIGNED") then //team b
+	ll_rtn_grpid = 131
+end if
+return ll_rtn_grpid
+end function
+

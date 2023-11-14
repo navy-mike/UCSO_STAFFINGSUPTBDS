@@ -1,0 +1,27 @@
+﻿$PBExportHeader$f_populate_dw_lay_specs.srf
+global type f_populate_dw_lay_specs from function_object
+end type
+
+forward prototypes
+global function integer f_populate_dw_lay_specs (datawindow dw_window, string ls_active_group, ref transaction tr_sqlca)
+end prototypes
+
+global function integer f_populate_dw_lay_specs (datawindow dw_window, string ls_active_group, ref transaction tr_sqlca);//prototype: ll_num_retrieved = f_populate_dw_lay_specs(ref dw_window, ls_active_group, ref sqlca)
+long ll_num_recs_retrieved
+ll_num_recs_retrieved = 0
+string ls_retrieve_spec
+ls_retrieve_spec = ""
+//string ls_active_group
+//ls_active_group = f_get_active_group(rb_all, rb_corrections, rb_patrol, rb_judicial, rb_emergsvcs)
+if(ls_active_group = "ALL") then
+	ls_retrieve_spec = "%%"
+else
+	ls_retrieve_spec = "%" + ls_active_group + "%"
+end if
+if(f_len_ext(ls_retrieve_spec) > 0) then
+	dw_window.settransobject(tr_sqlca)
+	ll_num_recs_retrieved = dw_window.Retrieve(ls_retrieve_spec)
+end if
+return ll_num_recs_retrieved
+end function
+

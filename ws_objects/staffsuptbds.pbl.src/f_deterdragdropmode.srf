@@ -1,0 +1,23 @@
+﻿$PBExportHeader$f_deterdragdropmode.srf
+global type f_deterDragDropMode from function_object
+end type
+
+forward prototypes
+global function string f_deterdragdropmode (long ll_to_row, long ll_to_rowcount, integer li_to_avail_positions, long ll_from_grpid, long ll_to_grpid, long ll_from_empno, long ll_to_empno, string ls_from_empname, string ls_to_empname, string ls_from_hdrtext, string ls_to_hdrtext)
+end prototypes
+
+global function string f_deterdragdropmode (long ll_to_row, long ll_to_rowcount, integer li_to_avail_positions, long ll_from_grpid, long ll_to_grpid, long ll_from_empno, long ll_to_empno, string ls_from_empname, string ls_to_empname, string ls_from_hdrtext, string ls_to_hdrtext);//prototype: string ls_mode = f_deterDragDropMode(ll_to_row, ll_to_rowcount, li_to_avail_positions, ll_from_grpid, ll_to_grpid, ll_from_empno, ll_to_empno, ls_from_empname, ls_to_empname, ls_from_hdrtext, ls_to_hdrtext)
+string ls_mode
+ls_mode = ""
+if((ll_to_row <= ll_to_rowcount) and (pos(ls_to_empname, "UNFILLED") > 0)) then
+	ls_mode = "UNFILLED"
+elseif((ll_to_row = 0) and (ll_to_rowcount < li_to_avail_positions) and (ls_to_empname = "INSERT")) then
+	ls_mode = "EMPTY"
+elseif((ll_from_grpid = ll_to_grpid) and (ls_from_empname = ls_to_empname) and (ls_from_hdrtext = ls_to_hdrtext)) then
+	ls_mode = "SAME"
+elseif((ll_to_row <= ll_to_rowcount) and (ll_from_grpid <> ll_to_grpid) and (ll_from_empno <> ll_to_empno) and (ls_from_empname <> ls_to_empname)) then
+	ls_mode = "DIFF"
+end if
+return ls_mode
+end function
+
