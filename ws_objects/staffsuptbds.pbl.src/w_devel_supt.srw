@@ -2,6 +2,14 @@
 forward
 global type w_devel_supt from window
 end type
+type sle_num_disp_grping from singlelineedit within w_devel_supt
+end type
+type st_13 from statictext within w_devel_supt
+end type
+type st_12 from statictext within w_devel_supt
+end type
+type dw_specs_disp_grping from datawindow within w_devel_supt
+end type
 type st_11 from statictext within w_devel_supt
 end type
 type lb_orderby_bak from listbox within w_devel_supt
@@ -73,8 +81,8 @@ end type
 end forward
 
 global type w_devel_supt from window
-integer width = 8059
-integer height = 3776
+integer width = 8544
+integer height = 4468
 boolean titlebar = true
 string title = "Developer Support"
 boolean controlmenu = true
@@ -84,6 +92,10 @@ boolean resizable = true
 long backcolor = 67108864
 string icon = "AppIcon!"
 boolean center = true
+sle_num_disp_grping sle_num_disp_grping
+st_13 st_13
+st_12 st_12
+dw_specs_disp_grping dw_specs_disp_grping
 st_11 st_11
 lb_orderby_bak lb_orderby_bak
 st_save_debug_location st_save_debug_location
@@ -122,6 +134,10 @@ end type
 global w_devel_supt w_devel_supt
 
 on w_devel_supt.create
+this.sle_num_disp_grping=create sle_num_disp_grping
+this.st_13=create st_13
+this.st_12=create st_12
+this.dw_specs_disp_grping=create dw_specs_disp_grping
 this.st_11=create st_11
 this.lb_orderby_bak=create lb_orderby_bak
 this.st_save_debug_location=create st_save_debug_location
@@ -156,7 +172,11 @@ this.st_2=create st_2
 this.dw_bd_groupids=create dw_bd_groupids
 this.pb_14=create pb_14
 this.gb_1=create gb_1
-this.Control[]={this.st_11,&
+this.Control[]={this.sle_num_disp_grping,&
+this.st_13,&
+this.st_12,&
+this.dw_specs_disp_grping,&
+this.st_11,&
 this.lb_orderby_bak,&
 this.st_save_debug_location,&
 this.pb_save_debug,&
@@ -193,6 +213,10 @@ this.gb_1}
 end on
 
 on w_devel_supt.destroy
+destroy(this.sle_num_disp_grping)
+destroy(this.st_13)
+destroy(this.st_12)
+destroy(this.dw_specs_disp_grping)
 destroy(this.st_11)
 destroy(this.lb_orderby_bak)
 destroy(this.st_save_debug_location)
@@ -236,15 +260,182 @@ ll_num_retrieved = f_populate_datawindow(ref dw_lay_specs, rb_all, rb_correction
 sle_num_specs.text = string(ll_num_retrieved)
 ll_num_retrieved = f_populate_datawindow(ref dw_specs_others, rb_all, rb_corrections, rb_patrol, rb_judicial, rb_emergsvcs, ref sqlca)
 sle_num_others.text = string(ll_num_retrieved)
+ll_num_retrieved = f_populate_datawindow(ref dw_specs_disp_grping, rb_all, rb_corrections, rb_patrol, rb_judicial, rb_emergsvcs, ref sqlca)
+sle_num_disp_grping.text = string(ll_num_retrieved)
+
 
 string ls_dbidentity
 ls_dbidentity = f_get_db_identity(ref sqlca)
 st_db_identity.text = ls_dbidentity
+
+
+end event
+
+type sle_num_disp_grping from singlelineedit within w_devel_supt
+integer x = 6693
+integer y = 2220
+integer width = 165
+integer height = 80
+integer taborder = 40
+integer textsize = -8
+integer weight = 700
+fontcharset fontcharset = ansi!
+fontpitch fontpitch = variable!
+fontfamily fontfamily = swiss!
+string facename = "Arial Narrow"
+long backcolor = 553648127
+string text = "0"
+borderstyle borderstyle = stylelowered!
+end type
+
+type st_13 from statictext within w_devel_supt
+integer x = 6405
+integer y = 2236
+integer width = 270
+integer height = 56
+integer textsize = -8
+integer weight = 700
+fontcharset fontcharset = ansi!
+fontpitch fontpitch = variable!
+fontfamily fontfamily = swiss!
+string facename = "Arial Narrow"
+long textcolor = 33488896
+long backcolor = 553648127
+string text = "#Records:"
+alignment alignment = right!
+boolean focusrectangle = false
+end type
+
+type st_12 from statictext within w_devel_supt
+integer x = 5527
+integer y = 2232
+integer width = 837
+integer height = 56
+integer textsize = -8
+integer weight = 700
+fontcharset fontcharset = ansi!
+fontpitch fontpitch = variable!
+fontfamily fontfamily = swiss!
+string facename = "Arial"
+long textcolor = 33488896
+long backcolor = 553648127
+string text = "SNS_BOARD_SPECS_DISP_GRPING"
+alignment alignment = center!
+boolean focusrectangle = false
+end type
+
+type dw_specs_disp_grping from datawindow within w_devel_supt
+integer x = 5495
+integer y = 2308
+integer width = 2990
+integer height = 2008
+integer taborder = 70
+string title = "none"
+string dataobject = "dw_bd_specs_disp_grping"
+boolean hscrollbar = true
+boolean vscrollbar = true
+borderstyle borderstyle = stylelowered!
+end type
+
+event clicked;long ll_id
+string ls_sql_err_text
+string ls_status_msg
+long ll_num_retrieved
+string ls_active_group
+string ls_grpingname
+long ll_grpid
+integer li_num_rows
+integer li_num_cols
+string ls_dwoname
+ls_dwoname = dwo.name
+dw_specs_disp_grping.settransobject(sqlca)
+ls_status_msg = ""
+ls_active_group = ""
+ls_active_group = f_get_active_group(rb_all, rb_corrections, rb_patrol, rb_judicial, rb_emergsvcs)
+if((dwo.name = "del") and (row > 0)) then
+	integer li_rslt
+	ls_grpingname = dw_specs_disp_grping.getitemstring(row, 'grpingname')
+	ll_grpid = dw_specs_disp_grping.getitemnumber(row, 'grpid')
+	ll_id = dw_specs_disp_grping.getitemnumber(row, 'id')
+	if(ll_id > 0) then
+		string ls_del_msg
+		ls_del_msg = "Are you sure you want to delete " + ls_grpingname + "," + string(ll_grpid) + ", id#=" + string(ll_id) + " ?"
+		li_rslt = MessageBox("Notification",ls_del_msg, QUESTION!, YESNO!, 1)
+		if(li_rslt = 1) then
+			//delete record
+			//
+			update sns_board_specs_disp_grping set active = 0 where id = :ll_id using sqlca;
+			//
+			if(sqlca.sqlcode <> -1) then
+				//
+				commit using sqlca;
+				//
+				ls_status_msg = "Delete record successful!"
+			else
+				ls_sql_err_text = sqlca.sqlerrtext
+				//
+				rollback using sqlca;
+				//
+				ls_status_msg = "Failed to delete record. error=" + ls_sql_err_text
+			end if
+			MessageBox("Notification",ls_status_msg)
+			ll_num_retrieved = f_populate_datawindow(ref dw_specs_disp_grping, rb_all, rb_corrections, rb_patrol, rb_judicial, rb_emergsvcs, ref sqlca)
+			sle_num_disp_grping.text = string(ll_num_retrieved)
+		end if
+	end if
+elseif(dwo.name = "b_refresh") then
+	ll_num_retrieved = f_populate_datawindow(ref dw_specs_disp_grping, rb_all, rb_corrections, rb_patrol, rb_judicial, rb_emergsvcs, ref sqlca)
+	sle_num_disp_grping.text = string(ll_num_retrieved)
+elseif(dwo.name = "b_insert") then
+	ls_grpingname = ""
+	ll_grpid = 0
+	//
+	insert into sns_board_specs_disp_grping(grpid, grpingname, active)
+	values(:ll_grpid, :ls_grpingname, 1)
+	using sqlca;
+	//
+	if(sqlca.sqlcode <> -1) then
+		//
+		commit using sqlca;
+		//
+	else
+		ls_sql_err_text = sqlca.sqlerrtext
+		//
+		rollback using sqlca;
+		//
+		ls_status_msg = "Failed to insert new record. error=" + ls_sql_err_text
+	end if
+	if(f_len_ext(ls_status_msg) > 0) then
+		MessageBox("Notification",ls_status_msg)
+	end if
+	ll_num_retrieved = f_populate_datawindow(ref dw_specs_disp_grping, rb_all, rb_corrections, rb_patrol, rb_judicial, rb_emergsvcs, ref sqlca)
+	sle_num_disp_grping.text = string(ll_num_retrieved)
+elseif(dwo.name = "b_commit") then
+	integer li_commit_status
+	li_commit_status = 0
+	li_commit_status = dw_specs_disp_grping.Update()
+	if(li_commit_status = 1) then
+		//
+		commit using sqlca;
+		//
+	else
+		ls_sql_err_text = sqlca.sqlerrtext
+		//
+		rollback using sqlca;
+		//
+		ls_status_msg = "Failed to commit! error=" + ls_sql_err_text
+	end if
+	if(f_len_ext(ls_status_msg) > 0) then
+		MessageBox("Notification",ls_status_msg)
+	end if
+	ll_num_retrieved = f_populate_datawindow(ref dw_specs_disp_grping, rb_all, rb_corrections, rb_patrol, rb_judicial, rb_emergsvcs, ref sqlca)
+	sle_num_disp_grping.text = string(ll_num_retrieved)
+end if
 end event
 
 type st_11 from statictext within w_devel_supt
-integer x = 7045
-integer y = 2240
+integer x = 4786
+integer y = 3652
 integer width = 507
 integer height = 60
 integer textsize = -8
@@ -260,10 +451,10 @@ boolean focusrectangle = false
 end type
 
 type lb_orderby_bak from listbox within w_devel_supt
-integer x = 7035
-integer y = 2312
+integer x = 4777
+integer y = 3724
 integer width = 677
-integer height = 1224
+integer height = 612
 integer taborder = 80
 integer textsize = -8
 integer weight = 700
@@ -278,8 +469,8 @@ borderstyle borderstyle = stylelowered!
 end type
 
 type st_save_debug_location from statictext within w_devel_supt
-integer x = 5353
-integer y = 3572
+integer x = 27
+integer y = 4152
 integer width = 736
 integer height = 60
 integer textsize = -8
@@ -296,8 +487,8 @@ boolean focusrectangle = false
 end type
 
 type pb_save_debug from picturebutton within w_devel_supt
-integer x = 6107
-integer y = 3556
+integer x = 782
+integer y = 4136
 integer width = 357
 integer height = 100
 integer taborder = 70
@@ -404,10 +595,10 @@ boolean focusrectangle = false
 end type
 
 type lb_devel from listbox within w_devel_supt
-integer x = 5339
-integer y = 2316
-integer width = 1559
-integer height = 1224
+integer x = 14
+integer y = 3656
+integer width = 2565
+integer height = 456
 integer taborder = 70
 integer textsize = -8
 integer weight = 700
@@ -477,7 +668,7 @@ end type
 type dw_specs_others from datawindow within w_devel_supt
 integer x = 910
 integer y = 2304
-integer width = 4379
+integer width = 4562
 integer height = 1324
 integer taborder = 60
 string title = "none"
@@ -486,6 +677,52 @@ boolean hscrollbar = true
 boolean vscrollbar = true
 borderstyle borderstyle = stylelowered!
 end type
+
+event clicked;long ll_id
+string ls_sql_err_text
+string ls_status_msg
+long ll_num_retrieved
+string ls_active_group
+//string ls_groupname
+//string ls_orderby
+//string ls_grpdesc
+//long ll_grpid
+//string ls_row
+//string ls_col
+//integer li_num_rows
+//integer li_num_cols
+//string ls_callnums
+string ls_dwoname
+ls_dwoname = dwo.name
+dw_specs_others.settransobject(sqlca)
+ls_status_msg = ""
+ls_active_group = ""
+ls_active_group = f_get_active_group(rb_all, rb_corrections, rb_patrol, rb_judicial, rb_emergsvcs)
+if(dwo.name = "b_refresh") then
+	ll_num_retrieved = f_populate_datawindow(ref dw_specs_others, rb_all, rb_corrections, rb_patrol, rb_judicial, rb_emergsvcs, ref sqlca)
+	sle_num_others.text = string(ll_num_retrieved)
+elseif(dwo.name = "b_commit") then
+	integer li_commit_status
+	li_commit_status = 0
+	li_commit_status = dw_specs_others.Update()
+	if(li_commit_status = 1) then
+		//
+		commit using sqlca;
+		//
+	else
+		ls_sql_err_text = sqlca.sqlerrtext
+		//
+		rollback using sqlca;
+		//
+		ls_status_msg = "Failed to commit! error=" + ls_sql_err_text
+	end if
+	if(f_len_ext(ls_status_msg) > 0) then
+		MessageBox("Notification",ls_status_msg)
+	end if
+	ll_num_retrieved = f_populate_datawindow(ref dw_specs_others, rb_all, rb_corrections, rb_patrol, rb_judicial, rb_emergsvcs, ref sqlca)
+	sle_num_others.text = string(ll_num_retrieved)
+end if
+end event
 
 type st_6 from statictext within w_devel_supt
 integer x = 14
@@ -949,6 +1186,11 @@ else
 				li_stop = 9
 			end try
 			
+			if(ll_grpid = 11) then
+				li_stop = 0
+			end if
+			
+			
 			if((ll_grpid = 1) or (ll_grpid = 2) or (ll_grpid = 3) or (ll_grpid = 4) or (ll_grpid = 5) or (ll_grpid = 6)) then
 				li_offset_row = 0
 			elseif((ll_grpid = 8) or (ll_grpid = 9) or (ll_grpid = 10) or (ll_grpid = 11) or (ll_grpid = 12) or (ll_grpid = 52)) then
@@ -1355,6 +1597,10 @@ else
 				integer li_dcloop
 				string ls_dcloopdata
 				//-----------------------------
+				string ls_acok9
+				string ls_lastchar
+				integer li_callnum_len
+				//-----------------------------
 				ll_to_grpid = f_stol(ls_grpid)
 				li_looprow = 0
 				ls_groupname = "PATROL"
@@ -1395,6 +1641,7 @@ else
 					li_unfilled = 0
 					ls_inserted_callnums = ""
 					li_num_dup_callnums = 0
+					ls_acok9 = ""
 					//---------------------------------------
 					ls_ploopdata = lsa_pos_info[li_ploop]
 					li_num_parse_items = f_parseoutstring_ext(ls_ploopdata, gs_delim, ref lsa_parseoutdata)
@@ -1482,9 +1729,21 @@ else
 									ls_debug = ls_row+"|"+ls_col+"|"+string(ll_grpid)+"|"+ls_found_empname+"|"+string(ll_pos_assgnd_empno)+"|"+ls_pos_callnum+"|"+string(li_found_super_lvl)+"|"+string(li_unfilled)
 									lb_devel.additem(ls_debug)								
 									
+									//ls_pos_callnum
+									ls_acok9 = ""
+									ls_lastchar = ""
+									li_callnum_len = f_len_ext(ls_pos_callnum)
+									if(li_callnum_len > 0) then
+										ls_lastchar = mid(ls_pos_callnum, li_callnum_len, 1)
+										if(ls_lastchar = "7") then
+											ls_acok9 = "ACO"
+										elseif(ls_lastchar = "9") then
+											ls_acok9 = "K9"
+										end if
+									end if
 									//
-									insert into sns_board_specs_others(groupname, nrow, ncol, grpid, empname, empno, callnum, issuper, isunfilled, active, positionid)
-									values(:ls_groupname, :ls_row, :ls_col, :ll_grpid, :ls_found_empname, :ll_pos_assgnd_empno, :ls_pos_callnum, :li_pos_super_lvl, :li_unfilled, 1, :ls_pos_positionid)
+									insert into sns_board_specs_others(groupname, nrow, ncol, grpid, empname, empno, callnum, issuper, isunfilled, active, positionid, acok9)
+									values(:ls_groupname, :ls_row, :ls_col, :ll_grpid, :ls_found_empname, :ll_pos_assgnd_empno, :ls_pos_callnum, :li_pos_super_lvl, :li_unfilled, 1, :ls_pos_positionid, :ls_acok9)
 									using sqlca;
 									//
 									//insert#1
@@ -1624,9 +1883,15 @@ else
 						for li_cnloop = 1 to li_num_callnums_list
 							ls_cnloopdata = lsa_callnums_list[li_cnloop]
 							if(f_len_ext(ls_cnloopdata) > 0) then
-								//
-								update sns_board_specs_others set callnum = :ls_cnloopdata, empname = :ls_empname_unfilled where id = :ll_update_rec_id using sqlca;
-								//
+								if(pos(ls_empname_unfilled, "UNFILLED") > 0) then
+									//
+									update sns_board_specs_others set callnum = :ls_cnloopdata, empname = :ls_empname_unfilled, isunfilled = 1 where id = :ll_update_rec_id using sqlca;
+									//
+								else
+									//
+									update sns_board_specs_others set callnum = :ls_cnloopdata, empname = :ls_empname_unfilled, isunfilled = 0 where id = :ll_update_rec_id using sqlca;
+									//
+								end if							
 								if(sqlca.sqlcode <> -1) then
 									//
 									commit using sqlca;

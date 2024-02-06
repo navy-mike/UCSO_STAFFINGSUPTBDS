@@ -81,7 +81,8 @@ ls_to_hdrtext = "UNFILLED {128}"
 //--------------------------
 li_rtn_value = 0
 li_rtn_value = f_backup_board_specs_tables(li_case_num, ls_from_hdrtext, ls_to_hdrtext, ll_from_pos_exists_id, ll_from_bs_specs_others_exists_id, ll_from_xref_exists_id, ll_from_xrefmods_exists_id, ll_from_emp_exists_id, ref sqlca)
-if(li_rtn_value = 1) then
+//li_rtn_value is the ID of sns_board_specs_backup record
+if(li_rtn_value > 0) then
 	bSuccessfulRemove = false
 	bSuccessfulRemove = f_remove_from_dragfrom_group(ll_from_pos_exists_id, ll_from_bs_specs_others_exists_id, ll_from_xref_exists_id, ll_from_xrefmods_exists_id, ll_from_emp_exists_id, ref lsa_dd_errors, ref li_num_deletes, ref li_num_updates, ref sqlca)
 	if(bSuccessfulRemove = true) then

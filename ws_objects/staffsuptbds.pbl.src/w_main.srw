@@ -2,6 +2,10 @@
 forward
 global type w_main from window
 end type
+type pb_15 from picturebutton within w_main
+end type
+type pb_test from picturebutton within w_main
+end type
 type st_copyright from statictext within w_main
 end type
 type pb_1 from picturebutton within w_main
@@ -76,6 +80,8 @@ boolean resizable = true
 long backcolor = 67108864
 string icon = "AppIcon!"
 boolean center = true
+pb_15 pb_15
+pb_test pb_test
 st_copyright st_copyright
 pb_1 pb_1
 pb_13 pb_13
@@ -110,6 +116,8 @@ end type
 global w_main w_main
 
 on w_main.create
+this.pb_15=create pb_15
+this.pb_test=create pb_test
 this.st_copyright=create st_copyright
 this.pb_1=create pb_1
 this.pb_13=create pb_13
@@ -140,7 +148,9 @@ this.ln_13=create ln_13
 this.ln_11=create ln_11
 this.st_1=create st_1
 this.pb_14=create pb_14
-this.Control[]={this.st_copyright,&
+this.Control[]={this.pb_15,&
+this.pb_test,&
+this.st_copyright,&
 this.pb_1,&
 this.pb_13,&
 this.pb_12,&
@@ -173,6 +183,8 @@ this.pb_14}
 end on
 
 on w_main.destroy
+destroy(this.pb_15)
+destroy(this.pb_test)
 destroy(this.st_copyright)
 destroy(this.pb_1)
 destroy(this.pb_13)
@@ -208,6 +220,51 @@ end on
 event open;st_copyright.Text = f_get_copyright(ref st_copyright)
 end event
 
+type pb_15 from picturebutton within w_main
+integer x = 407
+integer y = 1404
+integer width = 498
+integer height = 104
+integer taborder = 40
+integer textsize = -10
+integer weight = 700
+fontcharset fontcharset = ansi!
+fontpitch fontpitch = variable!
+fontfamily fontfamily = swiss!
+string facename = "Tahoma"
+string text = "Patrol-EM"
+boolean originalsize = true
+end type
+
+event clicked;open(w_pat_eagle_mtn)
+end event
+
+type pb_test from picturebutton within w_main
+integer x = 5
+integer y = 2092
+integer width = 123
+integer height = 92
+integer taborder = 50
+integer textsize = -8
+integer weight = 400
+fontcharset fontcharset = ansi!
+fontpitch fontpitch = variable!
+fontfamily fontfamily = swiss!
+string facename = "Arial"
+string text = "test"
+boolean originalsize = true
+alignment htextalign = left!
+end type
+
+event clicked;//integer li_num_found
+//long ll_grpid
+//ll_grpid = 11
+//string lsa_avail_callnums[]
+//li_num_found = f_get_avail_group_callnums(ll_grpid, ref lsa_avail_callnums, ref sqlca)
+//if(li_num_found > 0) then
+//end if
+end event
+
 type st_copyright from statictext within w_main
 integer x = 526
 integer y = 2108
@@ -233,9 +290,8 @@ end event
 
 type pb_1 from picturebutton within w_main
 integer x = 128
-integer y = 16
 integer width = 2414
-integer height = 472
+integer height = 496
 integer taborder = 50
 integer textsize = -12
 integer weight = 700
@@ -253,13 +309,14 @@ integer width = 498
 integer height = 224
 integer taborder = 40
 integer textsize = -10
-integer weight = 400
+integer weight = 700
 fontcharset fontcharset = ansi!
 fontpitch fontpitch = variable!
 fontfamily fontfamily = swiss!
 string facename = "Tahoma"
 string text = "Volunteers"
 boolean originalsize = true
+vtextalign vtextalign = vcenter!
 end type
 
 type pb_12 from picturebutton within w_main
@@ -269,23 +326,24 @@ integer width = 498
 integer height = 224
 integer taborder = 40
 integer textsize = -10
-integer weight = 400
+integer weight = 700
 fontcharset fontcharset = ansi!
 fontpitch fontpitch = variable!
 fontfamily fontfamily = swiss!
 string facename = "Tahoma"
 string text = "Investigations"
 boolean originalsize = true
+vtextalign vtextalign = vcenter!
 end type
 
 type pb_11 from picturebutton within w_main
-integer x = 402
-integer y = 1304
+integer x = 407
+integer y = 1308
 integer width = 498
-integer height = 224
+integer height = 104
 integer taborder = 30
 integer textsize = -10
-integer weight = 400
+integer weight = 700
 fontcharset fontcharset = ansi!
 fontpitch fontpitch = variable!
 fontfamily fontfamily = swiss!
@@ -304,16 +362,17 @@ integer width = 503
 integer height = 224
 integer taborder = 30
 integer textsize = -10
-integer weight = 400
+integer weight = 700
 fontcharset fontcharset = ansi!
 fontpitch fontpitch = variable!
 fontfamily fontfamily = swiss!
 string facename = "Tahoma"
 string text = "Admin"
 boolean originalsize = true
+vtextalign vtextalign = vcenter!
 end type
 
-event clicked;open(w_pat_admin)
+event clicked;open(w_admin)
 end event
 
 type pb_9 from picturebutton within w_main
@@ -460,6 +519,9 @@ boolean originalsize = true
 string picturename = "\\ucfs1\apps\pix\ucso_staffing\sbadge_patrol.png"
 end type
 
+event clicked;open(w_pat_chief_deputy)
+end event
+
 type ln_1 from line within w_main
 long linecolor = 33554432
 integer linethickness = 11
@@ -472,9 +534,9 @@ end type
 type ln_2 from line within w_main
 long linecolor = 33554432
 integer linethickness = 11
-integer beginx = 1911
+integer beginx = 1984
 integer beginy = 1912
-integer endx = 2021
+integer endx = 2094
 integer endy = 1912
 end type
 
@@ -563,9 +625,9 @@ type ln_13 from line within w_main
 long linecolor = 33554432
 integer linethickness = 11
 integer beginx = 302
-integer beginy = 1900
+integer beginy = 1908
 integer endx = 425
-integer endy = 1900
+integer endy = 1908
 end type
 
 type ln_11 from line within w_main

@@ -1,0 +1,30 @@
+﻿$PBExportHeader$f_create_string_from_array.srf
+global type f_create_string_from_array from function_object
+end type
+
+forward prototypes
+global function string f_create_string_from_array (string lsa_array[], string ls_delim)
+end prototypes
+
+global function string f_create_string_from_array (string lsa_array[], string ls_delim);//prototype: string ls_array_string = f_create_string_from_array(lsa_array, ls_delim)
+string ls_array_string 
+ls_array_string = ""
+integer li_num_array_items
+li_num_array_items = UpperBound(lsa_array)
+if(li_num_array_items > 0) then
+	integer li_loop
+	string ls_loopdata
+	for li_loop = 1 to li_num_array_items
+		ls_loopdata = lsa_array[li_loop]
+		if(f_len_ext(ls_loopdata) > 0) then
+			ls_array_string += ls_loopdata
+			if(li_loop < li_num_array_items) then
+				ls_array_string += ls_delim
+			end if
+		end if
+	next
+end if
+return ls_array_string
+
+end function
+

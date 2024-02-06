@@ -257,7 +257,7 @@ if((li_case_num = 8) or (li_case_num = 6)) then
 						//
 						select grp_super_empno, root_grp_super_empno into :ll_grp_super_empno, :ll_grps_resp from sns_staffing_groups where id = :ll_to_grpid using tr_sqlca;
 						//
-						update sns_employees set grps_resp = :ll_grps_resp, supervisor = :ll_grp_super_empno using tr_sqlca;
+						update sns_employees set grps_resp = :ll_grps_resp, supervisor = :ll_grp_super_empno where id = :ll_from_emp_exists_id using tr_sqlca;
 						//
 						if(sqlca.sqlcode <> -1) then
 							//
@@ -345,7 +345,7 @@ else //other casenums
 					//
 					select grp_super_empno, root_grp_super_empno into :ll_grp_super_empno, :ll_grps_resp from sns_staffing_groups where id = :ll_to_grpid using tr_sqlca;
 					//
-					update sns_employees set grps_resp = :ll_grps_resp, supervisor = :ll_grp_super_empno using tr_sqlca;
+					update sns_employees set grps_resp = :ll_grps_resp, supervisor = :ll_grp_super_empno  where id = :ll_from_emp_exists_id using tr_sqlca;
 					//
 					if(sqlca.sqlcode <> -1) then
 						//

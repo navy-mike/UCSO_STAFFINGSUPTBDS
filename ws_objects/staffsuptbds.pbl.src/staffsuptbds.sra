@@ -32,6 +32,7 @@ integer gi_pad_len
 boolean gb_compress
 transaction SP_SQLCA
 string gs_not_allowed_to_dragdrop_hdrtexts
+boolean gb_inserted_unfilled
 end variables
 
 global type staffsuptbds from application
@@ -98,7 +99,7 @@ else
 	gs_dbconnection = "db1.world" //"db1_test" //"db1.world" 
 end if
 
-gs_dbconnection = "db1_test" //"db1_test" //"db1.world" 
+gs_dbconnection = "db1.world" //"db1_test" //"db1.world" 
 
 // Profile justice_dev
 SQLCA.DBMS = "O10 Oracle10g (10.1.0)"
@@ -253,7 +254,7 @@ if(li_num_pop_items > 0) then
 end if
 //===============================================
 //===============================================
-
+gb_inserted_unfilled = false
 
 
 open(w_main)

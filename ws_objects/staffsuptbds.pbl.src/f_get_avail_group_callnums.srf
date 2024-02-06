@@ -1,0 +1,56 @@
+﻿$PBExportHeader$f_get_avail_group_callnums.srf
+global type f_get_avail_group_callnums from function_object
+end type
+
+forward prototypes
+global function integer f_get_avail_group_callnums (long ll_grpid, ref string lsa_avail_callnums[], ref transaction tr_sqlca)
+end prototypes
+
+global function integer f_get_avail_group_callnums (long ll_grpid, ref string lsa_avail_callnums[], ref transaction tr_sqlca);//prototype: integer li_num_found = f_get_avail_group_callnums(ll_grpid, ref lsa_avail_callnums, ref sqlca)
+integer li_num_avail
+li_num_avail = 0
+string lsa_nulls[]
+lsa_avail_callnums = lsa_nulls
+string lsa_defined_callnums[]
+string lsa_assigned_callnums[]
+string ls_def_callnums
+//
+select callnums into :ls_def_callnums from sns_bd_others_layout_specs where grpid = :ll_grpid using tr_sqlca;
+//
+integer li_num_defined_callnums
+li_num_defined_callnums = f_parseoutstring_ext(ls_def_callnums, ",", ref lsa_defined_callnums)
+if(li_num_defined_callnums > 0) then
+	string ls_sql
+	ls_sql = "select callnum from sns_board_specs_others where grpid = " + string(ll_grpid) + " and callnum is not null order by callnum"
+	integer li_num_assigned_callnums
+   li_num_assigned_callnums = f_app_ds_populate_string_array_by_sql(ref lsa_assigned_callnums, ls_sql, gi_pad_len, gs_delim, gb_compress, ref tr_sqlca)
+	if(li_num_assigned_callnums > 0) then
+		string ls_assigned_callnums	
+		ls_assigned_callnums = ""
+		integer li_loop
+		string ls_loopdata
+		for li_loop = 1 to li_num_assigned_callnums
+			ls_loopdata = lsa_assigned_callnums[li_loop]
+			if(f_len_ext(ls_loopdata) > 0) then
+				ls_assigned_callnums += ls_loopdata
+				if(li_loop < li_num_assigned_callnums) then
+					ls_assigned_callnums += ","
+				end if
+			end if
+		next
+		//
+		if(f_len_ext(ls_assigned_callnums) > 0) then
+			for li_loop = 1 to li_num_defined_callnums
+				ls_loopdata = lsa_defined_callnums[li_loop]
+				if(pos(ls_assigned_callnums, ls_loopdata) = 0) then
+					li_num_avail++
+					f_add_item_to_string_array_ext(lsa_avail_callnums, ls_loopdata, true)
+				end if
+			next
+			li_num_avail = UpperBound(lsa_avail_callnums)
+		end if
+	end if
+end if
+return li_num_avail
+end function
+
