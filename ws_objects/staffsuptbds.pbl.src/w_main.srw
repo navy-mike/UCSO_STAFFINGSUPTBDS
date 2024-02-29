@@ -234,6 +234,7 @@ fontfamily fontfamily = swiss!
 string facename = "Tahoma"
 string text = "Patrol-EM"
 boolean originalsize = true
+string powertiptext = "Eagle Mountain Assignments"
 end type
 
 event clicked;open(w_pat_eagle_mtn)
@@ -263,6 +264,8 @@ event clicked;//integer li_num_found
 //li_num_found = f_get_avail_group_callnums(ll_grpid, ref lsa_avail_callnums, ref sqlca)
 //if(li_num_found > 0) then
 //end if
+
+open(w_testing)
 end event
 
 type st_copyright from statictext within w_main
@@ -350,6 +353,7 @@ fontfamily fontfamily = swiss!
 string facename = "Tahoma"
 string text = "Patrol"
 boolean originalsize = true
+string powertiptext = "Patrol Assignments"
 end type
 
 event clicked;open(w_pat_assmts)
@@ -370,6 +374,7 @@ string facename = "Tahoma"
 string text = "Admin"
 boolean originalsize = true
 vtextalign vtextalign = vcenter!
+string powertiptext = "Patrol Assignments Changes"
 end type
 
 event clicked;open(w_admin)
@@ -501,7 +506,11 @@ fontfamily fontfamily = swiss!
 string facename = "Tahoma"
 boolean originalsize = true
 string picturename = "\\ucfs1\apps\pix\ucso_staffing\sbadge_judicial.png"
+string powertiptext = "Judicial Assignments Board"
 end type
+
+event clicked;open(w_judicial)
+end event
 
 type pb_patrol from picturebutton within w_main
 integer x = 23
@@ -517,6 +526,7 @@ fontfamily fontfamily = swiss!
 string facename = "Tahoma"
 boolean originalsize = true
 string picturename = "\\ucfs1\apps\pix\ucso_staffing\sbadge_patrol.png"
+string powertiptext = "Chief Deputy Board"
 end type
 
 event clicked;open(w_pat_chief_deputy)

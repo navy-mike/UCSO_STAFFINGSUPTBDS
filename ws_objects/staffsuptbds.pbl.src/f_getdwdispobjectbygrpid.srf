@@ -1,0 +1,65 @@
+﻿$PBExportHeader$f_getdwdispobjectbygrpid.srf
+global type f_getdwdispobjectbygrpid from function_object
+end type
+
+forward prototypes
+global function datawindow f_getdwdispobjectbygrpid (long ll_grpid, ref datawindow dw_disp_a, ref datawindow dw_disp_b, ref datawindow dw_disp_c, ref datawindow dw_disp_d, ref datawindow dw_disp_rec1, ref datawindow dw_disp_rec2, ref datawindow dw_disp_vine1, ref datawindow dw_disp_vine2, ref datawindow dw_disp_fto, ref datawindow dw_disp_smcont, ref datawindow dw_disp_sccadmin, ref datawindow dw_disp_em101, ref datawindow dw_disp_em102, ref datawindow dw_disp_em201, ref datawindow dw_disp_em202, ref datawindow dw_disp_emsro, ref datawindow dw_disp_resvrs)
+end prototypes
+
+global function datawindow f_getdwdispobjectbygrpid (long ll_grpid, ref datawindow dw_disp_a, ref datawindow dw_disp_b, ref datawindow dw_disp_c, ref datawindow dw_disp_d, ref datawindow dw_disp_rec1, ref datawindow dw_disp_rec2, ref datawindow dw_disp_vine1, ref datawindow dw_disp_vine2, ref datawindow dw_disp_fto, ref datawindow dw_disp_smcont, ref datawindow dw_disp_sccadmin, ref datawindow dw_disp_em101, ref datawindow dw_disp_em102, ref datawindow dw_disp_em201, ref datawindow dw_disp_em202, ref datawindow dw_disp_emsro, ref datawindow dw_disp_resvrs);//prototype: dw_object = f_getDwDispObjectByGrpid(ll_clicked_grpid, dw_disp_a, dw_disp_b, dw_disp_c, dw_disp_d, dw_disp_rec1, dw_disp_rec2, dw_disp_vine1, dw_disp_vine2, dw_disp_fto, dw_disp_smcont, dw_disp_sccadmin, dw_disp_em101, dw_disp_em102,  dw_disp_em201, dw_disp_em202, dw_disp_emsro, dw_disp_resvrs)
+//dw_disp_a	1
+//dw_disp_b	2
+//dw_disp_c	3
+//dw_disp_d	4
+//dw_disp_rec1	5
+//dw_disp_rec2	6
+//dw_disp_vine1	111
+//dw_disp_vine2   112
+//dw_disp_fto	52
+//dw_disp_smcont	12
+//dw_disp_sccadmin 132
+//dw_disp_em101 	811
+//dw_disp_em102   812
+//dw_disp_em201   921
+//dw_disp_em202   922
+//dw_disp_emsro   10
+//dw_disp_resvrs  129
+datawindow dw_object
+if(ll_grpid = 1) then //team a
+	dw_object = dw_disp_a
+elseif(ll_grpid = 2) then //team b
+	dw_object = dw_disp_b
+elseif(ll_grpid = 3) then //team c
+	dw_object = dw_disp_c
+elseif(ll_grpid = 4) then //team d
+	dw_object = dw_disp_d
+elseif(ll_grpid = 5) then //rec1
+	dw_object = dw_disp_rec1
+elseif(ll_grpid = 6) then //rec2
+	dw_object = dw_disp_rec2
+elseif(ll_grpid = 111) then //rec2
+	dw_object = dw_disp_vine1
+elseif(ll_grpid = 112) then //rec2
+	dw_object = dw_disp_vine2
+elseif(ll_grpid = 52) then //fto
+	dw_object = dw_disp_fto 	
+elseif(ll_grpid = 12) then //smcont
+	dw_object = dw_disp_smcont	
+elseif(ll_grpid = 132) then //smcont
+	dw_object = dw_disp_sccadmin	
+elseif(ll_grpid = 811) then //em101
+	dw_object = dw_disp_em101	
+elseif(ll_grpid = 812) then //em102
+	dw_object = dw_disp_em102	
+elseif(ll_grpid = 921) then //em201
+	dw_object = dw_disp_em201	
+elseif(ll_grpid = 922) then //em202
+	dw_object = dw_disp_em202		
+elseif(ll_grpid = 10) then //emsro
+	dw_object = dw_disp_emsro	
+elseif(ll_grpid = 129) then //resvrs
+	dw_object = dw_disp_resvrs		
+end if
+return dw_object
+end function
+

@@ -1,0 +1,56 @@
+﻿$PBExportHeader$f_getdwdispjudobjectbygrpid_mod.srf
+global type f_getdwdispjudobjectbygrpid_mod from function_object
+end type
+
+forward prototypes
+global function datawindow f_getdwdispjudobjectbygrpid_mod (long ll_grpid, string ls_subgrpid, ref datawindow dw_jud_chief, ref datawindow dw_jud_supr1, ref datawindow dw_jud_supr2, ref datawindow dw_jud_group1, ref datawindow dw_jud_group2, ref datawindow dw_jud_group3, ref datawindow dw_jud_group4, ref datawindow dw_jud_group5, ref datawindow dw_jud_group6, ref datawindow dw_jud_admin, ref integer li_valid_object)
+end prototypes
+
+global function datawindow f_getdwdispjudobjectbygrpid_mod (long ll_grpid, string ls_subgrpid, ref datawindow dw_jud_chief, ref datawindow dw_jud_supr1, ref datawindow dw_jud_supr2, ref datawindow dw_jud_group1, ref datawindow dw_jud_group2, ref datawindow dw_jud_group3, ref datawindow dw_jud_group4, ref datawindow dw_jud_group5, ref datawindow dw_jud_group6, ref datawindow dw_jud_admin, ref integer li_valid_object);//prototype: dw_object = f_getDwDispJudObjectByGrpid(ll_clicked_grpid, ls_subgrpid, dw_jud_chief, dw_jud_supr1, dw_jud_supr2, dw_jud_group1, dw_jud_group2, dw_jud_group3, dw_jud_group4, dw_jud_group5, dw_jud_group6, dw_jud_admin)
+//dwobject    ll_grpid  ls_subgrpid
+//dw_jud_group1 135         'G1'
+//dw_jud_group2 136         'G2'
+//dw_jud_admin  59          'A0'
+//dw_jud_group3 137         'G3'
+//dw_jud_group4 138         'G4'
+//dw_jud_group5 139         'G5'
+//dw_jud_group6 140         'G6'
+//dw_jud_chief  118         'C0'
+//dw_jud_supr1  135         'S1' 
+//dw_jud_supr2  137         'S2'
+datawindow dw_object
+li_valid_object = 0
+if((ll_grpid = 135) and (ls_subgrpid = 'G1')) then //dw_jud_group1
+	dw_object = dw_jud_group1
+	li_valid_object = 1
+elseif((ll_grpid = 136) and (ls_subgrpid = 'G2')) then //dw_jud_group2
+	dw_object = dw_jud_group2
+	li_valid_object = 1	
+elseif((ll_grpid = 59) and (ls_subgrpid = 'A0')) then //dw_jud_admin
+	dw_object = dw_jud_admin
+	li_valid_object = 1
+elseif((ll_grpid = 137) and (ls_subgrpid = 'G3')) then //dw_jud_group3
+	dw_object = dw_jud_group3
+	li_valid_object = 1	
+elseif((ll_grpid = 138) and (ls_subgrpid = 'G4')) then //dw_jud_group4
+	dw_object = dw_jud_group4
+	li_valid_object = 1	
+elseif((ll_grpid = 139) and (ls_subgrpid = 'G5')) then //dw_jud_group5
+	dw_object = dw_jud_group5
+	li_valid_object = 1	
+elseif((ll_grpid = 140) and (ls_subgrpid = 'G6')) then //dw_jud_group6
+	dw_object = dw_jud_group6
+	li_valid_object = 1	
+elseif((ll_grpid = 118) and (ls_subgrpid = 'C0')) then //dw_jud_chief
+	dw_object = dw_jud_chief
+	li_valid_object = 1	
+elseif((ll_grpid = 117) and (ls_subgrpid = 'S1')) then //dw_jud_supr1
+	dw_object = dw_jud_supr1 	
+	li_valid_object = 1	
+elseif((ll_grpid = 117) and (ls_subgrpid = 'S2')) then //dw_jud_supr2
+	dw_object = dw_jud_supr2	
+	li_valid_object = 1	
+end if
+return dw_object
+end function
+

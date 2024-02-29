@@ -33,6 +33,19 @@ boolean gb_compress
 transaction SP_SQLCA
 string gs_not_allowed_to_dragdrop_hdrtexts
 boolean gb_inserted_unfilled
+integer gi_bd_span_from
+integer gi_bd_span_to
+integer gi_bd_no_display
+integer gi_bd_before_days
+integer gi_bd_after_days
+integer gi_bd_today
+
+//nrtnvalue = 0 do not display birthday
+//          = 1 birthday within 7 days
+//          = 2 birthday past 7days
+//          = 3 on birthday
+
+boolean gb_show_all_birthdays
 end variables
 
 global type staffsuptbds from application
@@ -88,16 +101,16 @@ string ls_command_line
 ls_command_line = CommandParm()
 //MessageBox("Notification","command line arg=" + ls_command_line)
 
-ls_command_line = "/T" //force db1_test
-
-if(pos(ls_command_line, "T") > 0) then
-	//li_num_db_settings = f_readfile(ls_dbsetting, ref lsa_dbsettings, ref ls_fileerror)
-	//if(li_num_db_settings > 0) then
-	gs_dbconnection = "db1_test"
-	gs_dbconnection = trim(gs_dbconnection)
-else
-	gs_dbconnection = "db1.world" //"db1_test" //"db1.world" 
-end if
+//ls_command_line = "/T" //force db1_test
+//
+//if(pos(ls_command_line, "T") > 0) then
+//	//li_num_db_settings = f_readfile(ls_dbsetting, ref lsa_dbsettings, ref ls_fileerror)
+//	//if(li_num_db_settings > 0) then
+//	gs_dbconnection = "db1_test"
+//	gs_dbconnection = trim(gs_dbconnection)
+//else
+//	gs_dbconnection = "db1.world" //"db1_test" //"db1.world" 
+//end if
 
 gs_dbconnection = "db1.world" //"db1_test" //"db1.world" 
 
@@ -255,7 +268,21 @@ end if
 //===============================================
 //===============================================
 gb_inserted_unfilled = false
+string ls_temp_parameter
+ls_temp_parameter = f_get_settings_parameter("SYSTEM","BD_SPAN_FROM","ndata", ref sqlca)
+gi_bd_span_from = f_stoi(ls_temp_parameter)
+ls_temp_parameter = f_get_settings_parameter("SYSTEM","BD_SPAN_TO","ndata", ref sqlca)
+gi_bd_span_to = f_stoi(ls_temp_parameter)
 
+// 0 do not display birthday
+// 1 birthday within 7 days
+// 2 birthday past 7days
+// 3 on birthday
+gi_bd_no_display = 0
+gi_bd_before_days = 1
+gi_bd_after_days = 2
+gi_bd_today = 3
+gb_show_all_birthdays = false
 
 open(w_main)
 end event

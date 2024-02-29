@@ -2,9 +2,11 @@
 forward
 global type w_pat_chief_deputy from window
 end type
+type lb_1 from listbox within w_pat_chief_deputy
+end type
 type pb_1 from picturebutton within w_pat_chief_deputy
 end type
-type dw_fto from datawindow within w_pat_chief_deputy
+type dw_disp_fto from datawindow within w_pat_chief_deputy
 end type
 type dw_disp_sccadmin from datawindow within w_pat_chief_deputy
 end type
@@ -41,20 +43,22 @@ end type
 end forward
 
 global type w_pat_chief_deputy from window
-integer width = 8942
-integer height = 5444
+integer width = 10999
+integer height = 5612
 boolean titlebar = true
 string title = "Untitled"
 boolean controlmenu = true
 boolean minbox = true
 boolean maxbox = true
+boolean hscrollbar = true
 boolean vscrollbar = true
 boolean resizable = true
 long backcolor = 67108864
 string icon = "AppIcon!"
 boolean center = true
+lb_1 lb_1
 pb_1 pb_1
-dw_fto dw_fto
+dw_disp_fto dw_disp_fto
 dw_disp_sccadmin dw_disp_sccadmin
 dw_disp_smcont dw_disp_smcont
 dw_disp_vine2 dw_disp_vine2
@@ -74,9 +78,15 @@ pb_14 pb_14
 end type
 global w_pat_chief_deputy w_pat_chief_deputy
 
+type variables
+
+
+end variables
+
 on w_pat_chief_deputy.create
+this.lb_1=create lb_1
 this.pb_1=create pb_1
-this.dw_fto=create dw_fto
+this.dw_disp_fto=create dw_disp_fto
 this.dw_disp_sccadmin=create dw_disp_sccadmin
 this.dw_disp_smcont=create dw_disp_smcont
 this.dw_disp_vine2=create dw_disp_vine2
@@ -93,8 +103,9 @@ this.dw_lt4=create dw_lt4
 this.dw_disp_a=create dw_disp_a
 this.st_1=create st_1
 this.pb_14=create pb_14
-this.Control[]={this.pb_1,&
-this.dw_fto,&
+this.Control[]={this.lb_1,&
+this.pb_1,&
+this.dw_disp_fto,&
 this.dw_disp_sccadmin,&
 this.dw_disp_smcont,&
 this.dw_disp_vine2,&
@@ -114,8 +125,9 @@ this.pb_14}
 end on
 
 on w_pat_chief_deputy.destroy
+destroy(this.lb_1)
 destroy(this.pb_1)
-destroy(this.dw_fto)
+destroy(this.dw_disp_fto)
 destroy(this.dw_disp_sccadmin)
 destroy(this.dw_disp_smcont)
 destroy(this.dw_disp_vine2)
@@ -137,17 +149,18 @@ end on
 event open;long ll_num_retrieved
 
 ll_num_retrieved = 0
+
 dw_disp_a.settransobject(sqlca)
-ll_num_retrieved = dw_disp_a.Retrieve(1)
+ll_num_retrieved = dw_disp_a.retrieve(1,"PATROL","PAT_CHIEF","1","02","DW_TEAMA",0,"03")
 
 dw_disp_b.settransobject(sqlca)
-ll_num_retrieved = dw_disp_b.Retrieve(2)
+ll_num_retrieved = dw_disp_b.retrieve(1,"PATROL","PAT_CHIEF","2","02","DW_TEAMB",0,"05")
 
 dw_disp_c.settransobject(sqlca)
-ll_num_retrieved = dw_disp_c.Retrieve(3)
+ll_num_retrieved = dw_disp_c.retrieve(1,"PATROL","PAT_CHIEF","3","02","DW_TEAMC",0,"07")
 
 dw_disp_d.settransobject(sqlca)
-ll_num_retrieved = dw_disp_d.Retrieve(4)
+ll_num_retrieved = dw_disp_d.retrieve(1,"PATROL","PAT_CHIEF","4","02","DW_TEAMD",0,"09")
 
 dw_lt1.settransobject(sqlca)
 ll_num_retrieved = dw_lt1.Retrieve(12)
@@ -183,14 +196,36 @@ ll_num_retrieved = dw_disp_smcont.Retrieve(12)
 dw_disp_sccadmin.settransobject(sqlca)
 ll_num_retrieved = dw_disp_sccadmin.Retrieve(132)
 
-dw_fto.settransobject(sqlca)
-ll_num_retrieved = dw_fto.Retrieve(52)
+dw_disp_fto.settransobject(sqlca)
+ll_num_retrieved = dw_disp_fto.Retrieve(52)
+
 
 end event
 
+event rbuttondown;close(w_pat_chief_deputy)
+end event
+
+type lb_1 from listbox within w_pat_chief_deputy
+integer x = 814
+integer width = 384
+integer height = 172
+integer taborder = 50
+integer textsize = -8
+integer weight = 400
+fontcharset fontcharset = ansi!
+fontpitch fontpitch = variable!
+fontfamily fontfamily = swiss!
+string facename = "Tw Cen MT Condensed"
+long backcolor = 553648127
+boolean border = false
+boolean sorted = false
+string item[] = {"Screen Res: 2560x1600","Client Width: 11620","Client Height: 5940"}
+borderstyle borderstyle = stylelowered!
+end type
+
 type pb_1 from picturebutton within w_pat_chief_deputy
-integer x = 4370
-integer y = 2840
+integer x = 4224
+integer y = 2948
 integer width = 242
 integer height = 92
 integer taborder = 10
@@ -209,15 +244,15 @@ end type
 event clicked;close(w_pat_chief_deputy)
 end event
 
-type dw_fto from datawindow within w_pat_chief_deputy
-integer x = 7035
-integer y = 2944
-integer width = 1728
+type dw_disp_fto from datawindow within w_pat_chief_deputy
+integer x = 7621
+integer y = 3040
+integer width = 1902
 integer height = 2388
 integer taborder = 40
 string dragicon = "\\ucfs1\apps\pix\ucso_staffing\UCSOSTAFFGRN.ICO"
 string title = "none"
-string dataobject = "dw_disp_teams"
+string dataobject = "dw_disp_teams_lg"
 boolean livescroll = true
 borderstyle borderstyle = stylelowered!
 end type
@@ -2371,14 +2406,14 @@ event retrieverow;////===================
 end event
 
 type dw_disp_sccadmin from datawindow within w_pat_chief_deputy
-integer x = 6990
-integer y = 744
-integer width = 1728
-integer height = 884
+integer x = 8837
+integer y = 852
+integer width = 2021
+integer height = 1148
 integer taborder = 50
 string dragicon = "\\ucfs1\apps\pix\ucso_staffing\UCSOSTAFFGRN.ICO"
 string title = "none"
-string dataobject = "dw_disp_teams"
+string dataobject = "dw_disp_teams_lg"
 boolean livescroll = true
 borderstyle borderstyle = stylelowered!
 end type
@@ -4532,14 +4567,14 @@ event retrieverow;////===================
 end event
 
 type dw_disp_smcont from datawindow within w_pat_chief_deputy
-integer x = 6990
-integer y = 176
-integer width = 1728
-integer height = 556
+integer x = 8832
+integer y = 192
+integer width = 2011
+integer height = 648
 integer taborder = 40
 string dragicon = "\\ucfs1\apps\pix\ucso_staffing\UCSOSTAFFGRN.ICO"
 string title = "none"
-string dataobject = "dw_disp_teams"
+string dataobject = "dw_disp_teams_lg"
 boolean livescroll = true
 borderstyle borderstyle = stylelowered!
 end type
@@ -6693,14 +6728,14 @@ event retrieverow;////===================
 end event
 
 type dw_disp_vine2 from datawindow within w_pat_chief_deputy
-integer x = 5275
-integer y = 2940
-integer width = 1728
+integer x = 5637
+integer y = 3040
+integer width = 1957
 integer height = 2388
 integer taborder = 40
 string dragicon = "\\ucfs1\apps\pix\ucso_staffing\UCSOSTAFFGRN.ICO"
 string title = "none"
-string dataobject = "dw_disp_teams_vine2"
+string dataobject = "dw_disp_teams_vine2_test"
 boolean livescroll = true
 borderstyle borderstyle = stylelowered!
 end type
@@ -8854,9 +8889,9 @@ event retrieverow;////===================
 end event
 
 type dw_disp_vine1 from datawindow within w_pat_chief_deputy
-integer x = 3520
-integer y = 2940
-integer width = 1728
+integer x = 3653
+integer y = 3040
+integer width = 1957
 integer height = 2388
 integer taborder = 30
 string dragicon = "\\ucfs1\apps\pix\ucso_staffing\UCSOSTAFFGRN.ICO"
@@ -11015,9 +11050,9 @@ event retrieverow;////===================
 end event
 
 type dw_disp_rec2 from datawindow within w_pat_chief_deputy
-integer x = 1769
-integer y = 2944
-integer width = 1728
+integer x = 1847
+integer y = 3028
+integer width = 1765
 integer height = 2388
 integer taborder = 60
 string dragicon = "\\ucfs1\apps\pix\ucso_staffing\UCSOSTAFFGRN.ICO"
@@ -13176,8 +13211,9 @@ event retrieverow;////===================
 end event
 
 type dw_disp_rec1 from datawindow within w_pat_chief_deputy
-integer y = 2944
-integer width = 1728
+integer x = 32
+integer y = 3032
+integer width = 1765
 integer height = 2388
 integer taborder = 40
 string dragicon = "\\ucfs1\apps\pix\ucso_staffing\UCSOSTAFFGRN.ICO"
@@ -15336,16 +15372,17 @@ event retrieverow;////===================
 end event
 
 type dw_disp_d from datawindow within w_pat_chief_deputy
-integer x = 5248
-integer y = 176
-integer width = 1728
-integer height = 2660
+string tag = "8"
+integer x = 6583
+integer y = 188
+integer width = 2194
+integer height = 2748
 integer taborder = 50
 string dragicon = "\\ucfs1\apps\pix\ucso_staffing\UCSOSTAFFGRN.ICO"
-string title = "none"
-string dataobject = "dw_disp_teams"
+string title = "Patrol Chief Deputy-Assignments"
+string dataobject = "dw_disp_teams_double_mod"
 boolean livescroll = true
-borderstyle borderstyle = stylelowered!
+borderstyle borderstyle = styleshadowbox!
 end type
 
 event clicked;//if(bIsDragging = false) then
@@ -17470,43 +17507,76 @@ event rbuttondown;////===================
 //
 end event
 
-event retrieverow;////===================
-////### RETRIEVEROW ###
-////===================
-//string ls_empname
-//long ll_assgnd_empno
-//string ls_callnum
-////=======================
-//long ll_clicked_grpid
-//ll_clicked_grpid = 1
-////=======================
-//datawindow dw_clicked_object
-//dw_clicked_object = f_getDwobjectByGrpid(ll_clicked_grpid, dw_a, dw_b, dw_c, dw_d, dw_rec1, dw_rec2, dw_em1, dw_em2, dw_emsro, dw_vine, dw_smcont, dw_fto, dw_team_resvrs, dw_unfilled, dw_unassigned, dw_supervisors, dw_admin)
-//if(IsNull(dw_clicked_object) = false) then
-//	ll_assgnd_empno = dw_clicked_object.getitemnumber(row, 'sns_board_specs_others_empno')
-//	ls_callnum = dw_clicked_object.getitemstring(row, 'sns_board_specs_others_callnum')
-//	ls_empname = dw_clicked_object.getitemstring(row, 'sns_board_specs_others_empname')
-//	if(IsNull(ls_callnum) = true) then
-//		ls_callnum = ""
-//	end if
-//	if((ll_assgnd_empno = 0) and (f_len_ext(ls_empname) = 0) and (f_len_ext(ls_callnum) > 0)) then
-//		dw_clicked_object.setitem(row, 'sns_board_specs_others_empname', '*** UNFILLED ***')
-//	end if
-//end if
+event retrieverow;long ll_rowcount
+//-------------------
+long ll_clicked_grpid
+ll_clicked_grpid = 4
+//-------------------
+string ls_clicked_grpid
+ls_clicked_grpid = string(ll_clicked_grpid)
+datawindow dw_null
+SetNull(dw_null)
+datawindow dw_object
+//dw_object = f_getDwDispObjectByGrpid(ll_clicked_grpid, dw_disp_a, dw_disp_b, dw_disp_c, dw_disp_d, dw_disp_rec1, dw_disp_rec2, dw_disp_vine1, dw_disp_vine2, dw_disp_fto, dw_disp_smcont, dw_disp_sccadmin, dw_disp_em101, dw_disp_em102,  dw_disp_em201, dw_disp_em202, dw_disp_emsro, dw_disp_resvrs)
+dw_object = f_getDwDispObjectByGrpid(ll_clicked_grpid, dw_disp_a, dw_disp_b, dw_disp_c, dw_disp_d, dw_disp_rec1, dw_disp_rec2, dw_disp_vine1, dw_disp_vine2, dw_disp_fto, dw_disp_smcont, dw_disp_sccadmin, dw_null,       dw_null,         dw_null,       dw_null,      dw_null,       dw_null)
+
 //
+select count(*) into :ll_rowcount from sns_board_specs_others where grpid = :ll_clicked_grpid and empname is not null using sqlca;
+//
+integer li_num_objects
+//
+select count(*) into :li_num_objects from sns_board_specs_others where grpid = :ll_clicked_grpid using sqlca;
+//
+integer li_max_disp_objects
+//
+select maxdispobj into :li_max_disp_objects from sns_board_specs where department = 'PATROL' and boardid = 'PAT_CHIEF' and grpids = :ls_clicked_grpid using sqlca;
+//
+if(li_max_disp_objects = 0) then
+	li_max_disp_objects = li_num_objects
+end if
+
+long ll_row
+string ls_grpname_object_name
+string ls_picobj_object_name
+string ls_empname_object_name
+string ls_row
+string ls_grpname
+string ls_picobj
+string ls_empname
+string ls_tcerror
+string ls_modify
+for ll_row = 1 to li_max_disp_objects
+	ls_row = f_lpad(string(ll_row), 3, "0")
+	ls_grpname_object_name = "grpteam_" + ls_row
+	ls_picobj_object_name = "picobj_" + ls_row
+	ls_empname_object_name = "empname_" + ls_row
+	if(ll_row <= ll_rowcount) then
+		ls_grpname = dw_object.getitemstring(row, ls_grpname_object_name)
+		ls_picobj = dw_object.getitemstring(row, ls_picobj_object_name)
+		ls_empname = dw_object.getitemstring(row, ls_empname_object_name)
+	else
+		ls_modify = ls_grpname_object_name + ".Visible = '0'"
+		dw_object.Modify(ls_modify)
+		ls_modify = ls_picobj_object_name + ".Visible = '0'"
+		dw_object.Modify(ls_modify)
+		ls_modify = ls_empname_object_name + ".Visible = '0'"
+		dw_object.Modify(ls_modify)
+	end if
+next
 end event
 
 type dw_disp_c from datawindow within w_pat_chief_deputy
-integer x = 3506
-integer y = 176
-integer width = 1728
-integer height = 2660
+string tag = "8"
+integer x = 4338
+integer y = 180
+integer width = 2194
+integer height = 2744
 integer taborder = 40
 string dragicon = "\\ucfs1\apps\pix\ucso_staffing\UCSOSTAFFGRN.ICO"
-string title = "none"
-string dataobject = "dw_disp_teams"
+string title = "Patrol Chief Deputy-Assignments"
+string dataobject = "dw_disp_teams_double_mod"
 boolean livescroll = true
-borderstyle borderstyle = stylelowered!
+borderstyle borderstyle = styleshadowbox!
 end type
 
 event clicked;//if(bIsDragging = false) then
@@ -19631,43 +19701,76 @@ event rbuttondown;////===================
 //
 end event
 
-event retrieverow;////===================
-////### RETRIEVEROW ###
-////===================
-//string ls_empname
-//long ll_assgnd_empno
-//string ls_callnum
-////=======================
-//long ll_clicked_grpid
-//ll_clicked_grpid = 1
-////=======================
-//datawindow dw_clicked_object
-//dw_clicked_object = f_getDwobjectByGrpid(ll_clicked_grpid, dw_a, dw_b, dw_c, dw_d, dw_rec1, dw_rec2, dw_em1, dw_em2, dw_emsro, dw_vine, dw_smcont, dw_fto, dw_team_resvrs, dw_unfilled, dw_unassigned, dw_supervisors, dw_admin)
-//if(IsNull(dw_clicked_object) = false) then
-//	ll_assgnd_empno = dw_clicked_object.getitemnumber(row, 'sns_board_specs_others_empno')
-//	ls_callnum = dw_clicked_object.getitemstring(row, 'sns_board_specs_others_callnum')
-//	ls_empname = dw_clicked_object.getitemstring(row, 'sns_board_specs_others_empname')
-//	if(IsNull(ls_callnum) = true) then
-//		ls_callnum = ""
-//	end if
-//	if((ll_assgnd_empno = 0) and (f_len_ext(ls_empname) = 0) and (f_len_ext(ls_callnum) > 0)) then
-//		dw_clicked_object.setitem(row, 'sns_board_specs_others_empname', '*** UNFILLED ***')
-//	end if
-//end if
+event retrieverow;long ll_rowcount
+//-------------------
+long ll_clicked_grpid
+ll_clicked_grpid = 3
+//-------------------
+string ls_clicked_grpid
+ls_clicked_grpid = string(ll_clicked_grpid)
+datawindow dw_null
+SetNull(dw_null)
+datawindow dw_object
+//dw_object = f_getDwDispObjectByGrpid(ll_clicked_grpid, dw_disp_a, dw_disp_b, dw_disp_c, dw_disp_d, dw_disp_rec1, dw_disp_rec2, dw_disp_vine1, dw_disp_vine2, dw_disp_fto, dw_disp_smcont, dw_disp_sccadmin, dw_disp_em101, dw_disp_em102,  dw_disp_em201, dw_disp_em202, dw_disp_emsro, dw_disp_resvrs)
+dw_object = f_getDwDispObjectByGrpid(ll_clicked_grpid, dw_disp_a, dw_disp_b, dw_disp_c, dw_disp_d, dw_disp_rec1, dw_disp_rec2, dw_disp_vine1, dw_disp_vine2, dw_disp_fto, dw_disp_smcont, dw_disp_sccadmin, dw_null,       dw_null,         dw_null,       dw_null,      dw_null,       dw_null)
+
 //
+select count(*) into :ll_rowcount from sns_board_specs_others where grpid = :ll_clicked_grpid and empname is not null using sqlca;
+//
+integer li_num_objects
+//
+select count(*) into :li_num_objects from sns_board_specs_others where grpid = :ll_clicked_grpid using sqlca;
+//
+integer li_max_disp_objects
+//
+select maxdispobj into :li_max_disp_objects from sns_board_specs where department = 'PATROL' and boardid = 'PAT_CHIEF' and grpids = :ls_clicked_grpid using sqlca;
+//
+if(li_max_disp_objects = 0) then
+	li_max_disp_objects = li_num_objects
+end if
+
+long ll_row
+string ls_grpname_object_name
+string ls_picobj_object_name
+string ls_empname_object_name
+string ls_row
+string ls_grpname
+string ls_picobj
+string ls_empname
+string ls_tcerror
+string ls_modify
+for ll_row = 1 to li_max_disp_objects
+	ls_row = f_lpad(string(ll_row), 3, "0")
+	ls_grpname_object_name = "grpteam_" + ls_row
+	ls_picobj_object_name = "picobj_" + ls_row
+	ls_empname_object_name = "empname_" + ls_row
+	if(ll_row <= ll_rowcount) then
+		ls_grpname = dw_object.getitemstring(row, ls_grpname_object_name)
+		ls_picobj = dw_object.getitemstring(row, ls_picobj_object_name)
+		ls_empname = dw_object.getitemstring(row, ls_empname_object_name)
+	else
+		ls_modify = ls_grpname_object_name + ".Visible = '0'"
+		dw_object.Modify(ls_modify)
+		ls_modify = ls_picobj_object_name + ".Visible = '0'"
+		dw_object.Modify(ls_modify)
+		ls_modify = ls_empname_object_name + ".Visible = '0'"
+		dw_object.Modify(ls_modify)
+	end if
+next
 end event
 
 type dw_disp_b from datawindow within w_pat_chief_deputy
-integer x = 1769
-integer y = 176
-integer width = 1728
-integer height = 2660
+string tag = "8"
+integer x = 2185
+integer y = 180
+integer width = 2135
+integer height = 2744
 integer taborder = 30
 string dragicon = "\\ucfs1\apps\pix\ucso_staffing\UCSOSTAFFGRN.ICO"
-string title = "none"
-string dataobject = "dw_disp_teams"
+string title = "Patrol Chief Deputy-Assignments"
+string dataobject = "dw_disp_teams_double_mod"
 boolean livescroll = true
-borderstyle borderstyle = stylelowered!
+borderstyle borderstyle = styleshadowbox!
 end type
 
 event clicked;//if(bIsDragging = false) then
@@ -21792,37 +21895,69 @@ event rbuttondown;////===================
 //
 end event
 
-event retrieverow;////===================
-////### RETRIEVEROW ###
-////===================
-//string ls_empname
-//long ll_assgnd_empno
-//string ls_callnum
-////=======================
-//long ll_clicked_grpid
-//ll_clicked_grpid = 1
-////=======================
-//datawindow dw_clicked_object
-//dw_clicked_object = f_getDwobjectByGrpid(ll_clicked_grpid, dw_a, dw_b, dw_c, dw_d, dw_rec1, dw_rec2, dw_em1, dw_em2, dw_emsro, dw_vine, dw_smcont, dw_fto, dw_team_resvrs, dw_unfilled, dw_unassigned, dw_supervisors, dw_admin)
-//if(IsNull(dw_clicked_object) = false) then
-//	ll_assgnd_empno = dw_clicked_object.getitemnumber(row, 'sns_board_specs_others_empno')
-//	ls_callnum = dw_clicked_object.getitemstring(row, 'sns_board_specs_others_callnum')
-//	ls_empname = dw_clicked_object.getitemstring(row, 'sns_board_specs_others_empname')
-//	if(IsNull(ls_callnum) = true) then
-//		ls_callnum = ""
-//	end if
-//	if((ll_assgnd_empno = 0) and (f_len_ext(ls_empname) = 0) and (f_len_ext(ls_callnum) > 0)) then
-//		dw_clicked_object.setitem(row, 'sns_board_specs_others_empname', '*** UNFILLED ***')
-//	end if
-//end if
+event retrieverow;long ll_rowcount
+//-------------------
+long ll_clicked_grpid
+ll_clicked_grpid = 2
+//-------------------
+string ls_clicked_grpid
+ls_clicked_grpid = string(ll_clicked_grpid)
+datawindow dw_null
+SetNull(dw_null)
+datawindow dw_object
+//dw_object = f_getDwDispObjectByGrpid(ll_clicked_grpid, dw_disp_a, dw_disp_b, dw_disp_c, dw_disp_d, dw_disp_rec1, dw_disp_rec2, dw_disp_vine1, dw_disp_vine2, dw_disp_fto, dw_disp_smcont, dw_disp_sccadmin, dw_disp_em101, dw_disp_em102,  dw_disp_em201, dw_disp_em202, dw_disp_emsro, dw_disp_resvrs)
+dw_object = f_getDwDispObjectByGrpid(ll_clicked_grpid, dw_disp_a, dw_disp_b, dw_disp_c, dw_disp_d, dw_disp_rec1, dw_disp_rec2, dw_disp_vine1, dw_disp_vine2, dw_disp_fto, dw_disp_smcont, dw_disp_sccadmin, dw_null,       dw_null,         dw_null,       dw_null,      dw_null,       dw_null)
+
 //
+select count(*) into :ll_rowcount from sns_board_specs_others where grpid = :ll_clicked_grpid and empname is not null using sqlca;
+//
+integer li_num_objects
+//
+select count(*) into :li_num_objects from sns_board_specs_others where grpid = :ll_clicked_grpid using sqlca;
+//
+integer li_max_disp_objects
+//
+select maxdispobj into :li_max_disp_objects from sns_board_specs where department = 'PATROL' and boardid = 'PAT_CHIEF' and grpids = :ls_clicked_grpid using sqlca;
+//
+if(li_max_disp_objects = 0) then
+	li_max_disp_objects = li_num_objects
+end if
+
+long ll_row
+string ls_grpname_object_name
+string ls_picobj_object_name
+string ls_empname_object_name
+string ls_row
+string ls_grpname
+string ls_picobj
+string ls_empname
+string ls_tcerror
+string ls_modify
+for ll_row = 1 to li_max_disp_objects
+	ls_row = f_lpad(string(ll_row), 3, "0")
+	ls_grpname_object_name = "grpteam_" + ls_row
+	ls_picobj_object_name = "picobj_" + ls_row
+	ls_empname_object_name = "empname_" + ls_row
+	if(ll_row <= ll_rowcount) then
+		ls_grpname = dw_object.getitemstring(row, ls_grpname_object_name)
+		ls_picobj = dw_object.getitemstring(row, ls_picobj_object_name)
+		ls_empname = dw_object.getitemstring(row, ls_empname_object_name)
+	else
+		ls_modify = ls_grpname_object_name + ".Visible = '0'"
+		dw_object.Modify(ls_modify)
+		ls_modify = ls_picobj_object_name + ".Visible = '0'"
+		dw_object.Modify(ls_modify)
+		ls_modify = ls_empname_object_name + ".Visible = '0'"
+		dw_object.Modify(ls_modify)
+	end if
+next
 end event
 
 type dw_lt3 from datawindow within w_pat_chief_deputy
-integer x = 4549
-integer y = 44
-integer width = 1499
-integer height = 124
+integer x = 4343
+integer y = 4
+integer width = 1554
+integer height = 148
 integer taborder = 30
 string title = "none"
 string dataobject = "dw_team_lt"
@@ -21887,10 +22022,10 @@ event doubleclicked;////change supervisor
 end event
 
 type dw_lt2 from datawindow within w_pat_chief_deputy
-integer x = 2807
-integer y = 44
-integer width = 1495
-integer height = 136
+integer x = 2775
+integer y = 4
+integer width = 1554
+integer height = 148
 integer taborder = 30
 string title = "none"
 string dataobject = "dw_team_lt"
@@ -21955,9 +22090,9 @@ event doubleclicked;////change supervisor
 end event
 
 type dw_lt1 from datawindow within w_pat_chief_deputy
-integer x = 1042
-integer y = 44
-integer width = 1499
+integer x = 1202
+integer y = 4
+integer width = 1554
 integer height = 148
 integer taborder = 30
 string title = "none"
@@ -22023,10 +22158,10 @@ event doubleclicked;////change supervisor
 end event
 
 type dw_lt4 from datawindow within w_pat_chief_deputy
-integer x = 6277
-integer y = 40
-integer width = 1499
-integer height = 124
+integer x = 5929
+integer y = 4
+integer width = 1554
+integer height = 148
 integer taborder = 20
 string title = "none"
 string dataobject = "dw_team_lt"
@@ -22091,16 +22226,16 @@ event doubleclicked;////change supervisor
 end event
 
 type dw_disp_a from datawindow within w_pat_chief_deputy
+string tag = "8"
 integer x = 32
 integer y = 176
-integer width = 1728
-integer height = 2660
+integer width = 2135
+integer height = 2744
 integer taborder = 20
 string dragicon = "\\ucfs1\apps\pix\ucso_staffing\UCSOSTAFFGRN.ICO"
-string title = "none"
-string dataobject = "dw_disp_teams"
+string dataobject = "dw_disp_teams_double_mod"
 boolean livescroll = true
-borderstyle borderstyle = stylelowered!
+borderstyle borderstyle = styleshadowbox!
 end type
 
 event clicked;//if(bIsDragging = false) then
@@ -24225,35 +24360,68 @@ event rbuttondown;////===================
 //
 end event
 
-event retrieverow;////===================
-////### RETRIEVEROW ###
-////===================
-//string ls_empname
-//long ll_assgnd_empno
-//string ls_callnum
-////=======================
-//long ll_clicked_grpid
-//ll_clicked_grpid = 1
-////=======================
-//datawindow dw_clicked_object
-//dw_clicked_object = f_getDwobjectByGrpid(ll_clicked_grpid, dw_a, dw_b, dw_c, dw_d, dw_rec1, dw_rec2, dw_em1, dw_em2, dw_emsro, dw_vine, dw_smcont, dw_fto, dw_team_resvrs, dw_unfilled, dw_unassigned, dw_supervisors, dw_admin)
-//if(IsNull(dw_clicked_object) = false) then
-//	ll_assgnd_empno = dw_clicked_object.getitemnumber(row, 'sns_board_specs_others_empno')
-//	ls_callnum = dw_clicked_object.getitemstring(row, 'sns_board_specs_others_callnum')
-//	ls_empname = dw_clicked_object.getitemstring(row, 'sns_board_specs_others_empname')
-//	if(IsNull(ls_callnum) = true) then
-//		ls_callnum = ""
-//	end if
-//	if((ll_assgnd_empno = 0) and (f_len_ext(ls_empname) = 0) and (f_len_ext(ls_callnum) > 0)) then
-//		dw_clicked_object.setitem(row, 'sns_board_specs_others_empname', '*** UNFILLED ***')
-//	end if
-//end if
+event retrieverow;long ll_rowcount
+//-------------------
+long ll_clicked_grpid
+ll_clicked_grpid = 1
+//-------------------
+datawindow dw_null
+SetNull(dw_null)
+datawindow dw_object
+//dw_object = f_getDwDispObjectByGrpid(ll_clicked_grpid, dw_disp_a, dw_disp_b, dw_disp_c, dw_disp_d, dw_disp_rec1, dw_disp_rec2, dw_disp_vine1, dw_disp_vine2, dw_disp_fto, dw_disp_smcont, dw_disp_sccadmin, dw_disp_em101, dw_disp_em102,  dw_disp_em201, dw_disp_em202, dw_disp_emsro, dw_disp_resvrs)
+dw_object = f_getDwDispObjectByGrpid(ll_clicked_grpid, dw_disp_a, dw_disp_b, dw_disp_c, dw_disp_d, dw_disp_rec1, dw_disp_rec2, dw_disp_vine1, dw_disp_vine2, dw_disp_fto, dw_disp_smcont, dw_disp_sccadmin, dw_null,       dw_null,         dw_null,       dw_null,      dw_null,       dw_null)
+string ls_clicked_grpid
+ls_clicked_grpid = string(ll_clicked_grpid)
 //
+select count(*) into :ll_rowcount from sns_board_specs_others where grpid = :ll_clicked_grpid and empname is not null using sqlca;
+//
+integer li_num_objects
+//
+select count(*) into :li_num_objects from sns_board_specs_others where grpid = :ll_clicked_grpid using sqlca;
+//
+integer li_max_disp_objects
+//
+select maxdispobj into :li_max_disp_objects from sns_board_specs where department = 'PATROL' and boardid = 'PAT_CHIEF' and grpids = :ls_clicked_grpid using sqlca;
+//
+if(li_max_disp_objects = 0) then
+	li_max_disp_objects = li_num_objects
+end if
+
+long ll_row
+string ls_grpname_object_name
+string ls_picobj_object_name
+string ls_empname_object_name
+string ls_row
+string ls_grpname
+string ls_picobj
+string ls_empname
+string ls_tcerror
+string ls_modify
+for ll_row = 1 to li_max_disp_objects
+	ls_row = f_lpad(string(ll_row), 3, "0")
+	ls_grpname_object_name = "grpteam_" + ls_row
+	ls_picobj_object_name = "picobj_" + ls_row
+	ls_empname_object_name = "empname_" + ls_row
+	if(ll_row <= ll_rowcount) then
+		ls_grpname = dw_object.getitemstring(row, ls_grpname_object_name)
+		ls_picobj = dw_object.getitemstring(row, ls_picobj_object_name)
+		ls_empname = dw_object.getitemstring(row, ls_empname_object_name)
+	else
+		ls_modify = ls_grpname_object_name + ".Visible = '0'"
+		dw_object.Modify(ls_modify)
+		ls_modify = ls_picobj_object_name + ".Visible = '0'"
+		dw_object.Modify(ls_modify)
+		ls_modify = ls_empname_object_name + ".Visible = '0'"
+		dw_object.Modify(ls_modify)
+	end if
+next
+
+
+
 end event
 
 type st_1 from statictext within w_pat_chief_deputy
 integer x = 50
-integer y = 24
 integer width = 768
 integer height = 88
 integer textsize = -12
@@ -24269,8 +24437,8 @@ boolean focusrectangle = false
 end type
 
 type pb_14 from picturebutton within w_pat_chief_deputy
-integer x = 795
-integer y = 16
+integer x = 46
+integer y = 84
 integer width = 242
 integer height = 92
 integer taborder = 10
