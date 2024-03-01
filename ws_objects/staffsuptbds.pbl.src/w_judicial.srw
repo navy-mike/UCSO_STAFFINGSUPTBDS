@@ -2533,7 +2533,7 @@ if(li_valid_object = 1) then
 	if(gb_show_all_birthdays = true) then
 		li_dispbd = dw_clicked_object.getitemnumber(row, "sns_employees_dispbd")
 		if(li_dispbd = 0) then
-			dw_clicked_object.setitem(row, "sns_employees_dispbd", 1)
+			dw_clicked_object.setitem(row, "sns_employees_dispbd", 4)
 		end if
 	end if
 end if
@@ -4729,7 +4729,7 @@ if(li_valid_object = 1) then
 	if(gb_show_all_birthdays = true) then
 		li_dispbd = dw_clicked_object.getitemnumber(row, "sns_employees_dispbd")
 		if(li_dispbd = 0) then
-			dw_clicked_object.setitem(row, "sns_employees_dispbd", 1)
+			dw_clicked_object.setitem(row, "sns_employees_dispbd", 4)
 		end if
 	end if
 end if
@@ -6925,7 +6925,7 @@ if(li_valid_object = 1) then
 	if(gb_show_all_birthdays = true) then
 		li_dispbd = dw_clicked_object.getitemnumber(row, "sns_employees_dispbd")
 		if(li_dispbd = 0) then
-			dw_clicked_object.setitem(row, "sns_employees_dispbd", 1)
+			dw_clicked_object.setitem(row, "sns_employees_dispbd", 4)
 		end if
 	end if
 end if
@@ -9122,7 +9122,7 @@ if(li_valid_object = 1) then
 	if(gb_show_all_birthdays = true) then
 		li_dispbd = dw_clicked_object.getitemnumber(row, "sns_employees_dispbd")
 		if(li_dispbd = 0) then
-			dw_clicked_object.setitem(row, "sns_employees_dispbd", 1)
+			dw_clicked_object.setitem(row, "sns_employees_dispbd", 4)
 		end if
 	end if
 end if
@@ -11342,7 +11342,7 @@ if(li_valid_object = 1) then
 	if(gb_show_all_birthdays = true) then
 		li_dispbd = dw_clicked_object.getitemnumber(row, "sns_employees_dispbd")
 		if(li_dispbd = 0) then
-			dw_clicked_object.setitem(row, "sns_employees_dispbd", 1)
+			dw_clicked_object.setitem(row, "sns_employees_dispbd", 4)
 		end if
 	end if
 end if
@@ -13539,7 +13539,7 @@ if(li_valid_object = 1) then
 	if(gb_show_all_birthdays = true) then
 		li_dispbd = dw_clicked_object.getitemnumber(row, "sns_employees_dispbd")
 		if(li_dispbd = 0) then
-			dw_clicked_object.setitem(row, "sns_employees_dispbd", 1)
+			dw_clicked_object.setitem(row, "sns_employees_dispbd", 4)
 		end if
 	end if
 end if
@@ -15736,7 +15736,7 @@ if(li_valid_object = 1) then
 	if(gb_show_all_birthdays = true) then
 		li_dispbd = dw_clicked_object.getitemnumber(row, "sns_employees_dispbd")
 		if(li_dispbd = 0) then
-			dw_clicked_object.setitem(row, "sns_employees_dispbd", 1)
+			dw_clicked_object.setitem(row, "sns_employees_dispbd", 4)
 		end if
 	end if
 end if
