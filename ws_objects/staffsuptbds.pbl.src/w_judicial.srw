@@ -2,6 +2,14 @@
 forward
 global type w_judicial from window
 end type
+type lb_test from listbox within w_judicial
+end type
+type st_4 from statictext within w_judicial
+end type
+type st_3 from statictext within w_judicial
+end type
+type st_2 from statictext within w_judicial
+end type
 type cbx_show_birthdays from checkbox within w_judicial
 end type
 type dw_jud_group6 from datawindow within w_judicial
@@ -12,7 +20,7 @@ type dw_jud_group4 from datawindow within w_judicial
 end type
 type dw_jud_group3 from datawindow within w_judicial
 end type
-type pb_1 from picturebutton within w_judicial
+type pb_close2 from picturebutton within w_judicial
 end type
 type dw_jud_admin from datawindow within w_judicial
 end type
@@ -60,12 +68,16 @@ boolean resizable = true
 long backcolor = 67108864
 string icon = "AppIcon!"
 boolean center = true
+lb_test lb_test
+st_4 st_4
+st_3 st_3
+st_2 st_2
 cbx_show_birthdays cbx_show_birthdays
 dw_jud_group6 dw_jud_group6
 dw_jud_group5 dw_jud_group5
 dw_jud_group4 dw_jud_group4
 dw_jud_group3 dw_jud_group3
-pb_1 pb_1
+pb_close2 pb_close2
 dw_jud_admin dw_jud_admin
 dw_jud_group2 dw_jud_group2
 dw_jud_group1 dw_jud_group1
@@ -85,12 +97,16 @@ end type
 global w_judicial w_judicial
 
 on w_judicial.create
+this.lb_test=create lb_test
+this.st_4=create st_4
+this.st_3=create st_3
+this.st_2=create st_2
 this.cbx_show_birthdays=create cbx_show_birthdays
 this.dw_jud_group6=create dw_jud_group6
 this.dw_jud_group5=create dw_jud_group5
 this.dw_jud_group4=create dw_jud_group4
 this.dw_jud_group3=create dw_jud_group3
-this.pb_1=create pb_1
+this.pb_close2=create pb_close2
 this.dw_jud_admin=create dw_jud_admin
 this.dw_jud_group2=create dw_jud_group2
 this.dw_jud_group1=create dw_jud_group1
@@ -106,12 +122,16 @@ this.ln_4=create ln_4
 this.ln_5=create ln_5
 this.r_1=create r_1
 this.r_2=create r_2
-this.Control[]={this.cbx_show_birthdays,&
+this.Control[]={this.lb_test,&
+this.st_4,&
+this.st_3,&
+this.st_2,&
+this.cbx_show_birthdays,&
 this.dw_jud_group6,&
 this.dw_jud_group5,&
 this.dw_jud_group4,&
 this.dw_jud_group3,&
-this.pb_1,&
+this.pb_close2,&
 this.dw_jud_admin,&
 this.dw_jud_group2,&
 this.dw_jud_group1,&
@@ -130,12 +150,16 @@ this.r_2}
 end on
 
 on w_judicial.destroy
+destroy(this.lb_test)
+destroy(this.st_4)
+destroy(this.st_3)
+destroy(this.st_2)
 destroy(this.cbx_show_birthdays)
 destroy(this.dw_jud_group6)
 destroy(this.dw_jud_group5)
 destroy(this.dw_jud_group4)
 destroy(this.dw_jud_group3)
-destroy(this.pb_1)
+destroy(this.pb_close2)
 destroy(this.dw_jud_admin)
 destroy(this.dw_jud_group2)
 destroy(this.dw_jud_group1)
@@ -188,9 +212,83 @@ ll_num_retrieved = dw_jud_group6.Retrieve(140)
 
 end event
 
+type lb_test from listbox within w_judicial
+integer x = 1541
+integer y = 3724
+integer width = 1358
+integer height = 1152
+integer taborder = 40
+integer textsize = -10
+integer weight = 400
+fontcharset fontcharset = ansi!
+fontpitch fontpitch = variable!
+fontfamily fontfamily = swiss!
+string facename = "Tahoma"
+long textcolor = 33554432
+boolean sorted = false
+borderstyle borderstyle = styleshadowbox!
+end type
+
+type st_4 from statictext within w_judicial
+integer x = 4023
+integer y = 424
+integer width = 517
+integer height = 64
+integer textsize = -8
+integer weight = 400
+fontcharset fontcharset = ansi!
+fontpitch fontpitch = variable!
+fontfamily fontfamily = swiss!
+string facename = "Tw Cen MT Condensed Extra Bold"
+long textcolor = 16777215
+long backcolor = 255
+string text = "BIRTHDAY HAS PASSED"
+alignment alignment = center!
+boolean border = true
+boolean focusrectangle = false
+end type
+
+type st_3 from statictext within w_judicial
+integer x = 2962
+integer y = 424
+integer width = 517
+integer height = 64
+integer textsize = -8
+integer weight = 400
+fontcharset fontcharset = ansi!
+fontpitch fontpitch = variable!
+fontfamily fontfamily = swiss!
+string facename = "Tw Cen MT Condensed Extra Bold"
+long textcolor = 33554432
+long backcolor = 16776960
+string text = "BIRTHDAY IS SOON"
+alignment alignment = center!
+boolean border = true
+boolean focusrectangle = false
+end type
+
+type st_2 from statictext within w_judicial
+integer x = 3493
+integer y = 424
+integer width = 517
+integer height = 64
+integer textsize = -8
+integer weight = 400
+fontcharset fontcharset = ansi!
+fontpitch fontpitch = variable!
+fontfamily fontfamily = swiss!
+string facename = "Tw Cen MT Condensed Extra Bold"
+long textcolor = 33554432
+long backcolor = 65280
+string text = "BIRTHDAY IS TODAY"
+alignment alignment = center!
+boolean border = true
+boolean focusrectangle = false
+end type
+
 type cbx_show_birthdays from checkbox within w_judicial
-integer x = 3305
-integer y = 364
+integer x = 3461
+integer y = 324
 integer width = 567
 integer height = 80
 integer textsize = -10
@@ -210,6 +308,8 @@ else
 	gb_show_all_birthdays = false
 end if
 long ll_num_retrieved
+
+lb_test.reset()
 
 dw_jud_chief.settransobject(sqlca)
 ll_num_retrieved = dw_jud_chief.Retrieve(118)
@@ -2433,7 +2533,7 @@ if(li_valid_object = 1) then
 	if(gb_show_all_birthdays = true) then
 		li_dispbd = dw_clicked_object.getitemnumber(row, "sns_employees_dispbd")
 		if(li_dispbd = 0) then
-			dw_clicked_object.setitem(row, "sns_employees_dispbd", 1)
+			dw_clicked_object.setitem(row, "sns_employees_dispbd", 4)
 		end if
 	end if
 end if
@@ -4629,7 +4729,7 @@ if(li_valid_object = 1) then
 	if(gb_show_all_birthdays = true) then
 		li_dispbd = dw_clicked_object.getitemnumber(row, "sns_employees_dispbd")
 		if(li_dispbd = 0) then
-			dw_clicked_object.setitem(row, "sns_employees_dispbd", 1)
+			dw_clicked_object.setitem(row, "sns_employees_dispbd", 4)
 		end if
 	end if
 end if
@@ -6825,7 +6925,7 @@ if(li_valid_object = 1) then
 	if(gb_show_all_birthdays = true) then
 		li_dispbd = dw_clicked_object.getitemnumber(row, "sns_employees_dispbd")
 		if(li_dispbd = 0) then
-			dw_clicked_object.setitem(row, "sns_employees_dispbd", 1)
+			dw_clicked_object.setitem(row, "sns_employees_dispbd", 4)
 		end if
 	end if
 end if
@@ -9022,7 +9122,7 @@ if(li_valid_object = 1) then
 	if(gb_show_all_birthdays = true) then
 		li_dispbd = dw_clicked_object.getitemnumber(row, "sns_employees_dispbd")
 		if(li_dispbd = 0) then
-			dw_clicked_object.setitem(row, "sns_employees_dispbd", 1)
+			dw_clicked_object.setitem(row, "sns_employees_dispbd", 4)
 		end if
 	end if
 end if
@@ -9030,10 +9130,10 @@ end if
  
 end event
 
-type pb_1 from picturebutton within w_judicial
-integer x = 3634
+type pb_close2 from picturebutton within w_judicial
+integer x = 3561
 integer y = 2884
-integer width = 114
+integer width = 219
 integer height = 100
 integer taborder = 20
 integer textsize = -10
@@ -9042,7 +9142,7 @@ fontcharset fontcharset = ansi!
 fontpitch fontpitch = variable!
 fontfamily fontfamily = swiss!
 string facename = "Tahoma"
-string text = "X"
+string text = "Close"
 boolean originalsize = true
 long textcolor = 16777215
 long backcolor = 255
@@ -11242,7 +11342,7 @@ if(li_valid_object = 1) then
 	if(gb_show_all_birthdays = true) then
 		li_dispbd = dw_clicked_object.getitemnumber(row, "sns_employees_dispbd")
 		if(li_dispbd = 0) then
-			dw_clicked_object.setitem(row, "sns_employees_dispbd", 1)
+			dw_clicked_object.setitem(row, "sns_employees_dispbd", 4)
 		end if
 	end if
 end if
@@ -11253,7 +11353,7 @@ type dw_jud_group2 from datawindow within w_judicial
 integer x = 1472
 integer y = 512
 integer width = 1454
-integer height = 4388
+integer height = 3120
 integer taborder = 20
 string dragicon = "\\ucfs1\apps\pix\ucso_staffing\UCSOSTAFFGRN.ICO"
 string title = "none"
@@ -13439,10 +13539,31 @@ if(li_valid_object = 1) then
 	if(gb_show_all_birthdays = true) then
 		li_dispbd = dw_clicked_object.getitemnumber(row, "sns_employees_dispbd")
 		if(li_dispbd = 0) then
-			dw_clicked_object.setitem(row, "sns_employees_dispbd", 1)
+			dw_clicked_object.setitem(row, "sns_employees_dispbd", 4)
 		end if
 	end if
 end if
+
+//integer li_dispbd
+//if(li_valid_object = 1) then
+//	if((ll_clicked_grpid = 135) or (ll_clicked_grpid = 136) or (ll_clicked_grpid = 59)) then
+//		string ls_grpteam
+//		ls_grpteam = dw_clicked_object.getitemstring(row, 'sns_staffing_groups_grpteam')
+//		dw_clicked_object.MODIFY("sns_staffing_groups_grpteam.Background.Color = 8454016") //15245824") 
+//		dw_clicked_object.MODIFY("sns_staffing_groups_grpteam.Color = 1447192") //16777215") 
+//	end if
+//	li_dispbd = dw_clicked_object.getitemnumber(row, "sns_employees_dispbd")
+//	if(gb_show_all_birthdays = true) then
+//		//lb_test.additem("show all: li_dispbd = " + string(li_dispbd))
+//		if(li_dispbd = 0) then
+//			dw_clicked_object.setitem(row, "sns_employees_dispbd", 1)
+//		end if
+//	else
+//		dw_clicked_object.MODIFY("sns_employees_dobshort.Background.Color = 16711680")
+//      dw_clicked_object.MODIFY("sns_employees_dobshort.Color = 16777215")	
+//		//lb_test.additem("li_dispbd = " + string(li_dispbd))
+//	end if
+//end if
 end event
 
 type dw_jud_group1 from datawindow within w_judicial
@@ -15625,6 +15746,7 @@ dw_clicked_object = f_getDwDispJudObjectByGrpid_mod(ll_clicked_grpid, ls_subgrpi
 //dw_jud_chief  118         'C0'
 //dw_jud_supr1  135         'S1' 
 //dw_jud_supr2  137         'S2'
+
 integer li_dispbd
 if(li_valid_object = 1) then
 	if((ll_clicked_grpid = 135) or (ll_clicked_grpid = 136) or (ll_clicked_grpid = 59)) then
@@ -15636,11 +15758,116 @@ if(li_valid_object = 1) then
 	if(gb_show_all_birthdays = true) then
 		li_dispbd = dw_clicked_object.getitemnumber(row, "sns_employees_dispbd")
 		if(li_dispbd = 0) then
-			dw_clicked_object.setitem(row, "sns_employees_dispbd", 1)
+			dw_clicked_object.setitem(row, "sns_employees_dispbd", 4)
 		end if
 	end if
 end if
 
+//integer li_dispbd
+//if(li_valid_object = 1) then
+//	if((ll_clicked_grpid = 135) or (ll_clicked_grpid = 136) or (ll_clicked_grpid = 59)) then
+//		string ls_grpteam
+//		ls_grpteam = dw_clicked_object.getitemstring(row, 'sns_staffing_groups_grpteam')
+//		dw_clicked_object.MODIFY("sns_staffing_groups_grpteam.Background.Color = 8454016") //15245824") 
+//		dw_clicked_object.MODIFY("sns_staffing_groups_grpteam.Color = 1447192") //16777215") 
+//	end if
+//	li_dispbd = dw_clicked_object.getitemnumber(row, "sns_employees_dispbd")
+//	if(gb_show_all_birthdays = true) then
+//		lb_test.additem("show all: row=" + string(row) + " li_dispbd = " + string(li_dispbd))
+//		if(li_dispbd = 0) then
+//			dw_clicked_object.setitem(row, "sns_employees_dispbd", 1)
+//		end if
+//	else
+//		lb_test.additem("not show all: row=" + string(row) + " li_dispbd = " + string(li_dispbd))
+//		
+//		if(li_dispbd > 0) then
+//			integer li_stop
+//			li_stop = 0
+//		end if
+//		
+//		if(li_dispbd = 0) then
+//			dw_clicked_object.MODIFY("sns_employees_dobshort.Background.Color = 16777215")
+//			dw_clicked_object.MODIFY("sns_employees_dobshort.Color = 16777215")	
+//		elseif(li_dispbd = 3) then
+//			dw_clicked_object.MODIFY("sns_employees_dobshort.Background.Color = 65280")
+//			dw_clicked_object.MODIFY("sns_employees_dobshort.Color = 0")	
+//		elseif(li_dispbd = 2) then
+//			dw_clicked_object.MODIFY("sns_employees_dobshort.Background.Color = 255")
+//			dw_clicked_object.MODIFY("sns_employees_dobshort.Color = 16777215")
+//		elseif(li_dispbd = 1) then
+//			dw_clicked_object.MODIFY("sns_employees_dobshort.Background.Color = 16776960")
+//			dw_clicked_object.MODIFY("sns_employees_dobshort.Color = 0")	
+//		elseif(li_dispbd = 4) then
+//			dw_clicked_object.MODIFY("sns_employees_dobshort.Background.Color = 16711680")
+//			dw_clicked_object.MODIFY("sns_employees_dobshort.Color = 16777215")	
+//		end if
+//	end if
+//end if
+
+
+//integer li_dispbd
+//if(li_valid_object = 1) then
+//	if((ll_clicked_grpid = 135) or (ll_clicked_grpid = 136) or (ll_clicked_grpid = 59)) then
+//		string ls_grpteam
+//		ls_grpteam = dw_clicked_object.getitemstring(row, 'sns_staffing_groups_grpteam')
+//		dw_clicked_object.MODIFY("sns_staffing_groups_grpteam.Background.Color = 8454016") //15245824") 
+//		dw_clicked_object.MODIFY("sns_staffing_groups_grpteam.Color = 1447192") //16777215")  blue=16711680
+//	end if
+//	//0 = wht=0
+//	//1 = cyan=16776960
+//	//2 = red=255
+//	//3 = grn=65280
+//	//4 = blue=16711680	
+//	if(gb_show_all_birthdays = true) then
+////		choose case li_dispbd
+////			case 0
+////				dw_clicked_object.MODIFY("sns_employees_dobshort.Background.Color = 0")
+////				dw_clicked_object.MODIFY("sns_employees_dobshort.Color = 16777215")
+////			case 1
+////				dw_clicked_object.MODIFY("sns_employees_dobshort.Background.Color = 16776960")
+////				dw_clicked_object.MODIFY("sns_employees_dobshort.Color = 16777215")			
+////			case 2
+////				dw_clicked_object.MODIFY("sns_employees_dobshort.Background.Color = 255")
+////				dw_clicked_object.MODIFY("sns_employees_dobshort.Color = 0")			
+////			case 3
+////				dw_clicked_object.MODIFY("sns_employees_dobshort.Background.Color = 65280")
+////				dw_clicked_object.MODIFY("sns_employees_dobshort.Color = 16777215")				
+////			case 4
+////				dw_clicked_object.MODIFY("sns_employees_dobshort.Background.Color = 16711680")
+////				dw_clicked_object.MODIFY("sns_employees_dobshort.Color = 0")				
+////			case else
+////			  //do nothing
+////		end choose
+////		//if(li_dispbd = 0) then
+////		//	dw_clicked_object.setitem(row, "sns_employees_dispbd", 1)
+////		//end if
+////	else
+////		//if(li_dispbd = 0) then
+////		//	dw_clicked_object.setitem(row, "sns_employees_dispbd", 1)
+////		//end if
+////		li_dispbd = dw_clicked_object.getitemnumber(row, "sns_employees_dispbd")
+////		choose case li_dispbd
+////			case 0
+////				dw_clicked_object.MODIFY("sns_employees_dobshort.Background.Color = 0")
+////				dw_clicked_object.MODIFY("sns_employees_dobshort.Color = 16777215")
+////			case 1
+////				dw_clicked_object.MODIFY("sns_employees_dobshort.Background.Color = 16776960")
+////				dw_clicked_object.MODIFY("sns_employees_dobshort.Color = 16777215")			
+////			case 2
+////				dw_clicked_object.MODIFY("sns_employees_dobshort.Background.Color = 255")
+////				dw_clicked_object.MODIFY("sns_employees_dobshort.Color = 0")			
+////			case 3
+////				dw_clicked_object.MODIFY("sns_employees_dobshort.Background.Color = 65280")
+////				dw_clicked_object.MODIFY("sns_employees_dobshort.Color = 16777215")				
+////			case 4
+////				dw_clicked_object.MODIFY("sns_employees_dobshort.Background.Color = 16711680")
+////				dw_clicked_object.MODIFY("sns_employees_dobshort.Color = 0")				
+////			case else
+////			  //do nothing
+////		end choose
+//	end if
+//end if
+//
 end event
 
 event retrieveend;///=======================
@@ -15662,51 +15889,51 @@ dw_clicked_object = f_getDwDispJudObjectByGrpid(ll_clicked_grpid, ls_subgrpid, d
 //dw_jud_chief  118         'C0'
 //dw_jud_supr1  135         'S1' 
 //dw_jud_supr2  137         'S2'
-integer li_stop
-integer ndisplaybd
-string ls_modify
-if(IsNull(dw_clicked_object) = false) then
-	long ll_rowcount
-	ll_rowcount = rowcount
-	if(ll_rowcount > 0) then
-		long ll_row
-		string ls_birthday
-		string ls_empname
-		integer li_dispbd
-		string ls_dobshort
-		for ll_row = 1 to ll_rowcount
-			ls_birthday = dw_clicked_object.getitemstring(ll_row, "BIRTHDAY")
-			ls_empname = dw_clicked_object.getitemstring(ll_row, "sns_employees_empname")
-			li_dispbd = dw_clicked_object.getitemnumber(ll_row, "sns_employees_dispbd")
-			ls_dobshort = dw_clicked_object.getitemstring(ll_row, "sns_employees_dobshort")
-			if(li_dispbd > 0) then
-				ls_modify = "sns_employees_dobshort" + ".Visible = 0"
-				//dw_jud_group1.Modify(ls_modify)
-				//dw_jud_group1.Object.sns_employees_dobshort.Visble = 0 //<=== does not work
-			else
-				ls_modify = "sns_employees_dobshort" + ".Visible = 1"
-				dw_jud_group1.Modify(ls_modify)
-			end if
-			if(f_len_ext(ls_birthday) > 0) then
-				//nrtnvalue = 0 do not display birthday
-				//          = 1 birthday within 7 days
-				//          = 2 birthday past 7days
-				//          = 3 on birthday				
-				//ndisplaybd = f_displayEmployeeBirthday(gi_bd_span_from, gi_bd_span_to, ls_birthday)
-				//if(ndisplaybd > 0) then
-				//	ls_modify = "birthday" + ".Visible = true"
-				//	dw_clicked_object.Modify(ls_modify)
-					//dw_jud_group1.Object.BIRTHDAY.Visible = true
-				//else
-				//	ls_modify = "birthday" + ".Visible = false"
-				//	dw_clicked_object.Modify(ls_modify)
-					//dw_jud_group1.Object.BIRTHDAY.Visible = false
-					
-				//end if
-			end if
-		next
-	end if
-end if
+//integer li_stop
+//integer ndisplaybd
+//string ls_modify
+//if(IsNull(dw_clicked_object) = false) then
+//	long ll_rowcount
+//	ll_rowcount = rowcount
+//	if(ll_rowcount > 0) then
+//		long ll_row
+//		string ls_birthday
+//		string ls_empname
+//		integer li_dispbd
+//		string ls_dobshort
+//		for ll_row = 1 to ll_rowcount
+//			ls_birthday = dw_clicked_object.getitemstring(ll_row, "BIRTHDAY")
+//			ls_empname = dw_clicked_object.getitemstring(ll_row, "sns_employees_empname")
+//			li_dispbd = dw_clicked_object.getitemnumber(ll_row, "sns_employees_dispbd")
+//			ls_dobshort = dw_clicked_object.getitemstring(ll_row, "sns_employees_dobshort")
+//			if(li_dispbd > 0) then
+//				ls_modify = "sns_employees_dobshort" + ".Visible = 0"
+//				//dw_jud_group1.Modify(ls_modify)
+//				//dw_jud_group1.Object.sns_employees_dobshort.Visble = 0 //<=== does not work
+//			else
+//				ls_modify = "sns_employees_dobshort" + ".Visible = 1"
+//				//dw_jud_group1.Modify(ls_modify)
+//			end if
+//			if(f_len_ext(ls_birthday) > 0) then
+//				//nrtnvalue = 0 do not display birthday
+//				//          = 1 birthday within 7 days
+//				//          = 2 birthday past 7days
+//				//          = 3 on birthday				
+//				//ndisplaybd = f_displayEmployeeBirthday(gi_bd_span_from, gi_bd_span_to, ls_birthday)
+//				//if(ndisplaybd > 0) then
+//				//	ls_modify = "birthday" + ".Visible = true"
+//				//	dw_clicked_object.Modify(ls_modify)
+//					//dw_jud_group1.Object.BIRTHDAY.Visible = true
+//				//else
+//				//	ls_modify = "birthday" + ".Visible = false"
+//				//	dw_clicked_object.Modify(ls_modify)
+//					//dw_jud_group1.Object.BIRTHDAY.Visible = false
+//					
+//				//end if
+//			end if
+//		next
+//	end if
+//end if
 
 
 
@@ -16076,8 +16303,7 @@ end if
 end event
 
 type st_1 from statictext within w_judicial
-integer x = 197
-integer y = 16
+integer x = 32
 integer width = 1129
 integer height = 84
 integer textsize = -12
@@ -16088,14 +16314,14 @@ fontfamily fontfamily = swiss!
 string facename = "Tahoma"
 long textcolor = 16711680
 long backcolor = 553648127
-string text = "Judicial Assignments Updates"
+string text = "Judicial Assignments"
 boolean focusrectangle = false
 end type
 
 type pb_close from picturebutton within w_judicial
-integer x = 27
-integer y = 8
-integer width = 114
+integer x = 23
+integer y = 92
+integer width = 210
 integer height = 100
 integer taborder = 10
 integer textsize = -10
@@ -16104,7 +16330,7 @@ fontcharset fontcharset = ansi!
 fontpitch fontpitch = variable!
 fontfamily fontfamily = swiss!
 string facename = "Tahoma"
-string text = "X"
+string text = "Close"
 boolean originalsize = true
 long textcolor = 16777215
 long backcolor = 255
