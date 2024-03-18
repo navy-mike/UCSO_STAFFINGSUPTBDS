@@ -1,0 +1,43 @@
+﻿$PBExportHeader$f_getdwdispemobjectbygrpid_mod.srf
+global type f_getdwdispemobjectbygrpid_mod from function_object
+end type
+
+forward prototypes
+global function datawindow f_getdwdispemobjectbygrpid_mod (long ll_grpid, string ls_subgrpid, ref datawindow dw_lt1, ref datawindow dw_disp_em101, ref datawindow dw_disp_em102, ref datawindow dw_disp_em201, ref datawindow dw_disp_em202, ref datawindow dw_disp_emsro, ref datawindow dw_em_chief, ref integer li_valid_object)
+end prototypes
+
+global function datawindow f_getdwdispemobjectbygrpid_mod (long ll_grpid, string ls_subgrpid, ref datawindow dw_lt1, ref datawindow dw_disp_em101, ref datawindow dw_disp_em102, ref datawindow dw_disp_em201, ref datawindow dw_disp_em202, ref datawindow dw_disp_emsro, ref datawindow dw_em_chief, ref integer li_valid_object);//prototype: dw_object = f_getdwdispemobjectbygrpid_mod(ll_clicked_grpid, ls_subgrpid, ref dw_lt1,ref dw_disp_em101,ref dw_disp_em102,ref dw_disp_em201,ref dw_disp_em202,ref dw_disp_emsro, ref li_valid_object)
+//dwobject    ll_grpid  ls_subgrpid
+//dw_lt1 		  8         'LT'
+//dw_disp_em101  8         'G1'
+//dw_disp_em102  8         'G2'
+//dw_disp_em201  9         'G3'
+//dw_disp_em202  9         'G4'
+//dw_disp_emsro  10        'G5'
+datawindow dw_object
+li_valid_object = 0
+if((ll_grpid = 64) and (ls_subgrpid = 'LT')) then //dw_jud_group1
+	dw_object = dw_lt1
+	li_valid_object = 1
+elseif((ll_grpid = 8) and (ls_subgrpid = 'G1')) then //dw_jud_group2
+	dw_object = dw_disp_em101
+	li_valid_object = 1	
+elseif((ll_grpid = 8) and (ls_subgrpid = 'G2')) then //dw_jud_admin
+	dw_object = dw_disp_em102
+	li_valid_object = 1
+elseif((ll_grpid = 9) and (ls_subgrpid = 'G3')) then //dw_jud_group3
+	dw_object = dw_disp_em201
+	li_valid_object = 1	
+elseif((ll_grpid = 9) and (ls_subgrpid = 'G4')) then //dw_jud_group4
+	dw_object = dw_disp_em202
+	li_valid_object = 1	
+elseif((ll_grpid = 10) and (ls_subgrpid = 'G5')) then //dw_jud_group5
+	dw_object = dw_disp_emsro
+	li_valid_object = 1	
+elseif((ll_grpid = 64) and (ls_subgrpid = 'EC')) then //dw_jud_group5
+	dw_object = dw_em_chief
+	li_valid_object = 1		
+end if
+return dw_object
+end function
+

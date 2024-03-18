@@ -2,6 +2,8 @@
 forward
 global type w_judicial from window
 end type
+type pb_2 from picturebutton within w_judicial
+end type
 type lb_test from listbox within w_judicial
 end type
 type st_4 from statictext within w_judicial
@@ -36,8 +38,6 @@ type dw_jud_chief from datawindow within w_judicial
 end type
 type st_1 from statictext within w_judicial
 end type
-type pb_close from picturebutton within w_judicial
-end type
 type ln_1 from line within w_judicial
 end type
 type ln_2 from line within w_judicial
@@ -68,6 +68,7 @@ boolean resizable = true
 long backcolor = 67108864
 string icon = "AppIcon!"
 boolean center = true
+pb_2 pb_2
 lb_test lb_test
 st_4 st_4
 st_3 st_3
@@ -85,7 +86,6 @@ dw_jud_supr2 dw_jud_supr2
 dw_jud_supr1 dw_jud_supr1
 dw_jud_chief dw_jud_chief
 st_1 st_1
-pb_close pb_close
 ln_1 ln_1
 ln_2 ln_2
 ln_3 ln_3
@@ -97,6 +97,7 @@ end type
 global w_judicial w_judicial
 
 on w_judicial.create
+this.pb_2=create pb_2
 this.lb_test=create lb_test
 this.st_4=create st_4
 this.st_3=create st_3
@@ -114,7 +115,6 @@ this.dw_jud_supr2=create dw_jud_supr2
 this.dw_jud_supr1=create dw_jud_supr1
 this.dw_jud_chief=create dw_jud_chief
 this.st_1=create st_1
-this.pb_close=create pb_close
 this.ln_1=create ln_1
 this.ln_2=create ln_2
 this.ln_3=create ln_3
@@ -122,7 +122,8 @@ this.ln_4=create ln_4
 this.ln_5=create ln_5
 this.r_1=create r_1
 this.r_2=create r_2
-this.Control[]={this.lb_test,&
+this.Control[]={this.pb_2,&
+this.lb_test,&
 this.st_4,&
 this.st_3,&
 this.st_2,&
@@ -139,7 +140,6 @@ this.dw_jud_supr2,&
 this.dw_jud_supr1,&
 this.dw_jud_chief,&
 this.st_1,&
-this.pb_close,&
 this.ln_1,&
 this.ln_2,&
 this.ln_3,&
@@ -150,6 +150,7 @@ this.r_2}
 end on
 
 on w_judicial.destroy
+destroy(this.pb_2)
 destroy(this.lb_test)
 destroy(this.st_4)
 destroy(this.st_3)
@@ -167,7 +168,6 @@ destroy(this.dw_jud_supr2)
 destroy(this.dw_jud_supr1)
 destroy(this.dw_jud_chief)
 destroy(this.st_1)
-destroy(this.pb_close)
 destroy(this.ln_1)
 destroy(this.ln_2)
 destroy(this.ln_3)
@@ -212,11 +212,31 @@ ll_num_retrieved = dw_jud_group6.Retrieve(140)
 
 end event
 
+type pb_2 from picturebutton within w_judicial
+integer y = 4
+integer width = 251
+integer height = 100
+integer taborder = 30
+integer textsize = -10
+integer weight = 700
+fontcharset fontcharset = ansi!
+fontpitch fontpitch = variable!
+fontfamily fontfamily = swiss!
+string facename = "Tahoma"
+string text = "CLOSE"
+boolean originalsize = true
+long textcolor = 16777215
+long backcolor = 255
+end type
+
+event clicked;close(w_judicial)
+end event
+
 type lb_test from listbox within w_judicial
 integer x = 1541
-integer y = 3724
+integer y = 4780
 integer width = 1358
-integer height = 1152
+integer height = 96
 integer taborder = 40
 integer textsize = -10
 integer weight = 400
@@ -2533,7 +2553,12 @@ if(li_valid_object = 1) then
 	if(gb_show_all_birthdays = true) then
 		li_dispbd = dw_clicked_object.getitemnumber(row, "sns_employees_dispbd")
 		if(li_dispbd = 0) then
-			dw_clicked_object.setitem(row, "sns_employees_dispbd", 4)
+			integer li_oktoshowbd
+			li_oktoshowbd = 0
+			li_oktoshowbd = dw_clicked_object.getitemnumber(row, "sns_employees_oktoshowbd")
+			if(li_oktoshowbd = 1) then
+				dw_clicked_object.setitem(row, "sns_employees_dispbd", 4)
+			end if	
 		end if
 	end if
 end if
@@ -4729,7 +4754,12 @@ if(li_valid_object = 1) then
 	if(gb_show_all_birthdays = true) then
 		li_dispbd = dw_clicked_object.getitemnumber(row, "sns_employees_dispbd")
 		if(li_dispbd = 0) then
-			dw_clicked_object.setitem(row, "sns_employees_dispbd", 4)
+			integer li_oktoshowbd
+			li_oktoshowbd = 0
+			li_oktoshowbd = dw_clicked_object.getitemnumber(row, "sns_employees_oktoshowbd")
+			if(li_oktoshowbd = 1) then
+				dw_clicked_object.setitem(row, "sns_employees_dispbd", 4)
+			end if	
 		end if
 	end if
 end if
@@ -6925,7 +6955,12 @@ if(li_valid_object = 1) then
 	if(gb_show_all_birthdays = true) then
 		li_dispbd = dw_clicked_object.getitemnumber(row, "sns_employees_dispbd")
 		if(li_dispbd = 0) then
-			dw_clicked_object.setitem(row, "sns_employees_dispbd", 4)
+			integer li_oktoshowbd
+			li_oktoshowbd = 0
+			li_oktoshowbd = dw_clicked_object.getitemnumber(row, "sns_employees_oktoshowbd")
+			if(li_oktoshowbd = 1) then
+				dw_clicked_object.setitem(row, "sns_employees_dispbd", 4)
+			end if	
 		end if
 	end if
 end if
@@ -6935,7 +6970,7 @@ type dw_jud_group3 from datawindow within w_judicial
 integer x = 2944
 integer y = 512
 integer width = 1454
-integer height = 2228
+integer height = 1996
 integer taborder = 30
 string dragicon = "\\ucfs1\apps\pix\ucso_staffing\UCSOSTAFFGRN.ICO"
 string title = "none"
@@ -9122,7 +9157,12 @@ if(li_valid_object = 1) then
 	if(gb_show_all_birthdays = true) then
 		li_dispbd = dw_clicked_object.getitemnumber(row, "sns_employees_dispbd")
 		if(li_dispbd = 0) then
-			dw_clicked_object.setitem(row, "sns_employees_dispbd", 4)
+			integer li_oktoshowbd
+			li_oktoshowbd = 0
+			li_oktoshowbd = dw_clicked_object.getitemnumber(row, "sns_employees_oktoshowbd")
+			if(li_oktoshowbd = 1) then
+				dw_clicked_object.setitem(row, "sns_employees_dispbd", 4)
+			end if	
 		end if
 	end if
 end if
@@ -9131,9 +9171,9 @@ end if
 end event
 
 type pb_1 from picturebutton within w_judicial
-integer x = 3634
-integer y = 2884
-integer width = 114
+integer x = 3534
+integer y = 2536
+integer width = 279
 integer height = 100
 integer taborder = 20
 integer textsize = -10
@@ -9142,7 +9182,7 @@ fontcharset fontcharset = ansi!
 fontpitch fontpitch = variable!
 fontfamily fontfamily = swiss!
 string facename = "Tahoma"
-string text = "X"
+string text = "CLOSE"
 boolean originalsize = true
 long textcolor = 16777215
 long backcolor = 255
@@ -9152,8 +9192,8 @@ event clicked;close(w_judicial)
 end event
 
 type dw_jud_admin from datawindow within w_judicial
-integer x = 2944
-integer y = 3304
+integer x = 2949
+integer y = 2676
 integer width = 1463
 integer height = 1484
 integer taborder = 30
@@ -11342,7 +11382,12 @@ if(li_valid_object = 1) then
 	if(gb_show_all_birthdays = true) then
 		li_dispbd = dw_clicked_object.getitemnumber(row, "sns_employees_dispbd")
 		if(li_dispbd = 0) then
-			dw_clicked_object.setitem(row, "sns_employees_dispbd", 4)
+			integer li_oktoshowbd
+			li_oktoshowbd = 0
+			li_oktoshowbd = dw_clicked_object.getitemnumber(row, "sns_employees_oktoshowbd")
+			if(li_oktoshowbd = 1) then
+				dw_clicked_object.setitem(row, "sns_employees_dispbd", 4)
+			end if	
 		end if
 	end if
 end if
@@ -13539,7 +13584,12 @@ if(li_valid_object = 1) then
 	if(gb_show_all_birthdays = true) then
 		li_dispbd = dw_clicked_object.getitemnumber(row, "sns_employees_dispbd")
 		if(li_dispbd = 0) then
-			dw_clicked_object.setitem(row, "sns_employees_dispbd", 4)
+			integer li_oktoshowbd
+			li_oktoshowbd = 0
+			li_oktoshowbd = dw_clicked_object.getitemnumber(row, "sns_employees_oktoshowbd")
+			if(li_oktoshowbd = 1) then
+				dw_clicked_object.setitem(row, "sns_employees_dispbd", 4)
+			end if	
 		end if
 	end if
 end if
@@ -15726,6 +15776,7 @@ dw_clicked_object = f_getDwDispJudObjectByGrpid_mod(ll_clicked_grpid, ls_subgrpi
 //dw_jud_supr1  135         'S1' 
 //dw_jud_supr2  137         'S2'
 integer li_dispbd
+long ll_empno
 if(li_valid_object = 1) then
 	if((ll_clicked_grpid = 135) or (ll_clicked_grpid = 136) or (ll_clicked_grpid = 59)) then
 		string ls_grpteam
@@ -15736,7 +15787,12 @@ if(li_valid_object = 1) then
 	if(gb_show_all_birthdays = true) then
 		li_dispbd = dw_clicked_object.getitemnumber(row, "sns_employees_dispbd")
 		if(li_dispbd = 0) then
-			dw_clicked_object.setitem(row, "sns_employees_dispbd", 4)
+			integer li_oktoshowbd
+			li_oktoshowbd = 0
+			li_oktoshowbd = dw_clicked_object.getitemnumber(row, "sns_employees_oktoshowbd")
+			if(li_oktoshowbd = 1) then
+				dw_clicked_object.setitem(row, "sns_employees_dispbd", 4)
+			end if			
 		end if
 	end if
 end if
@@ -15998,7 +16054,12 @@ if(li_valid_object = 1) then
 	if(gb_show_all_birthdays = true) then
 		li_dispbd = dw_clicked_object.getitemnumber(row, "sns_employees_dispbd")
 		if(li_dispbd = 0) then
-			dw_clicked_object.setitem(row, "sns_employees_dispbd", 1)
+			integer li_oktoshowbd
+			li_oktoshowbd = 0
+			li_oktoshowbd = dw_clicked_object.getitemnumber(row, "sns_employees_oktoshowbd")
+			if(li_oktoshowbd = 1) then
+				dw_clicked_object.setitem(row, "sns_employees_dispbd", 1)
+			end if
 		end if
 	end if
 end if
@@ -16127,7 +16188,12 @@ if(li_valid_object = 1) then
 	if(gb_show_all_birthdays = true) then
 		li_dispbd = dw_clicked_object.getitemnumber(row, "sns_employees_dispbd")
 		if(li_dispbd = 0) then
-			dw_clicked_object.setitem(row, "sns_employees_dispbd", 1)
+			integer li_oktoshowbd 
+			li_oktoshowbd = 0
+			li_oktoshowbd = dw_clicked_object.getitemnumber(row, "sns_employees_oktoshowbd")
+			if(li_oktoshowbd = 1) then
+				dw_clicked_object.setitem(row, "sns_employees_dispbd", 1)
+			end if
 		end if
 	end if
 end if
@@ -16231,16 +16297,22 @@ if(li_valid_object = 1) then
 	if(gb_show_all_birthdays = true) then
 		li_dispbd = dw_clicked_object.getitemnumber(row, "sns_employees_dispbd")
 		if(li_dispbd = 0) then
-			dw_clicked_object.setitem(row, "sns_employees_dispbd", 1)
+			integer li_oktoshowbd
+			li_oktoshowbd = 0
+			li_oktoshowbd = dw_clicked_object.getitemnumber(row, "sns_employees_oktoshowbd")
+			if(li_oktoshowbd = 1) then
+				dw_clicked_object.setitem(row, "sns_employees_dispbd", 1)
+			end if
 		end if
+		
 	end if
 end if
 
 end event
 
 type st_1 from statictext within w_judicial
-integer x = 197
-integer y = 16
+integer x = 265
+integer y = 8
 integer width = 1129
 integer height = 84
 integer textsize = -12
@@ -16254,27 +16326,6 @@ long backcolor = 553648127
 string text = "Judicial Assignments Updates"
 boolean focusrectangle = false
 end type
-
-type pb_close from picturebutton within w_judicial
-integer x = 27
-integer y = 8
-integer width = 114
-integer height = 100
-integer taborder = 10
-integer textsize = -10
-integer weight = 700
-fontcharset fontcharset = ansi!
-fontpitch fontpitch = variable!
-fontfamily fontfamily = swiss!
-string facename = "Tahoma"
-string text = "X"
-boolean originalsize = true
-long textcolor = 16777215
-long backcolor = 255
-end type
-
-event clicked;close(w_judicial)
-end event
 
 type ln_1 from line within w_judicial
 long linecolor = 33554432

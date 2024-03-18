@@ -2,6 +2,8 @@
 forward
 global type w_main from window
 end type
+type st_2 from statictext within w_main
+end type
 type pb_15 from picturebutton within w_main
 end type
 type pb_test from picturebutton within w_main
@@ -80,6 +82,7 @@ boolean resizable = true
 long backcolor = 67108864
 string icon = "AppIcon!"
 boolean center = true
+st_2 st_2
 pb_15 pb_15
 pb_test pb_test
 st_copyright st_copyright
@@ -116,6 +119,7 @@ end type
 global w_main w_main
 
 on w_main.create
+this.st_2=create st_2
 this.pb_15=create pb_15
 this.pb_test=create pb_test
 this.st_copyright=create st_copyright
@@ -148,7 +152,8 @@ this.ln_13=create ln_13
 this.ln_11=create ln_11
 this.st_1=create st_1
 this.pb_14=create pb_14
-this.Control[]={this.pb_15,&
+this.Control[]={this.st_2,&
+this.pb_15,&
 this.pb_test,&
 this.st_copyright,&
 this.pb_1,&
@@ -183,6 +188,7 @@ this.pb_14}
 end on
 
 on w_main.destroy
+destroy(this.st_2)
 destroy(this.pb_15)
 destroy(this.pb_test)
 destroy(this.st_copyright)
@@ -218,12 +224,33 @@ destroy(this.pb_14)
 end on
 
 event open;st_copyright.Text = f_get_copyright(ref st_copyright)
+if(gs_winuser <> "MIKEJ") then
+	pb_10.enabled = false
+	pb_test.visible = false
+end if
 end event
+
+type st_2 from statictext within w_main
+integer x = 2336
+integer y = 2116
+integer width = 279
+integer height = 56
+integer textsize = -8
+integer weight = 400
+fontcharset fontcharset = ansi!
+fontpitch fontpitch = variable!
+fontfamily fontfamily = swiss!
+string facename = "Tw Cen MT Condensed"
+long textcolor = 255
+long backcolor = 553648127
+string text = "03/14/2024 09:45"
+boolean focusrectangle = false
+end type
 
 type pb_15 from picturebutton within w_main
 integer x = 407
 integer y = 1404
-integer width = 498
+integer width = 645
 integer height = 104
 integer taborder = 40
 integer textsize = -10
@@ -264,13 +291,14 @@ event clicked;//integer li_num_found
 //li_num_found = f_get_avail_group_callnums(ll_grpid, ref lsa_avail_callnums, ref sqlca)
 //if(li_num_found > 0) then
 //end if
-
-open(w_testing)
+if(gs_winuser = "MIKEJ") then
+	open(w_testing)
+end if
 end event
 
 type st_copyright from statictext within w_main
-integer x = 526
-integer y = 2108
+integer x = 434
+integer y = 2116
 integer width = 1861
 integer height = 64
 integer textsize = -10
@@ -292,9 +320,10 @@ end if
 end event
 
 type pb_1 from picturebutton within w_main
-integer x = 128
-integer width = 2414
-integer height = 496
+integer x = 224
+integer y = 32
+integer width = 2208
+integer height = 328
 integer taborder = 50
 integer textsize = -12
 integer weight = 700
@@ -342,7 +371,7 @@ end type
 type pb_11 from picturebutton within w_main
 integer x = 407
 integer y = 1308
-integer width = 498
+integer width = 649
 integer height = 104
 integer taborder = 30
 integer textsize = -10
@@ -351,7 +380,7 @@ fontcharset fontcharset = ansi!
 fontpitch fontpitch = variable!
 fontfamily fontfamily = swiss!
 string facename = "Tahoma"
-string text = "Patrol"
+string text = "Patrol Assignments"
 boolean originalsize = true
 string powertiptext = "Patrol Assignments"
 end type
@@ -378,39 +407,48 @@ string powertiptext = "Patrol Assignments Changes"
 end type
 
 event clicked;open(w_admin)
+
 end event
 
 type pb_9 from picturebutton within w_main
-integer x = 1239
-integer y = 1320
-integer width = 498
+integer x = 1353
+integer y = 1324
+integer width = 539
 integer height = 224
 integer taborder = 30
 integer textsize = -10
-integer weight = 400
+integer weight = 700
 fontcharset fontcharset = ansi!
 fontpitch fontpitch = variable!
 fontfamily fontfamily = swiss!
 string facename = "Tahoma"
-string text = "CIVIL"
+string text = "Judicial Services"
 boolean originalsize = true
+vtextalign vtextalign = vcenter!
 end type
 
+event clicked;open(w_judicial_services)
+end event
+
 type pb_8 from picturebutton within w_main
-integer x = 1239
-integer y = 1068
-integer width = 498
+integer x = 1349
+integer y = 1072
+integer width = 549
 integer height = 224
 integer taborder = 30
 integer textsize = -10
-integer weight = 400
+integer weight = 700
 fontcharset fontcharset = ansi!
 fontpitch fontpitch = variable!
 fontfamily fontfamily = swiss!
 string facename = "Tahoma"
-string text = "Deputies"
+string text = "Judicial Deputies"
 boolean originalsize = true
+vtextalign vtextalign = vcenter!
 end type
+
+event clicked;open(w_judicial_deputies)
+end event
 
 type pb_7 from picturebutton within w_main
 integer x = 2094
@@ -493,9 +531,9 @@ string picturename = "\\ucfs1\apps\pix\ucso_staffing\sbadge_emerg_svcs.png"
 end type
 
 type pb_2 from picturebutton within w_main
-integer x = 864
-integer y = 572
-integer width = 558
+integer x = 1010
+integer y = 576
+integer width = 562
 integer height = 408
 integer taborder = 20
 integer textsize = -10
@@ -505,7 +543,7 @@ fontpitch fontpitch = variable!
 fontfamily fontfamily = swiss!
 string facename = "Tahoma"
 boolean originalsize = true
-string picturename = "\\ucfs1\apps\pix\ucso_staffing\sbadge_judicial.png"
+string picturename = "\\ucfs1\apps\pix\ucso_staffing\sbadge_judicial_new.png"
 string powertiptext = "Judicial Assignments Board"
 end type
 
@@ -580,28 +618,28 @@ end type
 type ln_6 from line within w_main
 long linecolor = 33554432
 integer linethickness = 11
-integer beginx = 1061
-integer beginy = 1188
-integer endx = 1184
-integer endy = 1188
+integer beginx = 1207
+integer beginy = 1192
+integer endx = 1330
+integer endy = 1192
 end type
 
 type ln_7 from line within w_main
 long linecolor = 33554432
 integer linethickness = 11
-integer beginx = 1056
-integer beginy = 1416
-integer endx = 1179
-integer endy = 1416
+integer beginx = 1202
+integer beginy = 1420
+integer endx = 1326
+integer endy = 1420
 end type
 
 type ln_8 from line within w_main
 long linecolor = 33554432
 integer linethickness = 11
-integer beginx = 1051
-integer beginy = 976
-integer endx = 1051
-integer endy = 1424
+integer beginx = 1198
+integer beginy = 980
+integer endx = 1198
+integer endy = 1428
 end type
 
 type ln_9 from line within w_main
@@ -650,8 +688,8 @@ integer endy = 1912
 end type
 
 type st_1 from statictext within w_main
-integer x = 841
-integer y = 416
+integer x = 855
+integer y = 420
 integer width = 891
 integer height = 88
 boolean bringtotop = true
@@ -669,9 +707,9 @@ boolean focusrectangle = false
 end type
 
 type pb_14 from picturebutton within w_main
-integer x = 18
-integer y = 12
-integer width = 105
+integer x = 9
+integer y = 36
+integer width = 192
 integer height = 92
 integer taborder = 10
 boolean bringtotop = true
@@ -681,7 +719,7 @@ fontcharset fontcharset = ansi!
 fontpitch fontpitch = variable!
 fontfamily fontfamily = swiss!
 string facename = "Arial"
-string text = "X"
+string text = "Close"
 boolean originalsize = true
 long textcolor = 16777215
 long backcolor = 255
