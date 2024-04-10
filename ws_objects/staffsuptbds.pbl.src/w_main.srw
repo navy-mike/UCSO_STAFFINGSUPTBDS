@@ -243,7 +243,7 @@ fontfamily fontfamily = swiss!
 string facename = "Tw Cen MT Condensed"
 long textcolor = 255
 long backcolor = 553648127
-string text = "03/14/2024 09:45"
+string text = "04/10/2024 08:00"
 boolean focusrectangle = false
 end type
 
