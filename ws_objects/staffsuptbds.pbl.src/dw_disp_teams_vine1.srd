@@ -5,24 +5,25 @@ header(height=132 color="536870912" transparency="0" gradient.color="8421504" gr
 summary(height=0 color="536870912" transparency="0" gradient.color="8421504" gradient.transparency="0" gradient.angle="0" brushmode="0" gradient.repetition.mode="0" gradient.repetition.count="0" gradient.repetition.length="100" gradient.focus="0" gradient.scale="100" gradient.spread="100" )
 footer(height=0 color="536870912" transparency="0" gradient.color="8421504" gradient.transparency="0" gradient.angle="0" brushmode="0" gradient.repetition.mode="0" gradient.repetition.count="0" gradient.repetition.length="100" gradient.focus="0" gradient.scale="100" gradient.spread="100" )
 detail(height=356 color="553648127" transparency="0" gradient.color="8421504" gradient.transparency="0" gradient.angle="0" brushmode="0" gradient.repetition.mode="0" gradient.repetition.count="0" gradient.repetition.length="100" gradient.focus="0" gradient.scale="100" gradient.spread="100" )
-table(column=(type=char(10) updatewhereclause=yes name=sns_board_specs_others_callnum dbname="sns_board_specs_others.callnum" )
- column=(type=char(40) updatewhereclause=yes name=sns_board_specs_others_empname dbname="sns_board_specs_others.empname" )
- column=(type=decimal(0) updatewhereclause=yes name=sns_board_specs_others_empno dbname="sns_board_specs_others.empno" )
- column=(type=decimal(0) updatewhereclause=yes name=sns_board_specs_others_issuper dbname="sns_board_specs_others.issuper" )
- column=(type=decimal(0) updatewhereclause=yes name=sns_board_specs_others_grpid dbname="sns_board_specs_others.grpid" )
- column=(type=char(2) updatewhereclause=yes name=sns_board_specs_others_nrow dbname="sns_board_specs_others.nrow" )
- column=(type=decimal(0) updatewhereclause=yes name=sns_board_specs_others_isunfilled dbname="sns_board_specs_others.isunfilled" )
- column=(type=char(20) updatewhereclause=yes name=sns_board_specs_others_groupname dbname="sns_board_specs_others.groupname" )
+table(column=(type=char(10) updatewhereclause=yes name=sns_board_specs_others_callnum dbname="sns_board_specs_others.callnum" dbalias="a.callnum" )
+ column=(type=char(40) updatewhereclause=yes name=sns_board_specs_others_empname dbname="sns_board_specs_others.empname" dbalias="a.empname" )
+ column=(type=decimal(0) updatewhereclause=yes name=sns_board_specs_others_empno dbname="sns_board_specs_others.empno" dbalias="a.empno" )
+ column=(type=decimal(0) updatewhereclause=yes name=sns_board_specs_others_issuper dbname="sns_board_specs_others.issuper" dbalias="a.issuper" )
+ column=(type=decimal(0) updatewhereclause=yes name=sns_board_specs_others_grpid dbname="sns_board_specs_others.grpid" dbalias="a.grpid" )
+ column=(type=char(2) updatewhereclause=yes name=sns_board_specs_others_nrow dbname="sns_board_specs_others.nrow" dbalias="a.nrow" )
+ column=(type=decimal(0) updatewhereclause=yes name=sns_board_specs_others_isunfilled dbname="sns_board_specs_others.isunfilled" dbalias="a.isunfilled" )
+ column=(type=char(20) updatewhereclause=yes name=sns_board_specs_others_groupname dbname="sns_board_specs_others.groupname" dbalias="a.groupname" )
  column=(type=char(103) updatewhereclause=yes name=grpteamid dbname="grpteamid" )
- column=(type=decimal(0) updatewhereclause=yes name=sns_board_specs_others_id dbname="sns_board_specs_others.id" )
- column=(type=char(2) updatewhereclause=yes name=sns_board_specs_others_orderby dbname="sns_board_specs_others.orderby" )
- column=(type=char(20) updatewhereclause=yes name=sns_board_specs_others_positionid dbname="sns_board_specs_others.positionid" )
- column=(type=char(2) updatewhereclause=yes name=sns_staffing_grps_positions2_subgrpid dbname="sns_staffing_grps_positions2.subgrpid" )
+ column=(type=decimal(0) updatewhereclause=yes name=sns_board_specs_others_id dbname="sns_board_specs_others.id" dbalias="a.id" )
+ column=(type=char(2) updatewhereclause=yes name=sns_board_specs_others_orderby dbname="sns_board_specs_others.orderby" dbalias="a.orderby" )
+ column=(type=char(20) updatewhereclause=yes name=sns_board_specs_others_positionid dbname="sns_board_specs_others.positionid" dbalias="a.positionid" )
+ column=(type=char(2) updatewhereclause=yes name=sns_staffing_grps_positions2_subgrpid dbname="sns_staffing_grps_positions2.subgrpid" dbalias="b.subgrpid" )
  column=(type=char(533) updatewhereclause=yes name=compute_0014 dbname="compute_0014" )
  retrieve="select a.callnum, a.empname, a.empno, a.issuper, a.grpid, a.nrow, a.isunfilled, a.groupname, c.grpteam || ' {' || c.id || '}' as grpteamid, a.id, a.orderby, a.positionid,b.subgrpid, d.photolocation || '\' || d.photoid
 from sns_board_specs_others a, sns_staffing_groups c, sns_staffing_grps_positions2 b, sns_employees d
 where a.groupname = 'PATROL'
 and a.active = 1
+and d.active = 1
 and a.grpid = :ll_grpid
 and c.id = a.grpid
 and a.callnum is not null
