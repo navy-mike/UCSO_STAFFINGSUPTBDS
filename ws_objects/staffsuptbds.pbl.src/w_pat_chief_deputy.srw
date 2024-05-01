@@ -187,16 +187,16 @@ dw_disp_d.settransobject(sqlca)
 ll_num_retrieved = dw_disp_d.retrieve(1,"PATROL","PAT_CHIEF","4","02","DW_TEAMD",0,"09")
 
 dw_lt1.settransobject(sqlca)
-ll_num_retrieved = dw_lt1.Retrieve(12)
+ll_num_retrieved = dw_lt1.Retrieve(12, '')
 
 dw_lt2.settransobject(sqlca)
-ll_num_retrieved = dw_lt2.Retrieve(1)
+ll_num_retrieved = dw_lt2.Retrieve(1, '')
 
 dw_lt3.settransobject(sqlca)
-ll_num_retrieved = dw_lt3.Retrieve(5)
+ll_num_retrieved = dw_lt3.Retrieve(5, '')
 
 dw_lt4.settransobject(sqlca)
-ll_num_retrieved = dw_lt4.Retrieve(11)
+ll_num_retrieved = dw_lt4.Retrieve(11, '')
 
 dw_disp_rec1.settransobject(sqlca)
 ll_num_retrieved = dw_disp_rec1.Retrieve(5)

@@ -22,29 +22,31 @@ bSuccessfulRemove = false
 //on exit:
 //lsa_dd_errors[]
 string ls_sqlerrtext
-if((ll_from_pos_exists_id > 0) and (ll_from_bs_specs_others_exists_id > 0)) then
-	bSuccessfulRemove = false
-	long ll_pos_grpid
-	//
-	select grpid into :ll_pos_grpid from sns_staffing_grps_positions2 where id = :ll_from_pos_exists_id using tr_sqlca;
-	// 
-	li_num_deletes = 0
-	li_num_updates = 0
-	// - delete from sns_staffing_grps_positions2 where id = ll_from_pos_exists_id
-	delete from sns_staffing_grps_positions2 where id = :ll_from_pos_exists_id using tr_sqlca;
-	//
-	if(sqlca.sqlcode <> -1) then
+if(ll_from_bs_specs_others_exists_id > 0) then
+	if(ll_from_pos_exists_id > 0) then
+		bSuccessfulRemove = false
+		long ll_pos_grpid
 		//
-		commit using tr_sqlca;
+		select grpid into :ll_pos_grpid from sns_staffing_grps_positions2 where id = :ll_from_pos_exists_id using tr_sqlca;
+		// 
+		li_num_deletes = 0
+		li_num_updates = 0
+		// - delete from sns_staffing_grps_positions2 where id = ll_from_pos_exists_id
+		delete from sns_staffing_grps_positions2 where id = :ll_from_pos_exists_id using tr_sqlca;
 		//
-		li_num_deletes++
-	else
-		ls_sqlerrtext = tr_sqlca.sqlerrtext
-		//
-		rollback using tr_sqlca;
-		//
-		ls_sqlerrtext = "delete from sns_staffing_grps_positions2 error=" + ls_sqlerrtext
-		f_add_item_to_string_array_ext(ref lsa_dd_errors, ls_sqlerrtext, false)
+		if(sqlca.sqlcode <> -1) then
+			//
+			commit using tr_sqlca;
+			//
+			li_num_deletes++
+		else
+			ls_sqlerrtext = tr_sqlca.sqlerrtext
+			//
+			rollback using tr_sqlca;
+			//
+			ls_sqlerrtext = "delete from sns_staffing_grps_positions2 error=" + ls_sqlerrtext
+			f_add_item_to_string_array_ext(ref lsa_dd_errors, ls_sqlerrtext, false)
+		end if
 	end if
 	// - delete from sns_pos_xref where id = ll_from_xref_exists_id
 	if(ll_from_xref_exists_id > 0) then
