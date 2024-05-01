@@ -12,9 +12,9 @@ type st_copyright from statictext within w_main
 end type
 type pb_1 from picturebutton within w_main
 end type
-type pb_13 from picturebutton within w_main
+type pb_volunteers from picturebutton within w_main
 end type
-type pb_12 from picturebutton within w_main
+type pb_investigations from picturebutton within w_main
 end type
 type pb_11 from picturebutton within w_main
 end type
@@ -24,15 +24,15 @@ type pb_9 from picturebutton within w_main
 end type
 type pb_8 from picturebutton within w_main
 end type
-type pb_7 from picturebutton within w_main
+type pb_ecsteam from picturebutton within w_main
 end type
-type pb_6 from picturebutton within w_main
+type pb_tert from picturebutton within w_main
 end type
-type pb_5 from picturebutton within w_main
+type pb_mountedposse from picturebutton within w_main
 end type
-type pb_4 from picturebutton within w_main
+type pb_searchrescue from picturebutton within w_main
 end type
-type pb_3 from picturebutton within w_main
+type pb_emergsvcs from picturebutton within w_main
 end type
 type pb_2 from picturebutton within w_main
 end type
@@ -87,17 +87,17 @@ pb_15 pb_15
 pb_test pb_test
 st_copyright st_copyright
 pb_1 pb_1
-pb_13 pb_13
-pb_12 pb_12
+pb_volunteers pb_volunteers
+pb_investigations pb_investigations
 pb_11 pb_11
 pb_10 pb_10
 pb_9 pb_9
 pb_8 pb_8
-pb_7 pb_7
-pb_6 pb_6
-pb_5 pb_5
-pb_4 pb_4
-pb_3 pb_3
+pb_ecsteam pb_ecsteam
+pb_tert pb_tert
+pb_mountedposse pb_mountedposse
+pb_searchrescue pb_searchrescue
+pb_emergsvcs pb_emergsvcs
 pb_2 pb_2
 pb_patrol pb_patrol
 ln_1 ln_1
@@ -124,17 +124,17 @@ this.pb_15=create pb_15
 this.pb_test=create pb_test
 this.st_copyright=create st_copyright
 this.pb_1=create pb_1
-this.pb_13=create pb_13
-this.pb_12=create pb_12
+this.pb_volunteers=create pb_volunteers
+this.pb_investigations=create pb_investigations
 this.pb_11=create pb_11
 this.pb_10=create pb_10
 this.pb_9=create pb_9
 this.pb_8=create pb_8
-this.pb_7=create pb_7
-this.pb_6=create pb_6
-this.pb_5=create pb_5
-this.pb_4=create pb_4
-this.pb_3=create pb_3
+this.pb_ecsteam=create pb_ecsteam
+this.pb_tert=create pb_tert
+this.pb_mountedposse=create pb_mountedposse
+this.pb_searchrescue=create pb_searchrescue
+this.pb_emergsvcs=create pb_emergsvcs
 this.pb_2=create pb_2
 this.pb_patrol=create pb_patrol
 this.ln_1=create ln_1
@@ -157,17 +157,17 @@ this.pb_15,&
 this.pb_test,&
 this.st_copyright,&
 this.pb_1,&
-this.pb_13,&
-this.pb_12,&
+this.pb_volunteers,&
+this.pb_investigations,&
 this.pb_11,&
 this.pb_10,&
 this.pb_9,&
 this.pb_8,&
-this.pb_7,&
-this.pb_6,&
-this.pb_5,&
-this.pb_4,&
-this.pb_3,&
+this.pb_ecsteam,&
+this.pb_tert,&
+this.pb_mountedposse,&
+this.pb_searchrescue,&
+this.pb_emergsvcs,&
 this.pb_2,&
 this.pb_patrol,&
 this.ln_1,&
@@ -193,17 +193,17 @@ destroy(this.pb_15)
 destroy(this.pb_test)
 destroy(this.st_copyright)
 destroy(this.pb_1)
-destroy(this.pb_13)
-destroy(this.pb_12)
+destroy(this.pb_volunteers)
+destroy(this.pb_investigations)
 destroy(this.pb_11)
 destroy(this.pb_10)
 destroy(this.pb_9)
 destroy(this.pb_8)
-destroy(this.pb_7)
-destroy(this.pb_6)
-destroy(this.pb_5)
-destroy(this.pb_4)
-destroy(this.pb_3)
+destroy(this.pb_ecsteam)
+destroy(this.pb_tert)
+destroy(this.pb_mountedposse)
+destroy(this.pb_searchrescue)
+destroy(this.pb_emergsvcs)
 destroy(this.pb_2)
 destroy(this.pb_patrol)
 destroy(this.ln_1)
@@ -228,6 +228,12 @@ if(gs_winuser <> "MIKEJ") then
 	pb_10.enabled = false
 	pb_test.visible = false
 end if
+pb_investigations.enabled = false
+pb_volunteers.enabled = false
+pb_searchrescue.enabled = false
+pb_mountedposse.enabled = false
+pb_tert.enabled = false
+pb_ecsteam.enabled = false
 end event
 
 type st_2 from statictext within w_main
@@ -334,7 +340,7 @@ string facename = "Tahoma"
 string picturename = "\\ucfs1\apps\pix\ucso_staffing\staffingiconnew.png"
 end type
 
-type pb_13 from picturebutton within w_main
+type pb_volunteers from picturebutton within w_main
 integer x = 421
 integer y = 1808
 integer width = 498
@@ -351,7 +357,7 @@ boolean originalsize = true
 vtextalign vtextalign = vcenter!
 end type
 
-type pb_12 from picturebutton within w_main
+type pb_investigations from picturebutton within w_main
 integer x = 411
 integer y = 1556
 integer width = 498
@@ -442,7 +448,7 @@ fontcharset fontcharset = ansi!
 fontpitch fontpitch = variable!
 fontfamily fontfamily = swiss!
 string facename = "Tahoma"
-string text = "Judicial Deputies"
+string text = "Judicial Courts"
 boolean originalsize = true
 vtextalign vtextalign = vcenter!
 end type
@@ -450,7 +456,7 @@ end type
 event clicked;open(w_judicial_deputies)
 end event
 
-type pb_7 from picturebutton within w_main
+type pb_ecsteam from picturebutton within w_main
 integer x = 2094
 integer y = 1804
 integer width = 503
@@ -466,7 +472,7 @@ string text = "ECS Team"
 boolean originalsize = true
 end type
 
-type pb_6 from picturebutton within w_main
+type pb_tert from picturebutton within w_main
 integer x = 2094
 integer y = 1552
 integer width = 498
@@ -482,7 +488,7 @@ string text = "TERT"
 boolean originalsize = true
 end type
 
-type pb_5 from picturebutton within w_main
+type pb_mountedposse from picturebutton within w_main
 integer x = 2094
 integer y = 1300
 integer width = 498
@@ -498,7 +504,7 @@ string text = "Mounted Posse"
 boolean originalsize = true
 end type
 
-type pb_4 from picturebutton within w_main
+type pb_searchrescue from picturebutton within w_main
 integer x = 2094
 integer y = 1048
 integer width = 498
@@ -514,7 +520,7 @@ string text = "Search & Rescue"
 boolean originalsize = true
 end type
 
-type pb_3 from picturebutton within w_main
+type pb_emergsvcs from picturebutton within w_main
 integer x = 1710
 integer y = 580
 integer width = 558

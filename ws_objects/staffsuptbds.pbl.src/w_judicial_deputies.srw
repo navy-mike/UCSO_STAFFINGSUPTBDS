@@ -7198,7 +7198,7 @@ fontfamily fontfamily = swiss!
 string facename = "Tahoma"
 long textcolor = 16711680
 long backcolor = 553648127
-string text = "Judicial Deputies Assignments"
+string text = "Judicial Courts Assignments"
 boolean focusrectangle = false
 end type
 
