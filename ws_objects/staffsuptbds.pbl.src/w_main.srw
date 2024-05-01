@@ -428,7 +428,7 @@ fontcharset fontcharset = ansi!
 fontpitch fontpitch = variable!
 fontfamily fontfamily = swiss!
 string facename = "Tahoma"
-string text = "Judicial Services"
+string text = "Judicial Support"
 boolean originalsize = true
 vtextalign vtextalign = vcenter!
 end type
@@ -543,7 +543,7 @@ integer width = 562
 integer height = 408
 integer taborder = 20
 integer textsize = -10
-integer weight = 400
+integer weight = 700
 fontcharset fontcharset = ansi!
 fontpitch fontpitch = variable!
 fontfamily fontfamily = swiss!
